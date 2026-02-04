@@ -19,5 +19,6 @@ public class EstiloGral {
     public static final Font INPUT_FONT = new Font("SansSerif", Font.PLAIN, 28);
     public static final Font MIDDLE_FONT = new Font("SansSerif", Font.BOLD, 32);
     public static final Font SMALL_FONT = new Font("SansSerif", Font.PLAIN, 17);
+    public static final Font SMALL_BOLD_FONT = new Font("SansSerif", Font.BOLD, 17);
 
 }

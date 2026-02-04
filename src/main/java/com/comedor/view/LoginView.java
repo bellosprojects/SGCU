@@ -1,23 +1,9 @@
 package com.comedor.view;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Image;
+import java.awt.*;
+import javax.swing.*;
 
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
-import com.comedor.view.components.GradientPanelRedondeado;
-import com.comedor.view.components.ImagePanel;
-
+import com.comedor.view.components.*;
 
 public class LoginView extends JFrame{
 
@@ -30,6 +16,7 @@ public class LoginView extends JFrame{
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
+        setResizable(false);
 
         JPanel mainPanel = new ImagePanel(cargarIcono("/images/background.jpeg", 1920, 1080).getImage());
         mainPanel.setLayout(new BorderLayout());
@@ -121,7 +108,7 @@ public class LoginView extends JFrame{
         footerGbc.weightx = 0;
         footerGbc.anchor = GridBagConstraints.SOUTH;
 
-        JLabel copyRightLabel = new JLabel("© 2024 SGCU. Todos los derechos reservados.");
+        JLabel copyRightLabel = new JLabel("© 2026 SGCU. Todos los derechos reservados.");
         copyRightLabel.setFont(EstiloGral.SMALL_FONT);
         copyRightLabel.setForeground(EstiloGral.BG_COLOR);
         copyRightLabel.setBorder(BorderFactory.createEmptyBorder(0, 30, 15, 0));
@@ -133,13 +120,27 @@ public class LoginView extends JFrame{
         footerGbc.gridx++;
         footerGbc.weightx = 0;
 
-        JPanel loginButtonPanel = new GradientPanelRedondeado(10, 40, new Color(255, 255, 255, 200));
+        GradientPanelRedondeado loginButtonPanel = new GradientPanelRedondeado(10, 40, new Color(255, 255, 255, 200));
+        loginButtonPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         JButton loginButton = new JButton("INICIAR SESIÓN");
         loginButton.setFont(EstiloGral.MIDDLE_FONT);
         loginButton.setForeground(EstiloGral.DARK_COLOR);
-        loginButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        loginButton.setBorder(null);
         loginButton.setContentAreaFilled(false);
-        loginButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        loginButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        loginButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                loginButtonPanel.setColor1(new Color(50, 50, 50, 220));
+                loginButton.setForeground(EstiloGral.BG_COLOR);
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                loginButtonPanel.setColor1(new Color(255, 255, 255, 200));
+                loginButton.setForeground(EstiloGral.DARK_COLOR);
+            }
+        });
         loginButtonPanel.add(loginButton);
         footer.add(loginButtonPanel, footerGbc);
 
@@ -171,5 +172,4 @@ public class LoginView extends JFrame{
             return null;
         }
     }
-
 }

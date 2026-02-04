@@ -54,11 +54,11 @@ public class GradientPanelRedondeado extends JPanel {
         Graphics2D g2d = (Graphics2D) g.create();
         g2d.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
 
-        int ancho = getWidth() - padding * 2;
-        int alto = getHeight() - padding * 2;
+        int ancho = getWidth();
+        int alto = getHeight();
 
         RoundRectangle2D forma = new RoundRectangle2D.Double(
-            padding, padding, ancho, alto, radio, radio
+            padding, padding, ancho - padding * 2, alto - padding * 2, radio, radio
         );
 
         if(conDegradado && !color1.equals(color2)){
@@ -112,7 +112,7 @@ public class GradientPanelRedondeado extends JPanel {
         this.radio = radio;
         repaint();
     }
-    
+
     public int getPadding() {
         return padding;
     }
