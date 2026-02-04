@@ -8,7 +8,10 @@ import com.comedor.view.components.*;
 public class LoginView extends JFrame{
 
     private JTextField cedulaInput;
-    private JTextField passField;
+    private JTextField passInput;
+    private JButton loginButton;
+    private JButton registerButton;
+    private JButton forgotPassButton;
     
     public LoginView() {
         setTitle("Login - SGCU");
@@ -73,28 +76,34 @@ public class LoginView extends JFrame{
 
         centerGbc.gridy++;
         JPanel inputPassPanel = new GradientPanelRedondeado(10, 0, new Color(255, 255, 255, 200));
-        passField = new JTextField(22);
-        passField.setFont(EstiloGral.INPUT_FONT);
-        passField.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        passField.setOpaque(false);
-        inputPassPanel.add(passField);
+        passInput = new JTextField(22);
+        passInput.setFont(EstiloGral.INPUT_FONT);
+        passInput.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        passInput.setOpaque(false);
+        inputPassPanel.add(passInput);
         centerPanel.add(inputPassPanel, centerGbc);
 
         centerGbc.gridy++;
 
-        JLabel forgotPassLabel = new JLabel("¿Olvidaste tu contraseña?");
-        forgotPassLabel.setFont(EstiloGral.SMALL_FONT);
-        forgotPassLabel.setForeground(EstiloGral.BG_COLOR);
-        forgotPassLabel.setCursor(new java.awt.Cursor(Cursor.HAND_CURSOR));
-        centerPanel.add(forgotPassLabel, centerGbc);
+        forgotPassButton = new JButton("¿Olvidaste tu contraseña?");
+        forgotPassButton.setFont(EstiloGral.SMALL_FONT);
+        forgotPassButton.setForeground(EstiloGral.BG_COLOR);
+        forgotPassButton.setCursor(new java.awt.Cursor(Cursor.HAND_CURSOR));
+        forgotPassButton.setBackground(new Color(0,0,0,0));
+        forgotPassButton.setBorder(null);
+        forgotPassButton.setContentAreaFilled(false);
+        centerPanel.add(forgotPassButton, centerGbc);
 
         centerGbc.anchor = GridBagConstraints.EAST;
 
-        JLabel registerLabel = new JLabel("¿No tienes cuenta? Regístrate");
-        registerLabel.setFont(EstiloGral.SMALL_FONT);
-        registerLabel.setForeground(EstiloGral.BG_COLOR);
-        registerLabel.setCursor(new java.awt.Cursor(Cursor.HAND_CURSOR));
-        centerPanel.add(registerLabel, centerGbc);
+        registerButton = new JButton("¿No tienes cuenta? Regístrate");
+        registerButton.setFont(EstiloGral.SMALL_FONT);
+        registerButton.setForeground(EstiloGral.BG_COLOR);
+        registerButton.setCursor(new java.awt.Cursor(Cursor.HAND_CURSOR));
+        registerButton.setBackground(new Color(0,0,0,0));
+        registerButton.setBorder(null);
+        registerButton.setContentAreaFilled(false);
+        centerPanel.add(registerButton, centerGbc);
 
 
         mainPanel.add(centerPanel, BorderLayout.CENTER);
@@ -122,7 +131,7 @@ public class LoginView extends JFrame{
 
         GradientPanelRedondeado loginButtonPanel = new GradientPanelRedondeado(10, 40, new Color(255, 255, 255, 200));
         loginButtonPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        JButton loginButton = new JButton("INICIAR SESIÓN");
+        loginButton = new JButton("INICIAR SESIÓN");
         loginButton.setFont(EstiloGral.MIDDLE_FONT);
         loginButton.setForeground(EstiloGral.DARK_COLOR);
         loginButton.setBorder(null);
@@ -155,8 +164,20 @@ public class LoginView extends JFrame{
         return this.cedulaInput;
     }
 
-    public JTextField getPassField() {
-        return this.passField;
+    public JTextField getPassInput() {
+        return this.passInput;
+    }
+
+    public JButton getLoginButton() {
+        return this.loginButton;
+    }
+
+    public JButton getRegisterButton() {
+        return this.registerButton;
+    }
+
+    public JButton getForgotPassButton() {
+        return this.forgotPassButton;
     }
 
     private ImageIcon cargarIcono(String ruta, int ancho, int alto) {
