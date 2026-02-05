@@ -5,10 +5,12 @@ import javax.swing.*;
 
 import com.comedor.view.components.*;
 
+import java.awt.event.*;
+
 public class LoginView extends JFrame{
 
     private JTextField cedulaInput;
-    private JTextField passInput;
+    private JPasswordField passInput;
     private JButton loginButton;
     private JButton registerButton;
     private JButton forgotPassButton;
@@ -21,7 +23,7 @@ public class LoginView extends JFrame{
         setLayout(new BorderLayout());
         setResizable(false);
 
-        JPanel mainPanel = new ImagePanel(cargarIcono("/images/background.jpeg", 1920, 1080).getImage());
+        JPanel mainPanel = new ImagePanel(cargarIcono("/images/comedor.png", 1920, 1080).getImage());
         mainPanel.setLayout(new BorderLayout());
 
         JPanel header = new JPanel(new GridBagLayout());
@@ -59,7 +61,7 @@ public class LoginView extends JFrame{
         centerPanel.add(cedulaLabel, centerGbc);
 
         centerGbc.gridy++;
-        JPanel inputCedulaPanel = new GradientPanelRedondeado(10, 0, new Color(255, 255, 255, 200));
+        JPanel inputCedulaPanel = new GradientPanelRedondeado(10, 0, EstiloGral.WHITE_TRANSP_COLOR);
         cedulaInput = new JTextField(22);
         cedulaInput.setFont(EstiloGral.INPUT_FONT);
         cedulaInput.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -75,8 +77,8 @@ public class LoginView extends JFrame{
         centerPanel.add(passLabel, centerGbc);
 
         centerGbc.gridy++;
-        JPanel inputPassPanel = new GradientPanelRedondeado(10, 0, new Color(255, 255, 255, 200));
-        passInput = new JTextField(22);
+        JPanel inputPassPanel = new GradientPanelRedondeado(10, 0, EstiloGral.WHITE_TRANSP_COLOR);
+        passInput = new JPasswordField(22);
         passInput.setFont(EstiloGral.INPUT_FONT);
         passInput.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         passInput.setOpaque(false);
@@ -129,25 +131,27 @@ public class LoginView extends JFrame{
         footerGbc.gridx++;
         footerGbc.weightx = 0;
 
-        GradientPanelRedondeado loginButtonPanel = new GradientPanelRedondeado(10, 40, new Color(255, 255, 255, 200));
+        GradientPanelRedondeado loginButtonPanel = new GradientPanelRedondeado(10, 40, EstiloGral.DARK_COLOR, EstiloGral.DARK_COLOR, GradientPanelRedondeado.HORIZONTAL);
         loginButtonPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         loginButton = new JButton("INICIAR SESIÓN");
         loginButton.setFont(EstiloGral.MIDDLE_FONT);
-        loginButton.setForeground(EstiloGral.DARK_COLOR);
+        loginButton.setForeground(EstiloGral.BG_COLOR);
         loginButton.setBorder(null);
         loginButton.setContentAreaFilled(false);
         loginButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
         loginButton.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                loginButtonPanel.setColor1(new Color(50, 50, 50, 220));
-                loginButton.setForeground(EstiloGral.BG_COLOR);
+                loginButtonPanel.setColor1(EstiloGral.BG_COLOR);
+                loginButtonPanel.setColor2(EstiloGral.GREY_COLOR);
+                loginButton.setForeground(EstiloGral.DARK_COLOR);
             }
 
             @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                loginButtonPanel.setColor1(new Color(255, 255, 255, 200));
-                loginButton.setForeground(EstiloGral.DARK_COLOR);
+                loginButtonPanel.setColor1(EstiloGral.DARK_COLOR);
+                loginButtonPanel.setColor2(EstiloGral.DARK_COLOR);
+                loginButton.setForeground(EstiloGral.BG_COLOR);
             }
         });
         loginButtonPanel.add(loginButton);
@@ -164,7 +168,7 @@ public class LoginView extends JFrame{
         return this.cedulaInput;
     }
 
-    public JTextField getPassInput() {
+    public JPasswordField getPassInput() {
         return this.passInput;
     }
 
@@ -178,6 +182,77 @@ public class LoginView extends JFrame{
 
     public JButton getForgotPassButton() {
         return this.forgotPassButton;
+    }
+
+    public void InvalidateInputs(Component input){
+
+        GradientPanelRedondeado target = (input.getParent() instanceof GradientPanelRedondeado) ? (GradientPanelRedondeado) input.getParent() : null;
+
+        if(target == null){
+            return;
+        }
+
+        target.cancelTimers();
+
+        Timer shaTimer = shakeComponent(target);
+    
+        Color colorError = EstiloGral.ERROR_COLOR;
+        Color colorOriginal = target.getColor2();
+
+        target.setColor1(colorError);
+
+        Timer timer = new Timer(15, null);
+        
+        timer.addActionListener(new ActionListener() {
+            float ratio = 0.0f;
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ratio += 0.02f; 
+                
+                if (ratio >= 1.0f) {
+                    target.setColor1(colorOriginal);
+                    timer.stop();
+                } else {
+                    
+                    int r = (int) (colorError.getRed() + (colorOriginal.getRed() - colorError.getRed()) * ratio);
+                    int g = (int) (colorError.getGreen() + (colorOriginal.getGreen() - colorError.getGreen()) * ratio);
+                    int b = (int) (colorError.getBlue() + (colorOriginal.getBlue() - colorError.getBlue()) * ratio);
+                    int a = (int) (colorError.getAlpha() + (colorOriginal.getAlpha() - colorError.getAlpha()) * ratio);
+                    
+                    target.setColor1(new Color(r, g, b, a));
+                }
+            }
+        });
+
+        timer.setInitialDelay(200); 
+        timer.start();
+
+        target.setTimers(timer, shaTimer);
+    }
+
+    public Timer shakeComponent(Component c) {
+        Point originalLoc = c.getLocation();
+        Timer timer = new Timer(20, null);
+        timer.addActionListener(new ActionListener() {
+            int count = 0;
+            int delta = 2; // Cuánto se mueve a los lados
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (count >= 10) { // 10 movimientos
+                    c.setLocation(originalLoc);
+                    timer.stop();
+                } else {
+                    // Alterna entre sumar y restar a la X
+                    int newX = (count % 2 == 0) ? originalLoc.x + delta : originalLoc.x - delta;
+                    c.setLocation(newX, originalLoc.y);
+                    count++;
+                }
+            }
+        });
+        timer.start();
+        return timer;
     }
 
     private ImageIcon cargarIcono(String ruta, int ancho, int alto) {
