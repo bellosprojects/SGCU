@@ -6,6 +6,7 @@ import com.comedor.view.components.*;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 
 public class RegisterView extends JFrame {
 
@@ -28,10 +29,10 @@ public class RegisterView extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLocationRelativeTo(null);
         setResizable(false);
-        setIconImage(cargarIcono("/images/logoColor.png", 100, 100).getImage());
+        setIconImage(cargarIcono("/images/logoColor.png", 100, 100, false).getImage());
         setLayout(new BorderLayout());
 
-        JPanel mainPanel = new ImagePanel(cargarIcono("/images/comedor.png", 1920, 1080).getImage());
+        JPanel mainPanel = new ImagePanel(cargarIcono("/images/comedor.png", 1920, 1080, false).getImage());
         mainPanel.setLayout(new BorderLayout());
 
         JPanel header = new JPanel(new GridBagLayout());
@@ -46,7 +47,7 @@ public class RegisterView extends JFrame {
         titleLabel.setFont(EstiloGral.TITLE_FONT);
         titleLabel.setForeground(EstiloGral.BG_COLOR);
 
-        JLabel logoIcon = new JLabel(cargarIcono("/images/logoWhite.png", 200, 200));
+        JLabel logoIcon = new JLabel(cargarIcono("/images/logoWhite.png", 200, 200, false));
 
         header.add(logoIcon, headerGbc);
         headerGbc.gridx++;
@@ -179,7 +180,7 @@ public class RegisterView extends JFrame {
 
         GradientPanelRedondeado imgIconRectangle = new GradientPanelRedondeado(20, 0, EstiloGral.WHITE_TRANSP_COLOR);
 
-        imageContainer = new JLabel(cargarIcono("/images/logoColor.png", 300, 300));
+        imageContainer = new JLabel(cargarIcono("/images/logoColor.png", 300, 300, false));
         imageContainer.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         imgIconRectangle.add(imageContainer);
@@ -290,7 +291,7 @@ public class RegisterView extends JFrame {
 
     public void setImagePath(String path) {
 
-        this.imageContainer.setIcon(cargarIcono(path, 300, 300));
+        this.imageContainer.setIcon(cargarIcono(path, 300, 300, true));
         this.profileImagePath = path;
         this.imageContainer.revalidate();
         this.imageContainer.repaint();
@@ -367,18 +368,28 @@ public class RegisterView extends JFrame {
         return timer;
     }
 
-    private ImageIcon cargarIcono(String ruta, int ancho, int alto) {
-        java.net.URL imgURL = getClass().getResource(ruta);
-        if(imgURL != null){
-            ImageIcon icon = new ImageIcon(imgURL);
+    private ImageIcon cargarIcono(String ruta, int ancho, int alto, boolean isAbsolute) {
 
+        if(!isAbsolute){
+            java.net.URL imgURL = getClass().getResource(ruta);
+            if(imgURL != null){
+                ImageIcon icon = new ImageIcon(imgURL);
+
+                Image img = icon.getImage().getScaledInstance(alto, ancho, Image.SCALE_SMOOTH);
+                return new ImageIcon(img);
+
+            } else {
+                System.err.println("No se pudo cargar el icono: " + ruta);
+                return null;
+            }
+        }
+        else{
+            File file = new File(ruta);
+            ImageIcon icon = new ImageIcon(file.getAbsolutePath());
             Image img = icon.getImage().getScaledInstance(alto, ancho, Image.SCALE_SMOOTH);
             return new ImageIcon(img);
-
-        } else {
-            System.err.println("No se pudo cargar el icono: " + ruta);
-            return null;
         }
+        
     }
 
 }
