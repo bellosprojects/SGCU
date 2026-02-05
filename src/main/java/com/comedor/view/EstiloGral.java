@@ -1,7 +1,6 @@
 package com.comedor.view;
 
-import java.awt.Color;
-import java.awt.Font;
+import java.awt.*;
 
 public class EstiloGral {
     
@@ -12,7 +11,10 @@ public class EstiloGral {
     public static final Color DARK_COLOR = new Color(50, 50, 50);
     public static final Color ACCENT_COLOR2 = new Color(210, 10, 150);
     public static final Color SKY_BLUE_COLOR = new Color(142, 163, 192);
-    public static final Color LIGHT_COLOR = new Color(170, 170, 100);
+    public static final Color GREY_COLOR = new Color(100, 100, 100);
+    public static final Color TRANSPARENT_COLOR = new Color(0, 0, 0, 0);
+    public static final Color WHITE_TRANSP_COLOR = new Color(255, 255, 255, 100);
+    public static final Color ERROR_COLOR = new Color(248, 10, 3);
 
     public static final Font LABEL_FONT = new Font("SansSerif", Font.PLAIN, 25);
     public static final Font TITLE_FONT = new Font("SansSerif", Font.BOLD, 60);
@@ -21,4 +23,5 @@ public class EstiloGral {
     public static final Font SMALL_FONT = new Font("SansSerif", Font.PLAIN, 17);
     public static final Font SMALL_BOLD_FONT = new Font("SansSerif", Font.BOLD, 17);
 
+    public static final Cursor HOVER_CURSOR = new Cursor(Cursor.HAND_CURSOR);
 }

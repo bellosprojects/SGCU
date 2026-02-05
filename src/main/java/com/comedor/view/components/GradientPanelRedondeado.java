@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 import java.awt.Dimension;
 import java.awt.GradientPaint;
@@ -20,6 +21,8 @@ public class GradientPanelRedondeado extends JPanel {
     private boolean conDegradado;
     private Color color1;
     private Color color2;
+    private Timer colorTimer;
+    private Timer shakeTimer;
 
     public static final int HORIZONTAL = 0;
     public static final int VERTICAL = 1;
@@ -103,6 +106,24 @@ public class GradientPanelRedondeado extends JPanel {
         return new Insets(padding, padding, padding, padding);
     }
     
+    public void cancelTimers(){
+        if(colorTimer != null){
+            colorTimer.stop();
+            colorTimer = null;
+        }
+
+        if(shakeTimer != null){
+            shakeTimer.stop();
+            shakeTimer = null;
+        }
+    }
+
+    public void setTimers(Timer colTimer, Timer shaTimer){
+        colorTimer = colTimer;
+        shakeTimer = shaTimer;
+    }
+
+
     // Getters y Setters
     public int getRadio() {
         return radio;
