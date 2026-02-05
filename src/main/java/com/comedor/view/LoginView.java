@@ -5,6 +5,8 @@ import javax.swing.*;
 
 import com.comedor.view.components.*;
 
+import java.awt.event.*;
+
 public class LoginView extends JFrame{
 
     private JTextField cedulaInput;
@@ -182,9 +184,75 @@ public class LoginView extends JFrame{
         return this.forgotPassButton;
     }
 
-    public void InvalidateInputs(){
-        this.cedulaInput.setText("");
-        this.passInput.setText("");
+    public void InvalidateInputs(Component input){
+
+        GradientPanelRedondeado target = (input.getParent() instanceof GradientPanelRedondeado) ? (GradientPanelRedondeado) input.getParent() : null;
+
+        if(target == null){
+            return;
+        }
+
+        target.cancelTimers();
+
+        Timer shaTimer = shakeComponent(target);
+    
+        Color colorError = EstiloGral.ERROR_COLOR;
+        Color colorOriginal = target.getColor2();
+
+        target.setColor1(colorError);
+
+        Timer timer = new Timer(15, null);
+        
+        timer.addActionListener(new ActionListener() {
+            float ratio = 0.0f;
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ratio += 0.02f; 
+                
+                if (ratio >= 1.0f) {
+                    target.setColor1(colorOriginal);
+                    timer.stop();
+                } else {
+                    
+                    int r = (int) (colorError.getRed() + (colorOriginal.getRed() - colorError.getRed()) * ratio);
+                    int g = (int) (colorError.getGreen() + (colorOriginal.getGreen() - colorError.getGreen()) * ratio);
+                    int b = (int) (colorError.getBlue() + (colorOriginal.getBlue() - colorError.getBlue()) * ratio);
+                    int a = (int) (colorError.getAlpha() + (colorOriginal.getAlpha() - colorError.getAlpha()) * ratio);
+                    
+                    target.setColor1(new Color(r, g, b, a));
+                }
+            }
+        });
+
+        timer.setInitialDelay(200); 
+        timer.start();
+
+        target.setTimers(timer, shaTimer);
+    }
+
+    public Timer shakeComponent(Component c) {
+        Point originalLoc = c.getLocation();
+        Timer timer = new Timer(20, null);
+        timer.addActionListener(new ActionListener() {
+            int count = 0;
+            int delta = 2; // Cuánto se mueve a los lados
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (count >= 10) { // 10 movimientos
+                    c.setLocation(originalLoc);
+                    timer.stop();
+                } else {
+                    // Alterna entre sumar y restar a la X
+                    int newX = (count % 2 == 0) ? originalLoc.x + delta : originalLoc.x - delta;
+                    c.setLocation(newX, originalLoc.y);
+                    count++;
+                }
+            }
+        });
+        timer.start();
+        return timer;
     }
 
     private ImageIcon cargarIcono(String ruta, int ancho, int alto) {
