@@ -4,11 +4,12 @@ public class Menu{
     private Boolean tipo;         //1= desayuno, 0= almuerzo
     private String plato;
     private String ingredientes;
-
-    public Menu(String plato, String ingredientes, Boolean tipo) {
+    private String fecha;
+    public Menu(String plato, String ingredientes, Boolean tipo, String fecha){
         this.plato = plato;
         this.ingredientes = ingredientes;
         this.tipo = tipo;
+        this.fecha = fecha;
     }
 
     public String getPlato() {
@@ -21,5 +22,9 @@ public class Menu{
 
     public Boolean getTipo() {
         return tipo;
+    }
+
+    public String getFecha() {
+        return fecha;
     }
 }
