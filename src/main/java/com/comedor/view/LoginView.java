@@ -268,4 +268,11 @@ public class LoginView extends JFrame{
             return null;
         }
     }
+    public String getCedulaText() {
+        return cedulaInput.getText();
+    }
+
+    public String getPassText() {
+        return new String(passInput.getPassword());
+    }
 }
