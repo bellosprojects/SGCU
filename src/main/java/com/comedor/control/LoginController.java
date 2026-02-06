@@ -40,9 +40,8 @@ public class LoginController implements ActionListener {
     private void handleLogin() {
         String cedula = loginView.getCedulaText();
         String password = loginView.getPassText();
-
-        if (cedula.isEmpty() || !isAllNumbers(cedula)) {
-            loginView.InvalidateInputs(loginView.getCedulaInput());
+ 
+        if(!isValidInputs(cedula, password)) {
             return;
         }
 
@@ -54,6 +53,21 @@ public class LoginController implements ActionListener {
             loginView.InvalidateInputs(loginView.getCedulaInput());
             loginView.InvalidateInputs(loginView.getPassInput());
         }
+    }
+
+    private boolean isValidInputs(String cedula, String password) {
+        boolean flag = true;
+        if (cedula.isEmpty() || !isAllNumbers(cedula)) {
+            loginView.InvalidateInputs(loginView.getCedulaInput());
+            flag = false;
+        }
+
+        if(password.isEmpty()) {
+            loginView.InvalidateInputs(loginView.getPassInput());
+            flag = false;
+            
+        }
+        return flag;
     }
 
     private void goToRegisterView() {

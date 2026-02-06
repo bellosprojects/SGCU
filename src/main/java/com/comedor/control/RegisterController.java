@@ -20,6 +20,7 @@ public class RegisterController implements ActionListener {
         this.persistenciaManager = persistenciaManager;
         this.delegate = delegate;
         setupListeners();
+        this.registerView.getRootPane().setDefaultButton(registerView.getRegisterButton());
     }
 
     @Override
