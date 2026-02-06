@@ -1,56 +1,35 @@
 package com.comedor.control;
 
 import com.comedor.view.LoginView;
-import com.comedor.view.RegisterView;
-import com.comedor.view.AdminDashboard;
-import com.comedor.view.UserDashboard;
 import com.comedor.model.PersistenciaManager;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-public class LoginController implements ActionListener{
+public class LoginController implements ActionListener {
+    private NavigationDelegate delegate;
+    private LoginView loginView;
+    private PersistenciaManager persistenciaManager;
 
-    public LoginView loginView;
-    public PersistenciaManager persistenciaManager;
-
-    public LoginController(LoginView loginView, PersistenciaManager persistenciaManager) {
+    public LoginController(LoginView loginView, PersistenciaManager persistenciaManager, NavigationDelegate delegate) {
         this.loginView = loginView;
         this.persistenciaManager = persistenciaManager;
+        this.delegate = delegate;
         setupListeners();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == loginView.getLoginButton()){
-            String cedula = loginView.getCedulaInput().getText();
-            char[] rawPassword = loginView.getPassInput().getPassword();
-            String password = new String(rawPassword);
-            if( password == persistenciaManager.getPasswordFromCedula(cedula) ){
-                if("admin" == persistenciaManager.getRoleFromCedula(cedula)){
-                    // Login exitoso dashboard admin
-                    goToAdminDashboardView();
-                    return;
-                } else {
-                    // Login exitoso dashboard user
-                    goToUserDashboardView();
-                    return;
-                }
-            } else {
-                loginView.InvalidateInputs(loginView.getCedulaInput());
-                loginView.InvalidateInputs(loginView.getPassInput());
-            }
-
-        } else if(e.getSource() == loginView.getRegisterButton()){
-            
+        if (e.getSource() == loginView.getLoginButton()) {
+            handleLogin();
+        } else if (e.getSource() == loginView.getRegisterButton()) {
             goToRegisterView();
-            
-        } else if(e.getSource() == loginView.getForgotPassButton()){
+        } else if (e.getSource() == loginView.getForgotPassButton()) {
             // Lógica para recuperar la contraseña
-        } 
+        }
     }
 
-    private void setupListeners(){
+    private void setupListeners() {
         loginView.getCedulaInput().addActionListener(this);
         loginView.getPassInput().addActionListener(this);
         loginView.getLoginButton().addActionListener(this);
@@ -58,28 +37,45 @@ public class LoginController implements ActionListener{
         loginView.getForgotPassButton().addActionListener(this);
     }
 
-    private void goToAdminDashboardView(){
-        loginView.setVisible(false);
-        loginView.dispose();
-        AdminDashboard AdminDashboardView = new AdminDashboard();
-        new AdminMenuController(AdminDashboardView, persistenciaManager);
-        AdminDashboardView.setVisible(true);
+    private void handleLogin() {
+        String cedula = loginView.getCedulaText();
+        String password = loginView.getPassText();
+ 
+        if(!isValidInputs(cedula, password)) {
+            return;
+        }
+
+        boolean isAuthenticated = persistenciaManager.autenticar(cedula, password);
+
+        if (isAuthenticated) {
+            goToMenuView(cedula);
+        } else {
+            loginView.InvalidateInputs(loginView.getCedulaInput());
+            loginView.InvalidateInputs(loginView.getPassInput());
+        }
     }
 
-    private void goToUserDashboardView(){
-        loginView.setVisible(false);
-        loginView.dispose();
-        UserDashboard UserDashboardView = new UserDashboard();
-        new UserMenuController(UserDashboardView, persistenciaManager);
-        UserDashboardView.setVisible(true);
+    private boolean isValidInputs(String cedula, String password) {
+        boolean flag = true;
+        if (cedula.isEmpty() || !isAllNumbers(cedula)) {
+            loginView.InvalidateInputs(loginView.getCedulaInput());
+            flag = false;
+        }
+
+        if(password.isEmpty()) {
+            loginView.InvalidateInputs(loginView.getPassInput());
+            flag = false;
+            
+        }
+        return flag;
     }
 
-    private void goToRegisterView(){
-        loginView.setVisible(false);
-        loginView.dispose();
-        RegisterView RegisterView = new RegisterView();
-        new RegisterController(RegisterView, persistenciaManager);
-        RegisterView.setVisible(true);
+    private void goToRegisterView() {
+        delegate.onRegisterRequested();
+    }
+
+    private void goToMenuView(String cedula) {
+        delegate.onLoginSuccess(cedula);
     }
 
     public static boolean isAllNumbers(String str) {

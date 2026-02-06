@@ -1,83 +1,55 @@
 package com.comedor.control;
 
-import com.comedor.view.LoginView;
 import com.comedor.view.RegisterView;
 import com.comedor.model.PersistenciaManager;
 import com.comedor.model.User;
 
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 
 import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
-import java.awt.event.ActionEvent;
+public class RegisterController implements ActionListener {
+    private NavigationDelegate delegate;
+    private RegisterView registerView;
+    private PersistenciaManager persistenciaManager;
 
-public class RegisterController implements ActionListener{
-
-    public RegisterView registerView;
-    public PersistenciaManager persistenciaManager;
-
-    public RegisterController(RegisterView registerView, PersistenciaManager persistenciaManager) {
+    public RegisterController(RegisterView registerView, PersistenciaManager persistenciaManager,
+            NavigationDelegate delegate) {
         this.registerView = registerView;
         this.persistenciaManager = persistenciaManager;
+        this.delegate = delegate;
         setupListeners();
+        this.registerView.getRootPane().setDefaultButton(registerView.getRegisterButton());
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == registerView.getRegisterButton()){
-            String username = registerView.getUsernameInput().getText();
-            String cedula = registerView.getCedulaInput().getText();
-            char[] rawPassword = registerView.getPassInput().getPassword();
-            char[] rawConfirmPassword = registerView.getConfirmPassInput().getPassword();
-            String password = new String(rawPassword);
-            String confirmPassword = new String(rawConfirmPassword);
-            String email = registerView.getEmailInput().getText();
-            String facultadSeleccionada = registerView.getFacultadSelect();
-            String imagePath = registerView.getProfileImagePath();
+        if (e.getSource() == registerView.getRegisterButton()) {
+            handleRegister();
 
-            if(!isValidRegister(username, cedula, password, confirmPassword, email)){
-                return;
-            }
-            
-            User user = new User(username, cedula, confirmPassword, email,facultadSeleccionada,imagePath);
-            persistenciaManager.guardarUsuario(user);
-            
+        } else if (e.getSource() == registerView.getBackButton()) {
+
             goToLoginView();
 
-        } else if(e.getSource() == registerView.getBackButton()){
-            
-            goToLoginView();
-
-        } else if(e.getSource() == registerView.getProfileImagFileChooser()){
-            // Seleccionar imagen y guardo en
-            JFileChooser fileChooser = new JFileChooser();
-            int result = fileChooser.showOpenDialog(null);
-            if (result == JFileChooser.APPROVE_OPTION) {
-                String selectedFile = fileChooser.getSelectedFile().getAbsolutePath();
-                registerView.setImagePath(selectedFile);
-            }
-
-        } 
-        
+        } else if (e.getSource() == registerView.getProfileImagFileChooser()) {
+            handleImageSelection();
+        }
     }
 
-    private void setupListeners(){
+    private void setupListeners() {
         registerView.getRegisterButton().addActionListener(this);
         registerView.getCedulaInput().addActionListener(this);
         registerView.getPassInput().addActionListener(this);
         registerView.getConfirmPassInput().addActionListener(this);
-        registerView.getBackButton().addActionListener(this); 
+        registerView.getBackButton().addActionListener(this);
         registerView.getUsernameInput().addActionListener(this);
         registerView.getEmailInput().addActionListener(this);
         registerView.getProfileImagFileChooser().addActionListener(this);
     }
 
-    private void goToLoginView(){
-        registerView.setVisible(false);
-        registerView.dispose();
-        LoginView loginView = new LoginView();
-        new LoginController(loginView, persistenciaManager);
-        loginView.setVisible(true);
+    private void goToLoginView() {
+        delegate.onRegisterSuccess();
     }
 
     public boolean isEmailValid(String email) {
@@ -85,29 +57,27 @@ public class RegisterController implements ActionListener{
             return false;
         }
         String emailLower = email.toLowerCase();
-        return emailLower.endsWith("@gmail.com") || emailLower.endsWith("@hotmail.com");
+        return (emailLower.endsWith("@gmail.com") && emailLower.length() > 10)
+                || (emailLower.endsWith("@hotmail.com") && emailLower.length() > 12);
     }
 
     public boolean isAllNumbers(String str) {
         return str != null && str.matches("\\d+");
     }
 
-    public boolean isValidRegister(String username, String cedula, String password, String confirmPassword, String email) {
+    public boolean isValidRegister(String fullname, String cedula, String password, String confirmPassword,
+            String email, String imagePath) {
         boolean flag = true;
-        if(username == null || username.isEmpty()){
+        if (fullname == null || fullname.isEmpty()) {
             registerView.InvalidateInputs(registerView.getUsernameInput());
             flag = false;
         }
-        if( persistenciaManager.isUsernameRegistered(username) ){
-            registerView.InvalidateInputs(registerView.getUsernameInput());
-            flag = false;
-        }
-        
+
         if (cedula == null || cedula.isEmpty()) {
             registerView.InvalidateInputs(registerView.getCedulaInput());
             flag = false;
         }
-        if( persistenciaManager.isCedulaRegistered(cedula) ){
+        if (persistenciaManager.isCedulaRegistered(cedula)) {
             registerView.InvalidateInputs(registerView.getCedulaInput());
             flag = false;
         }
@@ -117,13 +87,19 @@ public class RegisterController implements ActionListener{
             flag = false;
         }
         if (confirmPassword == null || confirmPassword.isEmpty()) {
-            
+
             registerView.InvalidateInputs(registerView.getConfirmPassInput());
             flag = false;
         }
 
-        if (!password.equals(confirmPassword) || password.length() < 8) {
+        if (password.length() < 8) {
             registerView.InvalidateInputs(registerView.getPassInput());
+            registerView.InvalidateInputs(registerView.getConfirmPassInput());
+            flag = false;
+        }
+
+        if (!password.equals(confirmPassword)) {
+            registerView.InvalidateInputs(registerView.getConfirmPassInput());
             flag = false;
         }
         if (!isEmailValid(email)) {
@@ -131,12 +107,46 @@ public class RegisterController implements ActionListener{
             flag = false;
         }
 
-        if(!isAllNumbers(cedula)){
+        if (!isAllNumbers(cedula)) {
             registerView.InvalidateInputs(registerView.getCedulaInput());
+            flag = false;
+        }
+
+        if (imagePath == null || imagePath.isEmpty()) {
+            // registerView.InvalidateInputs(registerView.getProfileImagFileChooser());
             flag = false;
         }
         return flag;
     }
 
-    
+    private void handleImageSelection() {
+        JFileChooser fileChooser = new JFileChooser();
+        FileNameExtensionFilter filtro = new FileNameExtensionFilter("Imágenes (JPG, PNG)", "jpg", "jpeg", "png");
+        fileChooser.setFileFilter(filtro);
+        int result = fileChooser.showOpenDialog(registerView);
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            String selectedFile = fileChooser.getSelectedFile().getAbsolutePath();
+            registerView.setImagePath(selectedFile);
+        }
+    }
+
+    private void handleRegister() {
+        String fullname = registerView.getUsernameText();
+        String cedula = registerView.getCedulaText();
+        String password = new String(registerView.getPassText());
+        String confirmPassword = new String(registerView.getConfirmPassText());
+        String email = registerView.getEmailText();
+        String facultadSeleccionada = registerView.getFacultadSelect();
+        String imagePath = registerView.getProfileImagePath();
+
+        if (!isValidRegister(fullname, cedula, password, confirmPassword, email, imagePath)) {
+            return;
+        }
+
+        User user = new User(fullname, cedula, password, email, facultadSeleccionada, imagePath);
+        persistenciaManager.guardarUsuario(user);
+        goToLoginView();
+    }
+
 }
