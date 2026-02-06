@@ -144,8 +144,8 @@ public class RegisterController implements ActionListener {
             return;
         }
 
-        User user = new User(fullname, cedula, password, email, facultadSeleccionada, imagePath);
-        persistenciaManager.guardarUsuario(user);
+        User user = new User(fullname, cedula, password, email, facultadSeleccionada, 0.0, "user");
+        persistenciaManager.guardarUsuario(user, imagePath);
         goToLoginView();
     }
 

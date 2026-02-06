@@ -3,7 +3,6 @@ package com.comedor.control;
 import javax.swing.JFrame;
 
 import com.comedor.model.PersistenciaManager;
-import com.comedor.view.AdminDashboard;
 import com.comedor.view.LoginView;
 import com.comedor.view.RegisterView;
 import com.comedor.view.UserMenuView;
@@ -50,7 +49,7 @@ public class AppCoordinator implements NavigationDelegate {
             mainFrame.dispose();
         }
         UserMenuView UserDashboardView = new UserMenuView();
-        new UserMenuController(model, cedula, UserDashboardView, this);
+        new UserMenuController(model, cedula, UserDashboardView);
         UserDashboardView.setVisible(true);
     }
 
@@ -59,9 +58,9 @@ public class AppCoordinator implements NavigationDelegate {
             mainFrame.setVisible(false);
             mainFrame.dispose();
         }
-        AdminDashboard AdminDashboardView = new AdminDashboard();
-        new AdminMenuController(AdminDashboardView, model, this);
-        AdminDashboardView.setVisible(true);
+        //AdminDashboard AdminDashboardView = new AdminDashboard();
+        //new AdminMenuController(AdminDashboardView, model, this);
+        //AdminDashboardView.setVisible(true);
     }
 
     @Override

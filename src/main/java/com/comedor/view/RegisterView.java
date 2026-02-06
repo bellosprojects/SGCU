@@ -391,5 +391,24 @@ public class RegisterView extends JFrame {
         }
         
     }
+    public String getUsernameText() {
+        return usernameInput.getText();
+    }
+
+    public String getCedulaText() {
+        return cedulaInput.getText();
+    }
+
+    public String getPassText() {
+        return new String(passInput.getPassword());
+    }
+
+    public String getConfirmPassText() {
+        return new String(confirmPassInput.getPassword());
+    }
+
+    public String getEmailText() {
+        return emailInput.getText();
+    }
 
 }

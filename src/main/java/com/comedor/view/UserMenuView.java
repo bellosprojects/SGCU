@@ -271,7 +271,7 @@ public class UserMenuView extends JFrame {
         this.cedula.setText("V-" + user.getCedula());
         this.saldo.setText(user.getSaldo() + "Bs.");
 
-        this.profileImage.setIcon(cargarIcono("C:/SGCU/images/" + user.getCedula() + ".jpg", 100, 100, true));
+        this.profileImage.setIcon(cargarIcono("C:/SGCU/imagenes/" + user.getCedula() + ".jpg", 100, 100, true));
         this.profileImage.revalidate();
         this.profileImage.repaint();
     }
