@@ -7,7 +7,7 @@ public class User {
     private String role;
     private String email;
     private String facultadSeleccionada;
-    private String imagePath;
+    private Double saldo;
 
     public User(){
         this.fullname = "";
@@ -16,17 +16,17 @@ public class User {
         this.role = "user";
         this.email = "";
         this.facultadSeleccionada = "";
-        this.imagePath = "";
+        this.saldo = 0.0;
     }
 
-    public User(String fullname, String cedula, String password, String email, String facultadSeleccionada, String imagePath){
-        this.fullname = fullname;
-        this.cedula = cedula;
-        this.password = password;
-        this.email = email;
-        this.facultadSeleccionada = facultadSeleccionada;
-        this.imagePath = imagePath;
-        this.role = "user";
+    public User(String fullname, String cedula, String password, String email, String facultadSeleccionada, Double saldo, String role){
+        this.fullname = fullname; //0
+        this.cedula = cedula;     //1
+        this.password = password; //2
+        this.email = email;       //3
+        this.facultadSeleccionada = facultadSeleccionada; //4
+        this.saldo = saldo;    //5
+        this.role = role;    //6
     }
 
     public String getCedula() {
@@ -45,8 +45,11 @@ public class User {
     public String getFacultadSeleccionada() {
         return facultadSeleccionada;
     }
-    public String getImagePath() {
-        return imagePath;
+    public Double getSaldo() {
+        return saldo;
+    }
+    public Boolean saldoSuficiente(double precio){
+        return this.saldo >= precio;
     }
     public String getNombres() {
         return fullname;
