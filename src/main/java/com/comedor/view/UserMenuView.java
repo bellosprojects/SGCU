@@ -9,12 +9,12 @@ import java.awt.*;
 
 public class UserMenuView extends JFrame {
     
-    JButton reservarDesayunoButton;
-    JButton reservarAlmuerzoButton;
-    JButton enviarOpinionButton;
-    JButton gestionarPerfilButton;
-    JButton confirmarButton;
-    JButton salirButton;
+    private JButton reservarDesayunoButton;
+    private JButton reservarAlmuerzoButton;
+    private JButton enviarOpinionButton;
+    private JButton gestionarPerfilButton;
+    private JButton confirmarButton;
+    private JButton salirButton;
 
     public UserMenuView(){
         setTitle("Menu de Usuario - SGCU");
@@ -29,6 +29,7 @@ public class UserMenuView extends JFrame {
         mainPanel.setLayout(new BorderLayout());
 
 
+        
         add(mainPanel, BorderLayout.CENTER);
     }
 
