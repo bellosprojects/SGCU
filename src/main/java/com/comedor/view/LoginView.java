@@ -33,7 +33,7 @@ public class LoginView extends JFrame{
         headerGbc.gridy = 0;
         header.setOpaque(false);
 
-        JLabel titleLabel = new JLabel("SGCU"); 
+        JLabel titleLabel = new JLabel("SGCU - Iniciar sesión"); 
         titleLabel.setFont(EstiloGral.TITLE_FONT);
         titleLabel.setForeground(EstiloGral.BG_COLOR);
 

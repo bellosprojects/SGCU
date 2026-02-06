@@ -43,7 +43,7 @@ public class RegisterView extends JFrame {
         headerGbc.insets = new Insets(0, 40, 20, 20);
         header.setOpaque(false);
 
-        JLabel titleLabel = new JLabel("SGCU"); 
+        JLabel titleLabel = new JLabel("SGCU - Registro"); 
         titleLabel.setFont(EstiloGral.TITLE_FONT);
         titleLabel.setForeground(EstiloGral.BG_COLOR);
 
