@@ -3,7 +3,7 @@ package com.comedor.control;
 import com.comedor.view.LoginView;
 import com.comedor.view.RegisterView;
 import com.comedor.view.AdminDashboard;
-import com.comedor.view.UserDashboard;
+import com.comedor.view.UserMenuView;
 import com.comedor.model.PersistenciaManager;
 
 import java.awt.event.ActionListener;
@@ -11,8 +11,8 @@ import java.awt.event.ActionEvent;
 
 public class LoginController implements ActionListener{
 
-    public LoginView loginView;
-    public PersistenciaManager persistenciaManager;
+    private LoginView loginView;
+    private PersistenciaManager persistenciaManager;
 
     public LoginController(LoginView loginView, PersistenciaManager persistenciaManager) {
         this.loginView = loginView;
@@ -33,7 +33,7 @@ public class LoginController implements ActionListener{
                     return;
                 } else {
                     // Login exitoso dashboard user
-                    goToUserDashboardView();
+                    goToUserDashboardView(cedula);
                     return;
                 }
             } else {
@@ -66,11 +66,11 @@ public class LoginController implements ActionListener{
         AdminDashboardView.setVisible(true);
     }
 
-    private void goToUserDashboardView(){
+    private void goToUserDashboardView(String cedula){
         loginView.setVisible(false);
         loginView.dispose();
-        UserDashboard UserDashboardView = new UserDashboard();
-        new UserMenuController(UserDashboardView, persistenciaManager);
+        UserMenuView UserDashboardView = new UserMenuView();
+        new UserMenuController(persistenciaManager, cedula, UserDashboardView);
         UserDashboardView.setVisible(true);
     }
 

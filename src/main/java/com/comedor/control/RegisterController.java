@@ -5,16 +5,15 @@ import com.comedor.view.RegisterView;
 import com.comedor.model.PersistenciaManager;
 import com.comedor.model.User;
 
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 
 import javax.swing.JFileChooser;
-
-import java.awt.event.ActionEvent;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class RegisterController implements ActionListener{
 
-    public RegisterView registerView;
-    public PersistenciaManager persistenciaManager;
+    private RegisterView registerView;
+    private PersistenciaManager persistenciaManager;
 
     public RegisterController(RegisterView registerView, PersistenciaManager persistenciaManager) {
         this.registerView = registerView;
@@ -25,7 +24,7 @@ public class RegisterController implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == registerView.getRegisterButton()){
-            String username = registerView.getUsernameInput().getText();
+            String fullname = registerView.getUsernameInput().getText();
             String cedula = registerView.getCedulaInput().getText();
             char[] rawPassword = registerView.getPassInput().getPassword();
             char[] rawConfirmPassword = registerView.getConfirmPassInput().getPassword();
@@ -35,11 +34,11 @@ public class RegisterController implements ActionListener{
             String facultadSeleccionada = registerView.getFacultadSelect();
             String imagePath = registerView.getProfileImagePath();
 
-            if(!isValidRegister(username, cedula, password, confirmPassword, email)){
+            if(!isValidRegister(fullname, cedula, password, confirmPassword, email, imagePath)){
                 return;
             }
             
-            User user = new User(username, cedula, confirmPassword, email,facultadSeleccionada,imagePath);
+            User user = new User(fullname, cedula, password, email,facultadSeleccionada,imagePath);
             persistenciaManager.guardarUsuario(user);
             
             goToLoginView();
@@ -49,16 +48,17 @@ public class RegisterController implements ActionListener{
             goToLoginView();
 
         } else if(e.getSource() == registerView.getProfileImagFileChooser()){
-            // Seleccionar imagen y guardo en
+            
             JFileChooser fileChooser = new JFileChooser();
-            int result = fileChooser.showOpenDialog(null);
+            FileNameExtensionFilter filtro = new FileNameExtensionFilter("Imágenes (JPG, PNG)", "jpg", "jpeg", "png");
+            fileChooser.setFileFilter(filtro);
+            int result = fileChooser.showOpenDialog(registerView);
+            
             if (result == JFileChooser.APPROVE_OPTION) {
                 String selectedFile = fileChooser.getSelectedFile().getAbsolutePath();
                 registerView.setImagePath(selectedFile);
             }
-
         } 
-        
     }
 
     private void setupListeners(){
@@ -85,20 +85,16 @@ public class RegisterController implements ActionListener{
             return false;
         }
         String emailLower = email.toLowerCase();
-        return emailLower.endsWith("@gmail.com") || emailLower.endsWith("@hotmail.com");
+        return (emailLower.endsWith("@gmail.com") && emailLower.length()>10) || (emailLower.endsWith("@hotmail.com")&& emailLower.length()>12);
     }
 
     public boolean isAllNumbers(String str) {
         return str != null && str.matches("\\d+");
     }
 
-    public boolean isValidRegister(String username, String cedula, String password, String confirmPassword, String email) {
+    public boolean isValidRegister(String fullname, String cedula, String password, String confirmPassword, String email, String imagePath) {
         boolean flag = true;
-        if(username == null || username.isEmpty()){
-            registerView.InvalidateInputs(registerView.getUsernameInput());
-            flag = false;
-        }
-        if( persistenciaManager.isUsernameRegistered(username) ){
+        if(fullname == null || fullname.isEmpty()){
             registerView.InvalidateInputs(registerView.getUsernameInput());
             flag = false;
         }
@@ -122,8 +118,14 @@ public class RegisterController implements ActionListener{
             flag = false;
         }
 
-        if (!password.equals(confirmPassword) || password.length() < 8) {
+        if(password.length() < 8){
             registerView.InvalidateInputs(registerView.getPassInput());
+            registerView.InvalidateInputs(registerView.getConfirmPassInput());
+            flag = false;
+        }
+
+        if (!password.equals(confirmPassword)) {
+            registerView.InvalidateInputs(registerView.getConfirmPassInput());
             flag = false;
         }
         if (!isEmailValid(email)) {
@@ -135,8 +137,11 @@ public class RegisterController implements ActionListener{
             registerView.InvalidateInputs(registerView.getCedulaInput());
             flag = false;
         }
+
+        if(imagePath == null || imagePath.isEmpty()){
+            //registerView.InvalidateInputs(registerView.getProfileImagFileChooser());
+            flag = false;
+        }
         return flag;
     }
-
-    
 }
