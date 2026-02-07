@@ -49,7 +49,8 @@ public class AppCoordinator implements NavigationDelegate {
             mainFrame.dispose();
         }
         UserMenuView UserDashboardView = new UserMenuView();
-        new UserMenuController(model, cedula, UserDashboardView);
+        mainFrame = UserDashboardView;
+        new UserMenuController(model, cedula, UserDashboardView, this);
         UserDashboardView.setVisible(true);
     }
 
@@ -83,7 +84,7 @@ public class AppCoordinator implements NavigationDelegate {
 
     @Override
     public void onLoginSuccess(String cedula) {
-        if ("admin" == model.getRoleFromCedula(cedula)) {
+        if (model.getRoleFromCedula(cedula).equals("admin")) {
             showAdminDashboard();
         } else {
             showUserMenu(cedula);
