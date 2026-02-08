@@ -9,18 +9,20 @@ import com.comedor.view.components.SuperBoton;
 import java.awt.*;
 import java.awt.event.*;
 
-public class GestionarMenuView extends JFrame {
+public class GestionarCCBView extends JFrame {
     
-    private JTextField fechaInput;
-    private JTextField platoInput;
-    private JTextArea ingredientesInput;
-    private JComboBox <String> tipoComida;
-    private SuperBoton btnPublicar;
+    private JTextField costosFijosInput;
+    private JTextField costosVariablesInput;
+    private JTextField cantidadBandejas;
+    private JTextField procentajeMerma;
+    private SuperBoton btnGuardar;
     private SuperBoton btnLimpiarFormulario;
     private SuperBoton btnVolver;
 
-    public GestionarMenuView(){
-        setTitle("Gestionar Menu - SGCU");
+    private JLabel CCBActual;
+
+    public GestionarCCBView(){
+        setTitle("Gestionar CCB - SGCU");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLocationRelativeTo(null);
@@ -39,7 +41,7 @@ public class GestionarMenuView extends JFrame {
         headerGbc.insets = new Insets(0, 40, 20, 20);
         header.setOpaque(false);
 
-        JLabel titleLabel = new JLabel("SGCU - Gestionar Menu"); 
+        JLabel titleLabel = new JLabel("SGCU - Gestionar CCB"); 
         titleLabel.setFont(EstiloGral.TITLE_FONT);
         titleLabel.setForeground(EstiloGral.BG_COLOR);
 
@@ -62,79 +64,76 @@ public class GestionarMenuView extends JFrame {
         formPanelGbc.insets = new Insets(5, 40, 0, 10);
         formPanelGbc.anchor = GridBagConstraints.WEST;
 
-        JLabel fechaLabel = new JLabel("FECHA");
-        fechaLabel.setFont(EstiloGral.LABEL_FONT);
-        fechaLabel.setForeground(EstiloGral.BG_COLOR);
-        fechaLabel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
-        formPanel.add(fechaLabel, formPanelGbc);
+        JLabel costosFijosLabel = new JLabel("COSTOS FIJOS TOTALES (Bs)");
+        costosFijosLabel.setFont(EstiloGral.LABEL_FONT);
+        costosFijosLabel.setForeground(EstiloGral.BG_COLOR);
+        costosFijosLabel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
+        formPanel.add(costosFijosLabel, formPanelGbc);
         
         formPanelGbc.gridy++;
-        JPanel fechaInputPanel = new GradientPanelRedondeado(10, 0, EstiloGral.WHITE_TRANSP_COLOR);
-        fechaInput = new JTextField(30);
-        fechaInput.setFont(EstiloGral.INPUT_FONT);
-        fechaInput.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        fechaInput.setOpaque(false);
-        fechaInputPanel.add(fechaInput);
-        formPanel.add(fechaInputPanel, formPanelGbc);
+        JPanel costosFijosPanel = new GradientPanelRedondeado(10, 0, EstiloGral.WHITE_TRANSP_COLOR);
+        costosFijosInput = new JTextField(22);
+        costosFijosInput.setFont(EstiloGral.INPUT_FONT);
+        costosFijosInput.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        costosFijosInput.setOpaque(false);
+        costosFijosPanel.add(costosFijosInput);
+        formPanel.add(costosFijosPanel, formPanelGbc);
         
         formPanelGbc.gridy++;
-        JLabel platoLabel = new JLabel("PLATO");
-        platoLabel.setFont(EstiloGral.LABEL_FONT);
-        platoLabel.setForeground(EstiloGral.BG_COLOR);
-        platoLabel.setBorder(BorderFactory.createEmptyBorder(40, 20, 0, 0));
-        formPanel.add(platoLabel, formPanelGbc);
+        JLabel costosVariablesLabel = new JLabel("COSTOS VARIABLES (BS)");
+        costosVariablesLabel.setFont(EstiloGral.LABEL_FONT);
+        costosVariablesLabel.setForeground(EstiloGral.BG_COLOR);
+        costosVariablesLabel.setBorder(BorderFactory.createEmptyBorder(40, 20, 0, 0));
+        formPanel.add(costosVariablesLabel, formPanelGbc);
         
         formPanelGbc.gridy++;
-        JPanel platoInputPanel = new GradientPanelRedondeado(10, 0, EstiloGral.WHITE_TRANSP_COLOR);
-        platoInput = new JTextField(30);
-        platoInput.setFont(EstiloGral.INPUT_FONT);
-        platoInput.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        platoInput.setOpaque(false);
-        platoInputPanel.add(platoInput);
-        formPanel.add(platoInputPanel, formPanelGbc);
+        JPanel costosVariablesPanel = new GradientPanelRedondeado(10, 0, EstiloGral.WHITE_TRANSP_COLOR);
+        costosVariablesInput = new JTextField(22);
+        costosVariablesInput.setFont(EstiloGral.INPUT_FONT);
+        costosVariablesInput.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        costosVariablesInput.setOpaque(false);
+        costosVariablesPanel.add(costosVariablesInput);
+        formPanel.add(costosVariablesPanel, formPanelGbc);
         
         formPanelGbc.gridy++;
-        JLabel ingredientesLabel = new JLabel("INGREDIENTES");
-        ingredientesLabel.setFont(EstiloGral.LABEL_FONT);
-        ingredientesLabel.setForeground(EstiloGral.BG_COLOR);
-        ingredientesLabel.setBorder(BorderFactory.createEmptyBorder(40, 20, 0, 0));
-        formPanel.add(ingredientesLabel, formPanelGbc);
+        JLabel cantidadBandejasLabel = new JLabel("CANTIDAD DE BANDEJAS");
+        cantidadBandejasLabel.setFont(EstiloGral.LABEL_FONT);
+        cantidadBandejasLabel.setForeground(EstiloGral.BG_COLOR);
+        cantidadBandejasLabel.setBorder(BorderFactory.createEmptyBorder(40, 20, 0, 0));
+        formPanel.add(cantidadBandejasLabel, formPanelGbc);
 
         formPanelGbc.gridy++;
-        JPanel ingredientesInputPanel = new GradientPanelRedondeado(10, 0, EstiloGral.WHITE_TRANSP_COLOR);
-        ingredientesInput = new JTextArea();
-        ingredientesInput.setBackground(EstiloGral.TRANSPARENT_COLOR);
-        ingredientesInput.setFont(EstiloGral.INPUT_FONT);
-        ingredientesInput.setOpaque(false);
-        ingredientesInput.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        ingredientesInput.setColumns(30);
-        ingredientesInput.setRows(3);
-        ingredientesInput.setPreferredSize(new Dimension(3, 30));
-        ingredientesInput.setLineWrap(true);
-        ingredientesInput.setWrapStyleWord(true);
-        ingredientesInputPanel.add(ingredientesInput);
-        formPanel.add(ingredientesInputPanel, formPanelGbc);
+        JPanel cantidadBandejasPanel = new GradientPanelRedondeado(10, 0, EstiloGral.WHITE_TRANSP_COLOR);
+        cantidadBandejas = new JTextField(22);
+        cantidadBandejas.setFont(EstiloGral.INPUT_FONT);
+        cantidadBandejas.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        cantidadBandejas.setOpaque(false);
+        cantidadBandejasPanel.add(cantidadBandejas);
+        formPanel.add(cantidadBandejasPanel, formPanelGbc);
+
+        formPanelGbc.gridy++;
+        JLabel mermaLabel = new JLabel("PORCENTAJE MERMA (%)");
+        mermaLabel.setFont(EstiloGral.LABEL_FONT);
+        mermaLabel.setForeground(EstiloGral.BG_COLOR);
+        mermaLabel.setBorder(BorderFactory.createEmptyBorder(40, 20, 0, 0));
+        formPanel.add(mermaLabel, formPanelGbc);
+        
+        formPanelGbc.gridy++;
+        JPanel mermaPanel = new GradientPanelRedondeado(10, 0, EstiloGral.WHITE_TRANSP_COLOR);
+        procentajeMerma = new JTextField(22);
+        procentajeMerma.setFont(EstiloGral.INPUT_FONT);
+        procentajeMerma.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        procentajeMerma.setOpaque(false);
+        mermaPanel.add(procentajeMerma);
+        formPanel.add(mermaPanel, formPanelGbc);
 
         formPanelGbc.gridy = 0;
         formPanelGbc.gridx++;
-        JLabel tipoLabel = new JLabel("TIPO");
-        tipoLabel.setFont(EstiloGral.LABEL_FONT);
-        tipoLabel.setForeground(EstiloGral.BG_COLOR);
-        tipoLabel.setBorder(BorderFactory.createEmptyBorder(40, 20, 0, 0));
-        formPanel.add(tipoLabel, formPanelGbc);
-        
-        formPanelGbc.gridy++;
-        JPanel tipoInputPanel = new GradientPanelRedondeado(10, 0, EstiloGral.WHITE_TRANSP_COLOR);
-        tipoComida = new JComboBox<String>(new String[] {"Almuerzo", "Desayuno"});
-        tipoComida.setFont(EstiloGral.INPUT_FONT);
-        tipoComida.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        tipoComida.setOpaque(false);
-        tipoComida.setFocusable(true);
-        tipoComida.setBackground(EstiloGral.BG_COLOR);
-        tipoComida.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-        tipoComida.setForeground(EstiloGral.DARK_COLOR);
-        tipoInputPanel.add(tipoComida);
-        formPanel.add(tipoInputPanel, formPanelGbc);
+        CCBActual = new JLabel("CCB Actual: 0.0Bs.");
+        CCBActual.setFont(EstiloGral.MIDDLE_FONT);
+        CCBActual.setForeground(EstiloGral.BG_COLOR);
+        CCBActual.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 0));
+        formPanel.add(CCBActual, formPanelGbc);
 
         mainPanel.add(formPanel, BorderLayout.CENTER);
         
@@ -158,10 +157,10 @@ public class GestionarMenuView extends JFrame {
         footerPanel.add(btnLimpiarFormulario, footerGbc);
 
         footerGbc.gridx++;
-        btnPublicar = new SuperBoton("PUBLICAR", EstiloGral.BUTTON_COLOR, 10, 20);
-        btnPublicar.setFont(EstiloGral.INPUT_FONT);
-        btnPublicar.setForeground(EstiloGral.BG_COLOR);
-        footerPanel.add(btnPublicar, footerGbc);
+        btnGuardar = new SuperBoton("GUARDAR", EstiloGral.BUTTON_COLOR, 10, 20);
+        btnGuardar.setFont(EstiloGral.INPUT_FONT);
+        btnGuardar.setForeground(EstiloGral.BG_COLOR);
+        footerPanel.add(btnGuardar, footerGbc);
 
         mainPanel.add(footerPanel, BorderLayout.SOUTH);
 
@@ -176,40 +175,40 @@ public class GestionarMenuView extends JFrame {
         return btnLimpiarFormulario;
     }
 
-    public SuperBoton getPublicarButton() {
-        return btnPublicar;
+    public SuperBoton getGuardarButton() {
+        return btnGuardar;
     }
 
-    public String getFechaText() {
-        return fechaInput.getText();
+    public String getCostosFijos() {
+        return costosFijosInput.getText();
     }
 
-    public String getPlatoText() {
-        return platoInput.getText();
+    public String getCostosVariables() {
+        return costosVariablesInput.getText();
     }
 
-    public String getingredientesText() {
-        return ingredientesInput.getText();
+    public String getCantidadBandejas() {
+        return cantidadBandejas.getText();
     }
 
-    public String getTipo() {
-        return tipoComida.getItemAt(tipoComida.getSelectedIndex());
+    public String getPorcentajeMerma() {
+        return procentajeMerma.getText();
     }
 
-    public JTextField getFechaComponent(){
-        return fechaInput;
+    public JTextField getCostosFijosComponent(){
+        return costosFijosInput;
     }
 
-    public JTextField getPlatoComponent(){
-        return platoInput;
+    public JTextField getCostosVariablesComponent(){
+        return costosVariablesInput;
     }
 
-    public JTextArea getIngredientsComponents(){
-        return ingredientesInput;
+    public JTextField getCantidadBAndejasComponent(){
+        return cantidadBandejas;
     }
 
-    public JComboBox<String> getTipoComponent(){
-        return tipoComida;
+    public JTextField getPorcentajeMermaComponent(){
+        return procentajeMerma;
     }
 
     public void InvalidateInputs(Component input){
@@ -297,11 +296,15 @@ public class GestionarMenuView extends JFrame {
         }
     }
 
+    public void setCCB(double CCB){
+        CCBActual.setText("CCB Actual: " + CCB + "Bs.");
+    }
+
     public void limpiarFormulario(){
-        tipoComida.setSelectedIndex(0);
-        fechaInput.setText("");
-        platoInput.setText("");
-        ingredientesInput.setText("");
+        costosFijosInput.setText("");
+        costosVariablesInput.setText("");
+        procentajeMerma.setText("");
+        cantidadBandejas.setText("");
     }
 
 }
