@@ -27,4 +27,21 @@ public class EstiloGral {
     public static final Font SMALL_BOLD_FONT = new Font("SansSerif", Font.BOLD, 17);
 
     public static final Cursor HOVER_CURSOR = new Cursor(Cursor.HAND_CURSOR);
+
+    public static final int INFO_MESSAGE = 0;
+    public static final int ERROR_MESSAGE = 1;
+    public static final int SUCCESS_MESSAGE = 2;
+
+    public static void ShowMessage(String texto, int tipo) {
+        Color color;
+        switch (tipo) {
+            case ERROR_MESSAGE -> color = new Color(220, 53, 69, 230); 
+            case SUCCESS_MESSAGE -> color = new Color(40, 167, 69, 230); 
+            default -> color = new Color(50, 50, 50, 230);    
+        }
+
+        ToastMessage toast = new ToastMessage(texto, color);
+        toast.setVisible(true);
+        toast.fadeIn();
+    }
 }
