@@ -262,7 +262,7 @@ public class UserMenuView extends JFrame {
 
     public void setDesayuno(Menu menu){
 
-        this.menuFecha.setText(menu.getFecha());
+        this.menuFecha.setText("Menu del dia: " + menu.getFecha());
         this.desayunoTitulo.setText(menu.getPlato());
         this.desayunoIngredients.setText(menu.getIngredientes());
 
@@ -270,7 +270,7 @@ public class UserMenuView extends JFrame {
 
     public void setAlmuerzo(Menu menu){
 
-        this.menuFecha.setText(menu.getFecha());
+        this.menuFecha.setText("Menu del dia: " + menu.getFecha());
         this.almuerzoTitulo.setText(menu.getPlato());
         this.almuerzoIngredients.setText(menu.getIngredientes());
 
