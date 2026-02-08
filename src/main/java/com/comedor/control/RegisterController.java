@@ -142,21 +142,35 @@ public class RegisterController implements ActionListener {
         String tipoUsuario = registerView.getRoleSelect();
         String imagePath = registerView.getProfileImagePath();
 
-
         if (!isValidRegister(fullname, cedula, password, confirmPassword, email, imagePath)) {
             return;
         }
 
-        boolean isCedulaRegisteredonUCV = persistenciaManager.isCedulaRegistered(cedula);
-        
-        if(isCedulaRegisteredonUCV){
+        boolean isCedulaRegistered = persistenciaManager.isCedulaRegistered(cedula);
+        String auxiliar = persistenciaManager.getRoleFromCedulaInDataBase(cedula);
+        if (auxiliar == null) {
             registerView.InvalidateInputs(registerView.getCedulaInput());
             JOptionPane.showMessageDialog(
-            null, 
-            "El usuario está registrado con otro rol en Secretaría", 
-            "Aviso de Registro", 
-            JOptionPane.WARNING_MESSAGE
-        );
+                    null,
+                    "La cédula ingresada no está registrada en la base de datos de la UCV. Por favor, verifica tu cédula y tipo de usuario.",
+                    "Aviso de Registro",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        } else if (!auxiliar.equals(tipoUsuario)) {
+            registerView.InvalidateInputs(registerView.getCedulaInput());
+            JOptionPane.showMessageDialog(
+                    null,
+                    "La cédula ingresada ya está registrada en la DB. Por favor, verifica tu rol.",
+                    "Aviso de Registro",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        } else if (isCedulaRegistered) {
+            registerView.InvalidateInputs(registerView.getCedulaInput());
+            JOptionPane.showMessageDialog(
+                    null,
+                    "La cédula ingresada ya está registrada en el sistema. Por favor, verifica tu cédula.",
+                    "Aviso de Registro",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
 

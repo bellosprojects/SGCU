@@ -1,0 +1,76 @@
+package com.comedor.control;
+
+import com.comedor.model.PersistenciaManager;
+import com.comedor.view.GestionarMenuView;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class GestionarMenuController implements ActionListener {
+    private NavigationDelegate delegate;
+    private GestionarMenuView gestionarMenuView;
+    private PersistenciaManager persistenciaManager;
+
+    public GestionarMenuController(GestionarMenuView gestionarMenuView, PersistenciaManager persistenciaManager,
+            NavigationDelegate delegate) {
+        this.gestionarMenuView = gestionarMenuView;
+        this.persistenciaManager = persistenciaManager;
+        this.delegate = delegate;
+        this.gestionarMenuView.getPublicarButton().addActionListener(this);
+        this.gestionarMenuView.getBtnLimpiarFormulario().addActionListener(this);
+        this.gestionarMenuView.getBackButton().addActionListener(this);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+
+        if (e.getSource() == gestionarMenuView.getPublicarButton()) {
+            guardarDatosDelMenu();
+        } else if (e.getSource() == gestionarMenuView.getBtnLimpiarFormulario()) {
+            gestionarMenuView.limpiarFormulario();
+        } else if (e.getSource() == gestionarMenuView.getBackButton()) {
+            salirDeVentana();
+        }
+    }
+
+    private void guardarDatosDelMenu() {
+
+        String fecha = gestionarMenuView.getFechaText();
+        String plato = gestionarMenuView.getPlatoText();
+        String ingredientes = gestionarMenuView.getingredientesText();
+        String tipo = gestionarMenuView.getTipo();
+        boolean tipob;
+        if (tipo.equals("Desayuno")) {
+            tipob = true;
+        } else {
+            tipob = false;
+        }
+
+        if (!isValidInputs(fecha, plato, ingredientes)) {
+            return;
+        }
+
+        persistenciaManager.guardarMenu(plato, ingredientes, tipob, fecha);
+        salirDeVentana();
+    }
+
+    private boolean isValidInputs(String fecha, String plato, String ingredientes) {
+        boolean flag = true;
+        if (fecha.isEmpty()) {
+            gestionarMenuView.InvalidateInputs(gestionarMenuView.getFechaComponent());
+            flag = false;
+        }
+        if (plato.isEmpty()) {
+            gestionarMenuView.InvalidateInputs(gestionarMenuView.getPlatoComponent());
+            flag = false;
+        }
+        if (ingredientes.isEmpty()) {
+            gestionarMenuView.InvalidateInputs(gestionarMenuView.getIngredientsComponents());
+            flag = false;
+        }
+        return flag;
+    }
+
+    private void salirDeVentana() {
+        delegate.onAdminPanelRequested();
+    }
+}
