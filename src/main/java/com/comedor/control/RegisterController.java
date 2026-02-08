@@ -8,7 +8,6 @@ import com.comedor.model.User;
 import java.awt.event.*;
 
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class RegisterController implements ActionListener {
