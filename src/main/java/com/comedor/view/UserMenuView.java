@@ -27,6 +27,7 @@ public class UserMenuView extends JFrame {
     private JLabel saldo;
 
     private JLabel menuFecha;
+    private JLabel precio;
     private JLabel desayunoTitulo;
     private JLabel almuerzoTitulo;
     private TextMultilinea desayunoIngredients;
@@ -103,12 +104,22 @@ public class UserMenuView extends JFrame {
         JPanel menusPanel = new JPanel(new BorderLayout());
         menusPanel.setOpaque(false);
 
+        JPanel generalInfoPanel = new JPanel(new GridLayout(2, 1));
+        generalInfoPanel.setOpaque(false);
+
         menuFecha = new JLabel("Menu del dia: Jueves 5 de Febrero");
         menuFecha.setFont(EstiloGral.MIDDLE_FONT);
         menuFecha.setForeground(EstiloGral.DARK_COLOR);
         menuFecha.setBorder(BorderFactory.createEmptyBorder(20, 100, 0, 0));
 
-        menusPanel.add(menuFecha, BorderLayout.NORTH);
+        precio = new JLabel("Precio: 0.0Bs.");
+        precio.setFont(EstiloGral.INPUT_FONT);
+        precio.setForeground(EstiloGral.DARK_COLOR);
+        precio.setBorder(BorderFactory.createEmptyBorder(20, 100, 0, 0));
+
+        generalInfoPanel.add(menuFecha);
+        generalInfoPanel.add(precio);
+        menusPanel.add(generalInfoPanel, BorderLayout.NORTH);
 
         JPanel menusPanel2 = new JPanel(new GridBagLayout());
         menusPanel2.setOpaque(false);
@@ -298,6 +309,10 @@ public class UserMenuView extends JFrame {
 
     public SuperBoton getSalirButton(){
         return this.salirButton;
+    }
+
+    public void setPrecio(double precio){
+        this.precio.setText("Precio: " + precio + "Bs.");
     }
 
     private ImageIcon cargarIcono(String ruta, int ancho, int alto, boolean isAbsolute) {
