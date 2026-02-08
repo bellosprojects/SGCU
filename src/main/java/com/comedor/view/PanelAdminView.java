@@ -19,7 +19,7 @@ public class PanelAdminView extends JFrame {
 
     public PanelAdminView(){
 
-        setTitle("Menu de Usuario - SGCU");
+        setTitle("Panel de Admin - SGCU");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLocationRelativeTo(null);
