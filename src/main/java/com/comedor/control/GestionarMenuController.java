@@ -1,6 +1,7 @@
 package com.comedor.control;
 
 import com.comedor.model.PersistenciaManager;
+import com.comedor.view.EstiloGral;
 import com.comedor.view.GestionarMenuView;
 
 import java.awt.event.ActionEvent;
@@ -46,10 +47,12 @@ public class GestionarMenuController implements ActionListener {
         }
 
         if (!isValidInputs(fecha, plato, ingredientes)) {
+            EstiloGral.ShowMessage("Datos invalidos", EstiloGral.ERROR_MESSAGE); 
             return;
         }
 
         persistenciaManager.guardarMenu(plato, ingredientes, tipob, fecha);
+        EstiloGral.ShowMessage("Menú guardado exitosamenmte", EstiloGral.SUCCESS_MESSAGE);  
         salirDeVentana();
     }
 

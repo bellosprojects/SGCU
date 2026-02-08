@@ -1,11 +1,11 @@
 package com.comedor.control;
 
 import com.comedor.model.PersistenciaManager;
+import com.comedor.view.EstiloGral;
 import com.comedor.view.PanelAdminView;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.JOptionPane;
 
 public class PanelAdminController implements ActionListener {
     private NavigationDelegate delegate;
@@ -42,15 +42,25 @@ public class PanelAdminController implements ActionListener {
     }
 
     private void actualizarTarifa() {
+        String newPorcentaje = panelAdminView.getPorcentaje();
+        if (newPorcentaje == null || newPorcentaje.trim().isEmpty()) {
+            panelAdminView.InvalidateInputs(panelAdminView.getPorcentajeComponent());
+        return;
+        }
+
         try {
             Double nuevoPorcentaje = Double.parseDouble(panelAdminView.getPorcentaje());
             String Role = panelAdminView.getRolSelect();
+
+            if (nuevoPorcentaje < 0) {
+            EstiloGral.ShowMessage("Porcentaje no puede ser negativo.", EstiloGral.ERROR_MESSAGE);
+            return;
+        }
             persistenciaManager.guardarTarifa(nuevoPorcentaje, Role);
+            EstiloGral.ShowMessage("Tarifa actualizada exitosamente para " + Role, EstiloGral.SUCCESS_MESSAGE);
 
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(panelAdminView,
-                    "Error: Asegúrate de ingresar números válidos en CCB y Porcentaje.",
-                    "Error de Formato", JOptionPane.ERROR_MESSAGE);
+            EstiloGral.ShowMessage("Por favor, ingresa un número válido para el porcentaje.", EstiloGral.ERROR_MESSAGE);
         }
     }
 

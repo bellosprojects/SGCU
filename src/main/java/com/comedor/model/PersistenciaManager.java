@@ -2,6 +2,8 @@ package com.comedor.model;
 import java.nio.file.*;
 import java.io.IOException;
 import java.util.*;
+
+import com.comedor.view.EstiloGral;
 public class PersistenciaManager {
     private final Path ruta = Path.of("C:", "SGCU", "data");
     private final Path rutaArchivo = ruta.resolve("UsuariosRegistrados.txt");
@@ -119,7 +121,7 @@ public class PersistenciaManager {
         catch (IOException e){ 
             e.printStackTrace();                  //caso error
         }
-        return -1.0;
+        return 0.0;
     }
 
     public Boolean isUserInDataBase(String cedula, String role){
@@ -133,7 +135,7 @@ public class PersistenciaManager {
                 }
             }
         } catch (IOException e){ 
-            e.printStackTrace();                  
+            EstiloGral.ShowMessage("Hubo un error al obtener el dato", EstiloGral.INFO_MESSAGE);                   
         }
         return false;                 
     }
@@ -151,7 +153,7 @@ public class PersistenciaManager {
             Files.copy(origen, destino, StandardCopyOption.REPLACE_EXISTING);
             
         } catch (IOException e) {
-            System.err.println("Error al guardar la imagen: " + e.getMessage());
+            EstiloGral.ShowMessage("Hubo un error al guardar la imagen", EstiloGral.INFO_MESSAGE);  
         }
         }
         try{
@@ -159,7 +161,7 @@ public class PersistenciaManager {
             java.nio.charset.StandardCharsets.UTF_8,
             StandardOpenOption.APPEND, StandardOpenOption.CREATE);
         } catch (IOException e) {
-            e.printStackTrace();
+            EstiloGral.ShowMessage("Hubo un error al guardar el usuario", EstiloGral.INFO_MESSAGE);  
         }
     }
 
@@ -177,7 +179,7 @@ public class PersistenciaManager {
                 }
             }
         } catch (IOException e){ 
-            e.printStackTrace();                  //caso error
+            EstiloGral.ShowMessage("Hubo un error al obtener el dato", EstiloGral.INFO_MESSAGE);                 //caso error
         }
         return null;                 //return null si no se encuentra la cedula
     }

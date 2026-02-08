@@ -1,6 +1,7 @@
 package com.comedor.control;
 
 import com.comedor.model.PersistenciaManager;
+import com.comedor.view.EstiloGral;
 import com.comedor.view.GestionarCCBView;
 
 import java.awt.event.ActionEvent;
@@ -37,12 +38,19 @@ public class CCBCalculoController implements ActionListener {
     }
 
     void calcularCCB() {
+         if (!IsValidInputs()){
+            EstiloGral.ShowMessage("Datos invalidos", EstiloGral.ERROR_MESSAGE); 
+            return;
+        }
+
         Double CF = Double.parseDouble(calcularCCBView.getCostosFijos());
         Double CV = Double.parseDouble(calcularCCBView.getCostosVariables());
         Integer NB = Integer.parseInt(calcularCCBView.getCantidadBandejas());
         Double porcMerma = Double.parseDouble(calcularCCBView.getPorcentajeMerma());
+        
         this.precioCCB = procesarCalculo(CF, CV, NB, porcMerma);
         persistenciaManager.guardarCCB(this.precioCCB);
+        EstiloGral.ShowMessage("CCB guardado exitosamenmte", EstiloGral.SUCCESS_MESSAGE); 
         gotoPanelAdminView();
     }
 
@@ -61,6 +69,36 @@ public class CCBCalculoController implements ActionListener {
         double costoPorBandeja = costosTotales / NB;
         double CCB = costoPorBandeja * (1 + porcMerma);
         return CCB;
+    }
+
+    private boolean esDecimalValido(String texto) {
+    return texto.matches("^[0-9]+(\\.[0-9]+)?$");
+}
+
+    private boolean IsValidInputs (){
+        String CF = calcularCCBView.getCostosFijos();
+        String CV = calcularCCBView.getCostosVariables();
+        String NB = calcularCCBView.getCantidadBandejas();
+        String porcMerma = calcularCCBView.getPorcentajeMerma();
+
+        boolean flag = true;
+
+        if(CF.isEmpty() || !esDecimalValido(CF)){
+            flag = false;
+            calcularCCBView.InvalidateInputs(calcularCCBView.getCostosFijosComponent());
+        }
+        if(CV.isEmpty() || !esDecimalValido(CV)){
+            flag = false;
+            calcularCCBView.InvalidateInputs(calcularCCBView.getCostosVariablesComponent());
+        }
+        if(NB.isEmpty() || !NB.matches("^[0-9]+$")){
+            flag = false;
+            calcularCCBView.InvalidateInputs(calcularCCBView.getCantidadBAndejasComponent());        }
+        if(porcMerma.isEmpty() || !esDecimalValido(porcMerma)){
+            flag = false;
+            calcularCCBView.InvalidateInputs(calcularCCBView.getPorcentajeMermaComponent());
+        }
+        return flag;
     }
 
 }
