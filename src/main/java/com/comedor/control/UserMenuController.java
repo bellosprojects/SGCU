@@ -5,11 +5,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class UserMenuController implements ActionListener {
+    private NavigationDelegate delegate;
     private PersistenciaManager persistenciaManager;       //modelo
     private UserMenuView menuView;                             //vista
     private String cedula;              //controlador
 
-    public UserMenuController(PersistenciaManager persistenciaManager, String cedula, UserMenuView menuView){ 
+    public UserMenuController(PersistenciaManager persistenciaManager, String cedula, UserMenuView menuView, NavigationDelegate delegate){ 
+        this.delegate = delegate;
         this.persistenciaManager = persistenciaManager;
         this.menuView = menuView;
         this.cedula = cedula;
@@ -35,7 +37,7 @@ public class UserMenuController implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e){
         if (e.getSource() == menuView.getSalirButton()){ 
-        System.exit(0);
+            delegate.onBackToLoginRequested();
         }
     }
 }

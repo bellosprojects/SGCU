@@ -7,6 +7,7 @@ import com.comedor.model.User;
 import java.awt.event.*;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class RegisterController implements ActionListener {
@@ -138,13 +139,28 @@ public class RegisterController implements ActionListener {
         String confirmPassword = new String(registerView.getConfirmPassText());
         String email = registerView.getEmailText();
         String facultadSeleccionada = registerView.getFacultadSelect();
+        String tipoUsuario = registerView.getRoleSelect();
         String imagePath = registerView.getProfileImagePath();
+
 
         if (!isValidRegister(fullname, cedula, password, confirmPassword, email, imagePath)) {
             return;
         }
 
-        User user = new User(fullname, cedula, password, email, facultadSeleccionada, 0.0, "user");
+        boolean isCedulaRegisteredonUCV = persistenciaManager.isCedulaRegistered(cedula);
+        
+        if(isCedulaRegisteredonUCV){
+            registerView.InvalidateInputs(registerView.getCedulaInput());
+            JOptionPane.showMessageDialog(
+            null, 
+            "El usuario está registrado con otro rol en Secretaría", 
+            "Aviso de Registro", 
+            JOptionPane.WARNING_MESSAGE
+        );
+            return;
+        }
+
+        User user = new User(fullname, cedula, password, email, facultadSeleccionada, 0.0, tipoUsuario);
         persistenciaManager.guardarUsuario(user, imagePath);
         goToLoginView();
     }
