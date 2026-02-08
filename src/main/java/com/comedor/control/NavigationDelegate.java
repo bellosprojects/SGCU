@@ -5,4 +5,7 @@ public interface NavigationDelegate {
     void onBackToLoginRequested(); 
     void onRegisterRequested(); 
     void onLoginSuccess(String cedula);
+    void onAdminPanelRequested();
+    void onGestionarMenuRequested();
+    void onCalcularCCBRequested();
 }

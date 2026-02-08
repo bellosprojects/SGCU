@@ -6,6 +6,9 @@ import com.comedor.model.PersistenciaManager;
 import com.comedor.view.LoginView;
 import com.comedor.view.RegisterView;
 import com.comedor.view.UserMenuView;
+import com.comedor.view.PanelAdminView;
+import com.comedor.view.GestionarCCBView;
+import com.comedor.view.GestionarMenuView;
 
 public class AppCoordinator implements NavigationDelegate {
     private PersistenciaManager model;
@@ -27,12 +30,11 @@ public class AppCoordinator implements NavigationDelegate {
         }
         LoginView view = new LoginView();
         mainFrame = view;
-        // El coordinador se pasa a sí mismo como el que maneja la navegación
         new LoginController(view, model, this);
         view.setVisible(true);
     }
 
-    public void showRegister() {
+    private void showRegister() {
         if (mainFrame != null) {
             mainFrame.setVisible(false);
             mainFrame.dispose();
@@ -59,36 +61,71 @@ public class AppCoordinator implements NavigationDelegate {
             mainFrame.setVisible(false);
             mainFrame.dispose();
         }
-        //AdminDashboard AdminDashboardView = new AdminDashboard();
-        //new AdminMenuController(AdminDashboardView, model, this);
-        //AdminDashboardView.setVisible(true);
+        PanelAdminView AdminDashboardView = new PanelAdminView();
+        mainFrame = AdminDashboardView;
+        new PanelAdminController(AdminDashboardView, model, this);
+        AdminDashboardView.setVisible(true);
+    }
+
+    private void showGestionarMenuView() {
+        if (mainFrame != null) {
+            mainFrame.setVisible(false);
+            mainFrame.dispose();
+        }
+        GestionarMenuView gestionarMenuView = new GestionarMenuView();
+        mainFrame = gestionarMenuView;
+        new GestionarMenuController(gestionarMenuView, model, this);
+        gestionarMenuView.setVisible(true);
+    }
+
+    private void showCalcularCCBView() {
+        if (mainFrame != null) {
+            mainFrame.setVisible(false);
+            mainFrame.dispose();
+        }
+        GestionarCCBView calcularCCBView = new GestionarCCBView();
+        mainFrame = calcularCCBView;
+        new CCBCalculoController(calcularCCBView, model, this);
+        calcularCCBView.setVisible(true);
     }
 
     @Override
     public void onRegisterSuccess() {
-        // Lógica para manejar el éxito del registro
         showLogin();
     }
 
     @Override
     public void onBackToLoginRequested() {
         showLogin();
-        // Lógica para manejar la solicitud de volver al login
     }
 
     @Override
     public void onRegisterRequested() {
         showRegister();
-        // Lógica para manejar la solicitud de registro
     }
 
     @Override
     public void onLoginSuccess(String cedula) {
-        if (model.getRoleFromCedula(cedula).equals("admin")) {
+        if (model.getRoleFromCedula(cedula).equals("Admin")) {
             showAdminDashboard();
         } else {
             showUserMenu(cedula);
         }
+    }
+
+    @Override
+    public void onAdminPanelRequested() {
+        showAdminDashboard();
+    }
+
+    @Override
+    public void onGestionarMenuRequested() {
+        showGestionarMenuView();
+    }
+
+    @Override
+    public void onCalcularCCBRequested() {
+        showCalcularCCBView();
     }
 
 }

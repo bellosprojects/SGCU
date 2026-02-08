@@ -21,6 +21,7 @@ public class RegisterView extends JFrame {
     private JButton profileImagFileChooser;
     private String profileImagePath;
     private JLabel imageContainer;
+    private JComboBox <String> rolSelect;
 
     public RegisterView() {
         
@@ -112,6 +113,27 @@ public class RegisterView extends JFrame {
         passInput.setOpaque(false);
         inputPassPanel.add(passInput);
         formPanel.add(inputPassPanel, centerGbc);
+
+        centerGbc.gridy++;
+        JLabel rolLabel = new JLabel("ROL");
+        rolLabel.setFont(EstiloGral.LABEL_FONT);
+        rolLabel.setForeground(EstiloGral.BG_COLOR);
+        rolLabel.setBorder(BorderFactory.createEmptyBorder(40, 20, 0, 0));
+        formPanel.add(rolLabel, centerGbc);
+
+        centerGbc.gridy++;
+        JPanel rolPanel = new GradientPanelRedondeado(10, 0, EstiloGral.WHITE_TRANSP_COLOR);
+        String[] roles = {"Estudiante","Profesor","Trabajador","Admin"};
+        rolSelect = new JComboBox<String>(roles);
+        rolSelect.setFont(EstiloGral.INPUT_FONT);
+        rolSelect.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        rolSelect.setOpaque(false);
+        rolSelect.setFocusable(true);
+        rolSelect.setBackground(EstiloGral.BG_COLOR);
+        rolSelect.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+        rolSelect.setForeground(EstiloGral.DARK_COLOR);
+        rolPanel.add(rolSelect);
+        formPanel.add(rolPanel, centerGbc);
 
         centerGbc.gridy=0;
         centerGbc.gridx++;
@@ -287,6 +309,10 @@ public class RegisterView extends JFrame {
 
     public JButton getProfileImagFileChooser() {
         return profileImagFileChooser;
+    }
+
+    public String getRoleSelect(){
+        return rolSelect.getItemAt(rolSelect.getSelectedIndex());
     }
 
     public void setImagePath(String path) {

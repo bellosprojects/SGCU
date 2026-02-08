@@ -1,5 +1,6 @@
 package com.comedor.control;
 
+import com.comedor.view.EstiloGral;
 import com.comedor.view.RegisterView;
 import com.comedor.model.PersistenciaManager;
 import com.comedor.model.User;
@@ -7,6 +8,7 @@ import com.comedor.model.User;
 import java.awt.event.*;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class RegisterController implements ActionListener {
@@ -77,10 +79,6 @@ public class RegisterController implements ActionListener {
             registerView.InvalidateInputs(registerView.getCedulaInput());
             flag = false;
         }
-        if (persistenciaManager.isCedulaRegistered(cedula)) {
-            registerView.InvalidateInputs(registerView.getCedulaInput());
-            flag = false;
-        }
 
         if (password == null || password.isEmpty()) {
             registerView.InvalidateInputs(registerView.getPassInput());
@@ -113,7 +111,7 @@ public class RegisterController implements ActionListener {
         }
 
         if (imagePath == null || imagePath.isEmpty()) {
-            // registerView.InvalidateInputs(registerView.getProfileImagFileChooser());
+            //EstiloGral.ShowMessage("Necesita elegir una foto de perfil", EstiloGral.ERROR_MESSAGE);
             flag = false;
         }
         return flag;
@@ -138,15 +136,34 @@ public class RegisterController implements ActionListener {
         String confirmPassword = new String(registerView.getConfirmPassText());
         String email = registerView.getEmailText();
         String facultadSeleccionada = registerView.getFacultadSelect();
+        String tipoUsuario = registerView.getRoleSelect();
         String imagePath = registerView.getProfileImagePath();
 
-        if (!isValidRegister(fullname, cedula, password, confirmPassword, email, imagePath)) {
-            return;
+        if (isValidRegister(fullname, cedula, password, confirmPassword, email, imagePath)) {
+            //EstiloGral.ShowMessage("Complete todos los campos", EstiloGral.ERROR_MESSAGE);
+            boolean isCedulaRegistered = persistenciaManager.isCedulaRegistered(cedula);
+            String auxiliar = persistenciaManager.getRoleFromCedulaInDataBase(cedula);
+            if (auxiliar == null) {
+                EstiloGral.ShowMessage("La cédula ingresada no está registrada en la base de datos de la UCV. Por favor, verifica tu cédula y tipo de usuario.", EstiloGral.ERROR_MESSAGE);
+                registerView.InvalidateInputs(registerView.getCedulaInput());
+                return;
+            } else if (!auxiliar.equals(tipoUsuario)) {
+                registerView.InvalidateInputs(registerView.getCedulaInput());
+                EstiloGral.ShowMessage("La cédula ingresada ya está registrada en la DB. Por favor, verifica tu rol.", EstiloGral.ERROR_MESSAGE);
+                return;
+            } else if (isCedulaRegistered) {
+                registerView.InvalidateInputs(registerView.getCedulaInput());
+                EstiloGral.ShowMessage("La cédula ingresada ya está registrada en el sistema. Debes iniciar sesión", EstiloGral.ERROR_MESSAGE);
+                return;
+            }
+            User user = new User(fullname, cedula, password, email, facultadSeleccionada, 0.0, tipoUsuario);
+            persistenciaManager.guardarUsuario(user, imagePath);
+            EstiloGral.ShowMessage("Usuario Registrado con exito", EstiloGral.SUCCESS_MESSAGE);
+            goToLoginView();
+        } else {
+            EstiloGral.ShowMessage("Complete todos los campos correctamente", EstiloGral.ERROR_MESSAGE);
         }
-
-        User user = new User(fullname, cedula, password, email, facultadSeleccionada, 0.0, "user");
-        persistenciaManager.guardarUsuario(user, imagePath);
-        goToLoginView();
+        
     }
 
 }

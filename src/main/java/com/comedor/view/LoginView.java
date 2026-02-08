@@ -94,6 +94,7 @@ public class LoginView extends JFrame{
         forgotPassButton.setBackground(new Color(0,0,0,0));
         forgotPassButton.setBorder(null);
         forgotPassButton.setContentAreaFilled(false);
+        forgotPassButton.setVisible(false);
         centerPanel.add(forgotPassButton, centerGbc);
 
         centerGbc.anchor = GridBagConstraints.EAST;

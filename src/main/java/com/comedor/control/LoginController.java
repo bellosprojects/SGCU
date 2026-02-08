@@ -1,5 +1,6 @@
 package com.comedor.control;
 
+import com.comedor.view.EstiloGral;
 import com.comedor.view.LoginView;
 import com.comedor.model.PersistenciaManager;
 
@@ -40,8 +41,9 @@ public class LoginController implements ActionListener {
     private void handleLogin() {
         String cedula = loginView.getCedulaText();
         String password = loginView.getPassText();
- 
-        if(!isValidInputs(cedula, password)) {
+
+        if (!isValidInputs(cedula, password)) {
+            EstiloGral.ShowMessage("Por favor completa todos los campos", EstiloGral.ERROR_MESSAGE); 
             return;
         }
 
@@ -52,6 +54,7 @@ public class LoginController implements ActionListener {
         } else {
             loginView.InvalidateInputs(loginView.getCedulaInput());
             loginView.InvalidateInputs(loginView.getPassInput());
+            EstiloGral.ShowMessage("Cédula o contraseña incorrectas. Por favor, inténtalo de nuevo.", EstiloGral.ERROR_MESSAGE);
         }
     }
 
@@ -62,10 +65,10 @@ public class LoginController implements ActionListener {
             flag = false;
         }
 
-        if(password.isEmpty()) {
+        if (password.isEmpty()) {
             loginView.InvalidateInputs(loginView.getPassInput());
             flag = false;
-            
+
         }
         return flag;
     }
