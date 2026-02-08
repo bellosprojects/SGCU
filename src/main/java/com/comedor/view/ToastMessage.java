@@ -8,6 +8,7 @@ import java.awt.geom.RoundRectangle2D;
 public class ToastMessage extends JWindow {
 
     private float opacity = 0;
+    private boolean active = false;
 
     public ToastMessage(String texto, Color colorFondo) {
         setAlwaysOnTop(true);
@@ -28,8 +29,8 @@ public class ToastMessage extends JWindow {
         panel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
         JLabel label = new JLabel(texto);
-        label.setForeground(Color.WHITE);
-        label.setFont(new Font("SansSerif", Font.BOLD, 14));
+        label.setForeground(EstiloGral.BG_COLOR);
+        label.setFont(EstiloGral.INPUT_FONT);
         panel.add(label);
         
         add(panel);
@@ -43,13 +44,16 @@ public class ToastMessage extends JWindow {
     }
 
     public void fadeIn() {
+
+        active = true;
+
         new Thread(() -> {
             try {
-                for (opacity = 0; opacity <= 1; opacity += 0.05f) {
+                for (opacity = 0; opacity <= 1; opacity += 0.1f) {
                     setOpacity(opacity);
                     Thread.sleep(20);
                 }
-                Thread.sleep(2500); // Duración del mensaje visible
+                Thread.sleep(1800); // Duración del mensaje visible
                 fadeOut();
             } catch (Exception e) {}
         }).start();
@@ -58,12 +62,17 @@ public class ToastMessage extends JWindow {
     private void fadeOut() {
         new Thread(() -> {
             try {
-                for (opacity = 1; opacity >= 0; opacity -= 0.05f) {
+                active = false;
+                for (opacity = 1; opacity >= 0; opacity -= 0.075f) {
                     setOpacity(opacity);
                     Thread.sleep(20);
                 }
                 dispose(); // Elimina la ventana por completo
             } catch (Exception e) {}
         }).start();
+    }
+
+    public boolean getActive(){
+        return this.active;
     }
 }
