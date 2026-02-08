@@ -170,7 +170,7 @@ public class PanelAdminView extends JFrame {
         return porcentajeInput.getText();
     }
 
-    public JTextField porcentajeComponent(){
+    public JTextField getPorcentajeComponent(){
         return porcentajeInput;
     }
 
