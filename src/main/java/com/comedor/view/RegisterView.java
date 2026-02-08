@@ -162,7 +162,7 @@ public class RegisterView extends JFrame {
 
         centerGbc.gridy++;
         JPanel selectFacultadPanel = new GradientPanelRedondeado(10, 0, EstiloGral.WHITE_TRANSP_COLOR);
-        String[] facultades = {"Ingeniería", "Ciencias", "Artes", "Medicina", "Derecho"};
+        String[] facultades = {"Agronomía", "Arquitectura y Urbanismo", "Ciencias", "Ciencias económicas y sociales", "Ciencias jurídicas y políticas", "Ciencias veterinarias", "Farmacia", "Humanidades y educación", "Ingieneria", "Medicina", "Odontología"};
         facultadSelect = new JComboBox<>(facultades);
         facultadSelect.setFont(EstiloGral.INPUT_FONT);
         facultadSelect.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
