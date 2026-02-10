@@ -1,6 +1,7 @@
 package com.comedor.control;
 
 import com.comedor.model.PersistenciaManager;
+import com.comedor.model.Menu.TipoMenu;
 import com.comedor.view.EstiloGral;
 import com.comedor.view.GestionarMenuView;
 
@@ -39,19 +40,14 @@ public class GestionarMenuController implements ActionListener {
         String plato = gestionarMenuView.getPlatoText();
         String ingredientes = gestionarMenuView.getingredientesText();
         String tipo = gestionarMenuView.getTipo();
-        boolean tipob;
-        if (tipo.equals("Desayuno")) {
-            tipob = true;
-        } else {
-            tipob = false;
-        }
+        TipoMenu tipoMenu = tipo.equals("Desayuno") ? TipoMenu.DESAYUNO : TipoMenu.ALMUERZO;
 
         if (!isValidInputs(fecha, plato, ingredientes)) {
             EstiloGral.ShowMessage("Datos invalidos", EstiloGral.ERROR_MESSAGE); 
             return;
         }
 
-        persistenciaManager.guardarMenu(plato, ingredientes, tipob, fecha);
+        persistenciaManager.guardarMenu(plato, ingredientes, tipoMenu, fecha);
         EstiloGral.ShowMessage("Menú guardado exitosamenmte", EstiloGral.SUCCESS_MESSAGE);  
         salirDeVentana();
     }

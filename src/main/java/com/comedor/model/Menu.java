@@ -1,11 +1,15 @@
 package com.comedor.model;
 
 public class Menu{
-    private Boolean tipo;         //1= desayuno, 0= almuerzo
     private String plato;
     private String ingredientes;
     private String fecha;
-    public Menu(String plato, String ingredientes, Boolean tipo, String fecha){
+    private TipoMenu tipo;
+    public enum TipoMenu {
+        DESAYUNO, 
+        ALMUERZO
+    }
+    public Menu(String plato, String ingredientes, TipoMenu tipo, String fecha){
         this.plato = plato;
         this.ingredientes = ingredientes;
         this.tipo = tipo;
@@ -20,7 +24,7 @@ public class Menu{
         return ingredientes;
     }
 
-    public Boolean getTipo() {
+    public TipoMenu getTipo() {
         return tipo;
     }
 

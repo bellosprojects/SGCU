@@ -3,6 +3,7 @@ import java.nio.file.*;
 import java.io.IOException;
 import java.util.*;
 
+import com.comedor.model.Menu.TipoMenu;
 import com.comedor.view.EstiloGral;
 public class PersistenciaManager {
     private final Path ruta = Path.of("C:", "SGCU", "data");
@@ -33,7 +34,7 @@ public class PersistenciaManager {
         try {
             Files.createFile(rutaArchivo);
         } catch (IOException e) {
-            e.printStackTrace();
+            EstiloGral.ShowMessage("Hubo un error al crear el archivo de usuarios registrados", EstiloGral.INFO_MESSAGE);
         }
     }
 
@@ -42,7 +43,7 @@ public class PersistenciaManager {
             Files.createDirectories(ruta);
             Files.createDirectories(rutaImagenesPath);
         } catch (IOException e) {
-            System.err.println("Error al crear directorios: " + e.getMessage());
+            EstiloGral.ShowMessage("Hubo un error al crear directorios" + e.getMessage(), EstiloGral.INFO_MESSAGE);
         }
     }
 
@@ -56,7 +57,7 @@ public class PersistenciaManager {
             java.nio.charset.StandardCharsets.UTF_8,
             StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
         } catch (IOException e) {
-            e.printStackTrace();
+            EstiloGral.ShowMessage("Hubo un error en el archivo del CCB", EstiloGral.INFO_MESSAGE);
         }
     }
 
@@ -76,13 +77,12 @@ public class PersistenciaManager {
                 }
             }
         } catch (IOException e){ 
-            e.printStackTrace();                  //caso error
+            EstiloGral.ShowMessage("Hubo un error al guardar en el archivo del CCB", EstiloGral.INFO_MESSAGE);
         }
     }
 
     public Double getPorcentajeFromRole(String role){
         try{
-            System.out.println("Obteniendo tarifa para el rol: " + role);
             if(Files.exists(rutaTarifas)){                                    //evalua si el archivo existe
                 List<String> lineas = Files.readAllLines(rutaTarifas, java.nio.charset.StandardCharsets.UTF_8);        //crea una lista con todas las lineas del archivo
                 for(int i=1; i<lineas.size(); i++){                           //recorre todas las lineas del archivo                                  
@@ -94,7 +94,7 @@ public class PersistenciaManager {
                 }
             }
         } catch (IOException e){ 
-            e.printStackTrace();                  //caso error
+            EstiloGral.ShowMessage("Hubo un error al leer el archivo de CCB", EstiloGral.INFO_MESSAGE);
         }
         return 0.0;
     }
@@ -108,7 +108,7 @@ public class PersistenciaManager {
                 Files.write(rutaTarifas, lineas, java.nio.charset.StandardCharsets.UTF_8); // Escribe todas las líneas de nuevo en el archivo
             }
         } catch (IOException e){ 
-            e.printStackTrace();                  //caso error
+            EstiloGral.ShowMessage("Hubo un error al guardar en el archivo del CCB", EstiloGral.INFO_MESSAGE);
         }
     }
 
@@ -119,7 +119,7 @@ public class PersistenciaManager {
             return Double.parseDouble(linea);
         }
         catch (IOException e){ 
-            e.printStackTrace();                  //caso error
+            EstiloGral.ShowMessage("Hubo un error al leer en el archivo del CCB", EstiloGral.INFO_MESSAGE);
         }
         return 0.0;
     }
@@ -217,29 +217,26 @@ public class PersistenciaManager {
         return cedulaExists && storedPassword.equals(password);
     }
 
-    public void guardarMenu(String nombre, String ingredientes, boolean tipo, String Fecha){
-        String menuString= nombre+SEPARADOR+ingredientes+SEPARADOR+Fecha;
-        if(tipo){
-            try{                                                                                     //try para manejar casos de error
-            Files.writeString(rutaMenuDesayuno, menuString + System.lineSeparator(), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);    //Escribe el string en el archivo sin borrar los datos anteriores, en la ruta indicada, 
-        } catch (IOException e){
-            e.printStackTrace();       //caso de error  
+    public void guardarMenu(String nombre, String ingredientes, TipoMenu tipo, String fecha){
+        String menuString = nombre + SEPARADOR + ingredientes + SEPARADOR + fecha;
+        Path rutaDestino = (tipo == TipoMenu.DESAYUNO) ? rutaMenuDesayuno : rutaMenuAlmuerzo;
+
+        try {
+            Files.writeString(
+                rutaDestino, 
+                menuString + System.lineSeparator(), 
+                StandardOpenOption.TRUNCATE_EXISTING, 
+                StandardOpenOption.CREATE
+            );
+        } catch (IOException e) {
+            EstiloGral.ShowMessage("Hubo un error al guardar en el archivo del Menu", EstiloGral.INFO_MESSAGE);
         }
-        }    
-        else{
-            try{                                                                                     //try para manejar casos de error
-            Files.writeString(rutaMenuAlmuerzo, menuString + System.lineSeparator(), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);    //Escribe el string en el archivo sin borrar los datos anteriores, en la ruta indicada, 
-        } catch (IOException e){
-            e.printStackTrace();       //caso de error
-        }
-        }                  
-        return;
     }
 
-    public Menu getMenu(boolean tipo){
+    public Menu getMenu(TipoMenu tipo){
         Menu menu = new Menu(null, null, tipo, null);
         try{
-            Path ruta = tipo ? rutaMenuDesayuno : rutaMenuAlmuerzo;
+            Path ruta = (tipo == TipoMenu.DESAYUNO) ? rutaMenuDesayuno : rutaMenuAlmuerzo;
             if(Files.exists(ruta)){                                    //evalua si el archivo existe
                 List<String> lineas = Files.readAllLines(ruta);        //crea una lista con todas las lineas del archivo
                 if(!lineas.isEmpty()){
@@ -250,7 +247,7 @@ public class PersistenciaManager {
                 }
             }
         } catch (IOException e){ 
-            e.printStackTrace();                  //caso error
+            EstiloGral.ShowMessage("Hubo un error al leer del archivo del Menu", EstiloGral.INFO_MESSAGE);
     }
     return menu;
     }
@@ -266,7 +263,7 @@ public class PersistenciaManager {
                 }
             }
         } catch (IOException e){ 
-            e.printStackTrace();
+            EstiloGral.ShowMessage("Hubo un error al leer en el archivo de la Base de datos", EstiloGral.INFO_MESSAGE);
         }
         return null;
     }
