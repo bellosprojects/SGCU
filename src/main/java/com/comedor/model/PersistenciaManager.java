@@ -244,6 +244,25 @@ public class PersistenciaManager {
         return getUserFromCedula(cedula).getSaldo();
     }
 
+    public void recargarSaldo(String cedula, double nuevoSaldo) {
+        try {
+            List<String> lineas = Files.readAllLines(usersFile, java.nio.charset.StandardCharsets.UTF_8);
+            for (int i = 0; i < lineas.size(); i++) {
+                User user = new User();
+                user.fromJSON(lineas.get(i));
+
+                if (user.getCedula().equals(cedula)) {
+                    user.setSaldo(nuevoSaldo);
+                    lineas.set(i, user.toJson());
+                    break;
+                }
+            }
+            Files.write(usersFile, lineas, java.nio.charset.StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            EstiloGral.ShowMessage("Hubo un error al recargar el saldo", EstiloGral.INFO_MESSAGE);
+        }
+    }
+
     public boolean isCedulaRegistered(String cedula){       
         User user = getUserFromCedula(cedula);
         return user != null;
