@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
+import javax.swing.SwingUtilities;
+
 import com.comedor.model.Menu;
 import com.comedor.model.User;
 
@@ -14,6 +16,8 @@ import aura.animations.AnimateString;
 import aura.components.AuraButton;
 import aura.components.AuraContainer;
 import aura.components.AuraImage;
+import aura.components.AuraInput;
+import aura.components.AuraModal;
 import aura.components.AuraMultiText;
 import aura.components.AuraSpacer;
 import aura.components.AuraText;
@@ -25,6 +29,8 @@ import aura.layouts.AuraRow;
 
 public class UserMenuView extends AuraWindow {
 
+    private AuraModal modal;
+
     public UserMenuView(){
         super("SGCU - Menu de usuario");
 
@@ -32,6 +38,10 @@ public class UserMenuView extends AuraWindow {
         .noResizable()
         .background(EstiloGral.BG_COLOR)
         .icon(new AuraImage(getResourcePath("/images/logoColor.png")));
+
+        SwingUtilities.invokeLater(() -> 
+            createModal()
+        );
 
         insert(
             new AuraRow()
@@ -211,9 +221,10 @@ public class UserMenuView extends AuraWindow {
                                                         carterColumn.insert(
                                                             new AuraButton("Recargar")
                                                                 .radius(25)
-                                                                .id("recharge")
+                                                                .id("rechargeBtn")
                                                                 .font(EstiloGral.LABEL_FONT)
                                                                 .margin(10, 0, 0, 0)
+
                                                         );
                                                     })
                                             );
@@ -497,8 +508,9 @@ public class UserMenuView extends AuraWindow {
         for(String id : ids){
 
             AuraBox<?> component = find(id);
-
-            component.background(EstiloGral.WHITE_TRANSP_COLOR);
+            if(component == null){
+                component = modal.find(id);
+            }
 
             AnimateBackground t = new AnimateBackground(component, EstiloGral.ERROR_COLOR, 200)
                                     .pingPong()
@@ -509,6 +521,120 @@ public class UserMenuView extends AuraWindow {
             t.parallel(t2).start();
         }
 
+    }
+
+    private void createModal(){
+
+        modal = new AuraModal(this);
+
+        AuraColumn columnModal = new AuraColumn()
+                        .background(EstiloGral.BG_COLOR)
+                        .radius(15)
+                        .padding(30)
+                        .content(col -> {
+                            col.insert(
+                                new AuraText("Recargar")
+                                    .font(EstiloGral.MIDDLE_FONT)
+                                    .textColor(EstiloGral.DARK_COLOR)
+                                    .margin(5,120,40,120)
+                            );
+
+                            col.insert(
+                                new AuraText("Monto")
+                                    .font(EstiloGral.LABEL_FONT)
+                                    .alignSelf(AuraColumn.Alignment.LEFT)
+                                    .margin(0,50,10,0)
+                            );
+
+                            col.insert(
+                                new AuraInput()
+                                    .radius(15)
+                                    .padding(15)
+                                    .font(EstiloGral.INPUT_FONT)
+                                    .textColor(EstiloGral.BG_COLOR)
+                                    .background(EstiloGral.DARK_COLOR)
+                                    .fillWidth()
+                                    .id("rechargeMonto")
+                            );
+
+                            col.insert(
+                                new AuraText("Nro. de Referencia")
+                                    .font(EstiloGral.LABEL_FONT)
+                                    .alignSelf(AuraColumn.Alignment.LEFT)
+                                    .margin(40,50,10,0)
+                            );
+
+                            col.insert(
+                                new AuraInput()
+                                    .radius(15)
+                                    .padding(15)
+                                    .font(EstiloGral.INPUT_FONT)
+                                    .textColor(EstiloGral.BG_COLOR)
+                                    .background(EstiloGral.DARK_COLOR)
+                                    .fillWidth()
+                                    .id("rechargeRef")
+                            );
+
+                            col.insert(
+                                new AuraRow()
+                                    .gap(40)
+                                    .margin(40,0,0,0)
+                                    .content(optionsRow -> {
+                                        optionsRow.insert(
+                                            new AuraButton("Cancelar")
+                                                .background(EstiloGral.GREY_COLOR)
+                                                .font(EstiloGral.INPUT_FONT)
+                                                .textColor(EstiloGral.BG_COLOR)
+                                                .onClick(b -> {
+                                                    modal.close();
+                                                })
+                                        );
+
+                                        optionsRow.insert(
+                                            new AuraButton("Confirmar")
+                                                .background(EstiloGral.BUTTON_COLOR)
+                                                .font(EstiloGral.INPUT_FONT)
+                                                .textColor(EstiloGral.BG_COLOR)
+                                                .id("confirmRechargeBtn")
+                                        );
+                                    })
+                            );
+                        });
+
+
+        modal.content(columnModal);
+    }
+
+    public void showRecharge(){ 
+        modal.display();
+    }
+
+    public void hideRecharge(){
+        modal.close();
+    }
+
+    public AuraModal getModal(){
+        return this.modal;
+    }
+
+    public void updateSaldo(Double saldo){
+        AuraText credits = (AuraText) find("credits");
+        
+        new AnimateFloat(0.0f, (float) (double) saldo , 1800, value -> {
+
+            credits.text(String.format("%.2fBs", value));
+
+        })
+        .delay(1000)
+        .start();
+    }
+
+    public String getMonto(){
+        return ((AuraInput) modal.find("rechargeMonto")).getText();
+    }
+
+    public String getNumeroReferencia(){
+        return ((AuraInput) modal.find("rechargeRef")).getText();
     }
 
 }

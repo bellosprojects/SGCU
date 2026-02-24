@@ -1,9 +1,12 @@
 package com.comedor.control;
 
+import javax.swing.SwingUtilities;
+
 import com.comedor.model.Menu;
 import com.comedor.model.Menu.TipoMenu;
 import com.comedor.model.PersistenciaManager;
 import com.comedor.model.User;
+import com.comedor.view.EstiloGral;
 import com.comedor.view.UserMenuView;
 
 public class UserMenuController {
@@ -56,8 +59,70 @@ public class UserMenuController {
             delegate.onBackToLoginRequested()
         );
 
-        
+        menuView.find("rechargeBtn").onClick(b -> {
+            menuView.showRecharge();
+        }
+        );
+
+        SwingUtilities.invokeLater(() -> 
+
+            menuView.getModal().find("confirmRechargeBtn").onClick(b -> {
+                recargarSaldo();
+            })
+            
+        );
+
         sendUser();
         sendMenu();
+    }
+
+
+    private boolean isValidInputs(String montoStr, String numeroReferencia) {
+        boolean flag = true;
+        if(montoStr.isEmpty() ){
+            menuView.InvalidateInputs("rechargeMonto");
+            EstiloGral.ShowMessage("Ingrese un monto para recargar", EstiloGral.ERROR_MESSAGE);
+            flag = false;
+        } 
+        else if(numeroReferencia.isEmpty()){
+            menuView.InvalidateInputs("rechargeRef");
+            EstiloGral.ShowMessage("Ingrese un numero de referencia para recargar", EstiloGral.ERROR_MESSAGE);
+            flag = false;
+        } 
+        else if(numeroReferencia.length() != 12){ //los numeros de referencia son de 12 digitos
+            menuView.InvalidateInputs("rechargeRef");
+            EstiloGral.ShowMessage("El numero de referencia debe tener 12 digitos", EstiloGral.ERROR_MESSAGE);
+            flag = false;
+        }
+        else if(!isAllNumbers(montoStr)){
+            menuView.InvalidateInputs("rechargeMonto");
+            EstiloGral.ShowMessage("Ingrese solo números en el monto", EstiloGral.ERROR_MESSAGE);
+            flag = false;
+        }
+        return flag;
+    }
+
+    private void recargarSaldo() {
+        String montoStr = menuView.getMonto();
+        String numeroReferencia = menuView.getNumeroReferencia();
+        if (!isValidInputs(montoStr, numeroReferencia)) {
+            return;
+        }
+        double monto = Double.parseDouble(montoStr);
+        if (monto <= 0) {
+            EstiloGral.ShowMessage("Ingrese un monto mayor a 0", EstiloGral.ERROR_MESSAGE);
+            return;
+        }
+
+        double nuevoSaldo = monto + persistenciaManager.getSaldoFromCedula(cedula);
+        //persistenciaManager.recargarSaldo(cedula, nuevoSaldo);
+        EstiloGral.ShowMessage("Recarga exitosa. Nuevo saldo: " + nuevoSaldo, EstiloGral.SUCCESS_MESSAGE);
+        menuView.hideRecharge();
+        menuView.updateSaldo(nuevoSaldo);            
+    }
+
+
+    public boolean isAllNumbers(String str) {
+        return str != null && str.matches("\\d+(\\.\\d+)?");
     }
 }
