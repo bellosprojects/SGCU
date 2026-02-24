@@ -1,8 +1,12 @@
 package com.comedor.view;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Font;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-public class EstiloGral {
+public abstract class EstiloGral {
     
     public static final Color BG_COLOR = new Color(248, 248, 248);
     public static final Color LIGHT_COLOR = new Color(200, 200, 200);
@@ -15,16 +19,20 @@ public class EstiloGral {
     public static final Color GREY_COLOR = new Color(100, 100, 100);
     public static final Color TRANSPARENT_COLOR = new Color(0, 0, 0, 0);
     public static final Color WHITE_TRANSP_COLOR = new Color(255, 255, 255, 100);
+    public static final Color WHITE_TRANSP_COLOR2 = new Color(255, 255, 255, 20);
     public static final Color BLACK_TRANSP_COLOR = new Color(0, 0, 0, 150);
     public static final Color ERROR_COLOR = new Color(248, 10, 3);
     public static final Color BUTTON_COLOR = new Color(158, 10, 34);
 
     public static final Font LABEL_FONT = new Font("SansSerif", Font.PLAIN, 25);
+    public static final Font LABEL_BOLD_FONT = new Font("SansSerif", Font.BOLD, 25);
     public static final Font TITLE_FONT = new Font("SansSerif", Font.BOLD, 60);
     public static final Font INPUT_FONT = new Font("SansSerif", Font.PLAIN, 28);
     public static final Font MIDDLE_FONT = new Font("SansSerif", Font.BOLD, 32);
+    public static final Font MIDDLE_FONT2 = new Font("SansSerif", Font.BOLD, 40);
     public static final Font SMALL_FONT = new Font("SansSerif", Font.PLAIN, 17);
     public static final Font SMALL_BOLD_FONT = new Font("SansSerif", Font.BOLD, 17);
+    public static final Font CLOCK_FONT = new Font("Consolas", Font.BOLD, 45);
 
     public static final Cursor HOVER_CURSOR = new Cursor(Cursor.HAND_CURSOR);
 
@@ -50,5 +58,10 @@ public class EstiloGral {
         toastMessaje = new ToastMessage(texto, color);
         toastMessaje.setVisible(true);
         toastMessaje.fadeIn();
+    }
+
+    public static String getImgPath(String cedula){
+        Path path = Paths.get("src/main/java/com/comedor/database/images", cedula + ".jpg");
+        return path.toString();
     }
 }

@@ -1,15 +1,32 @@
 package com.comedor.view;
 
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.Timer;
 
 import com.comedor.view.components.GradientPanelRedondeado;
 import com.comedor.view.components.ImagePanel;
 import com.comedor.view.components.SuperBoton;
 
-import java.awt.*;
-import java.awt.event.*;
+import aura.components.AuraWindow;
 
-public class GestionarCCBView extends JFrame {
+public class GestionarCCBView extends AuraWindow {
     
     private JTextField costosFijosInput;
     private JTextField costosVariablesInput;
@@ -22,7 +39,7 @@ public class GestionarCCBView extends JFrame {
     private JLabel CCBActual;
 
     public GestionarCCBView(){
-        setTitle("Gestionar CCB - SGCU");
+        super("Gestionar CCB - SGCU");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLocationRelativeTo(null);

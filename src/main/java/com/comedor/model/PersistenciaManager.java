@@ -1,81 +1,103 @@
 package com.comedor.model;
-import java.nio.file.*;
 import java.io.IOException;
-import java.util.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.List;
 
 import com.comedor.model.Menu.TipoMenu;
+import com.comedor.utils.ModelUtils;
 import com.comedor.view.EstiloGral;
-public class PersistenciaManager {
-    private final Path ruta = Path.of("C:", "SGCU", "data");
-    private final Path rutaArchivo = ruta.resolve("UsuariosRegistrados.txt");
-    private final Path rutaMenuDesayuno = ruta.resolve("Desayuno.txt");
-    private final Path rutaMenuAlmuerzo = ruta.resolve("Almuerzo.txt");
-    private final Path rutaImagenesPath = Path.of("C:", "SGCU", "imagenes");
-    private final Path rutaDataUCV= ruta.resolve("UCVDataBase.txt");
-    private final Path rutaTarifas= ruta.resolve("Tarifas.txt");
-    private final String SEPARADOR = "<>";
-    public static final int CEDULA_INDEX = 0;
-    public static final int ROLE_INDEX = 1;
-    public static final int ROLE_TARIFA_INDEX = 0;
-    public static final int PRECIO_TARIFA_INDEX = 1;
 
+public class PersistenciaManager {
+
+    private final Path localDir = Path.of("C:", "SGCU", "data");
+
+    private final Path usersFile = localDir.resolve("UsuariosRegistrados.json");
+    private final Path desayunoFile = localDir.resolve("Desayuno.json");
+    private final Path almuerzoFile = localDir.resolve("Almuerzo.json");
+    private final Path pricesFile = localDir.resolve("Tarifas.json");
+
+    private final Path UCVDataBase = Paths.get("src/main/java/com/comedor/database","users.json");
+
+    public static final String SEPARATOR = "<>";
     
     public PersistenciaManager(){
-        crearDirectorios();
-        if(!Files.exists(rutaArchivo)){
-            crearUsuariosRegistrados();
-        }
-        if(!Files.exists(rutaTarifas)){
-            crearTarifa();
-        }
+        createLocalData();
     }
 
     public void crearUsuariosRegistrados(){
         try {
-            Files.createFile(rutaArchivo);
+            Files.createFile(usersFile);
         } catch (IOException e) {
             EstiloGral.ShowMessage("Hubo un error al crear el archivo de usuarios registrados", EstiloGral.INFO_MESSAGE);
         }
     }
 
-    private void crearDirectorios() {
+    private void createLocalData() {
+
+        //Crear directorio local
         try {
-            Files.createDirectories(ruta);
-            Files.createDirectories(rutaImagenesPath);
+            Files.createDirectories(localDir);
         } catch (IOException e) {
             EstiloGral.ShowMessage("Hubo un error al crear directorios" + e.getMessage(), EstiloGral.INFO_MESSAGE);
         }
+
+        //Crear archivos locales
+        if(!Files.exists(usersFile)){
+            crearUsuariosRegistrados();
+        }
+        if(!Files.exists(pricesFile)){
+            crearTarifa();
+        }
+
     }
 
     private void crearTarifa(){
-        String tarifaTrabajador = "Trabajador" + SEPARADOR + "0.0";
-        String tarifaEstudiante = "Estudiante" + SEPARADOR + "0.0";
-        String tarifaProfesor = "Profesor" + SEPARADOR + "0.0";
-        String CCB= "0.0";
+
+        String initialPrices = new Prices().toJson();
+
         try {
-            Files.writeString(rutaTarifas, CCB + System.lineSeparator() + tarifaTrabajador + System.lineSeparator() + tarifaEstudiante + System.lineSeparator() + tarifaProfesor, 
-            java.nio.charset.StandardCharsets.UTF_8,
-            StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
+            Files.writeString(
+                pricesFile, initialPrices, 
+                java.nio.charset.StandardCharsets.UTF_8
+            );
         } catch (IOException e) {
             EstiloGral.ShowMessage("Hubo un error en el archivo del CCB", EstiloGral.INFO_MESSAGE);
         }
+
     }
 
     public void guardarTarifa(Double tarifaFinal, String role){
+
         try{
-            if(Files.exists(rutaTarifas)){                                                                             //evalua si el archivo existe
-                List<String> lineas = Files.readAllLines(rutaTarifas, java.nio.charset.StandardCharsets.UTF_8);        //crea una lista con todas las lineas del archivo
-                for(int i=1; i<lineas.size(); i++){                           //recorre todas las lineas del archivo                                  
-                    String linea = lineas.get(i);                             //obtiene la linea i
-                    String[] partes = linea.split(SEPARADOR);                      //divide la linea en partes separadas por <>
-                    if(partes[ROLE_TARIFA_INDEX].equals(role)){                             //si la primera parte coincide con la cedula retorna el dato solicitado
-                        String nuevaLinea = role + SEPARADOR + tarifaFinal; // Crea la nueva línea con el nuevo precio
-                        lineas.set(i, nuevaLinea); // Reemplaza la línea antigua con la nueva
-                        Files.write(rutaTarifas, lineas, java.nio.charset.StandardCharsets.UTF_8); // Escribe todas las líneas de nuevo en el archivo
-                        return;
-                    }
+
+            if(Files.exists(pricesFile)){                                                                             //evalua si el archivo existe
+                List<String> lineas = Files.readAllLines(pricesFile, java.nio.charset.StandardCharsets.UTF_8);        //crea una lista con todas las lineas del archivo
+                Prices prices = new Prices();
+                prices.fromJSON(lineas.get(0));
+
+                switch (role) {
+                    case "Estudiante":
+                        prices.setEstudiante(tarifaFinal);
+                        break;
+                    case "Profesor":
+                        prices.setProfesor(tarifaFinal);
+                        break;
+                    case "Trabajador":
+                        prices.setTrabajador(tarifaFinal);
+                        break;
+                    default:
+                        break;
                 }
+
+                lineas.clear();
+                lineas.add(prices.toJson());
+
+                Files.write(pricesFile, lineas, java.nio.charset.StandardCharsets.UTF_8);
             }
+
         } catch (IOException e){ 
             EstiloGral.ShowMessage("Hubo un error al guardar en el archivo del CCB", EstiloGral.INFO_MESSAGE);
         }
@@ -83,15 +105,17 @@ public class PersistenciaManager {
 
     public Double getPorcentajeFromRole(String role){
         try{
-            if(Files.exists(rutaTarifas)){                                    //evalua si el archivo existe
-                List<String> lineas = Files.readAllLines(rutaTarifas, java.nio.charset.StandardCharsets.UTF_8);        //crea una lista con todas las lineas del archivo
-                for(int i=1; i<lineas.size(); i++){                           //recorre todas las lineas del archivo                                  
-                    String linea = lineas.get(i);                             //obtiene la linea i
-                    String[] partes = linea.split(SEPARADOR);                      //divide la linea en partes separadas por <>
-                    if(partes[ROLE_TARIFA_INDEX].equals(role)){                             //si la primera parte coincide con la cedula retorna el dato solicitado
-                        return Double.parseDouble(partes[PRECIO_TARIFA_INDEX]);
-                    }
-                }
+            if(Files.exists(pricesFile)){                                    //evalua si el archivo existe
+                List<String> lineas = Files.readAllLines(pricesFile, java.nio.charset.StandardCharsets.UTF_8);        //crea una lista con todas las lineas del archivo
+                Prices prices = new Prices();
+                prices.fromJSON(lineas.get(0));
+
+                return switch(role){
+                    case "Estudiante" -> prices.getEstudiante();
+                    case "Profesor" -> prices.getProfesor();
+                    case "Trabajador" -> prices.getTrabajador();
+                    default -> 0.0;
+                };
             }
         } catch (IOException e){ 
             EstiloGral.ShowMessage("Hubo un error al leer el archivo de CCB", EstiloGral.INFO_MESSAGE);
@@ -101,11 +125,16 @@ public class PersistenciaManager {
 
     public void guardarCCB(Double CCB){
         try{
-            if(Files.exists(rutaTarifas)){                                                                             //evalua si el archivo existe
-                List<String> lineas = Files.readAllLines(rutaTarifas, java.nio.charset.StandardCharsets.UTF_8);        //crea una lista con todas las lineas del archivo
-                String nuevaLinea = CCB.toString(); // Crea la nueva línea con el nuevo precio
-                lineas.set(0, nuevaLinea); // Reemplaza la línea antigua con la nueva
-                Files.write(rutaTarifas, lineas, java.nio.charset.StandardCharsets.UTF_8); // Escribe todas las líneas de nuevo en el archivo
+            if(Files.exists(pricesFile)){                                                                             //evalua si el archivo existe
+                List<String> lineas = Files.readAllLines(pricesFile, java.nio.charset.StandardCharsets.UTF_8);        //crea una lista con todas las lineas del archivo
+                Prices prices = new Prices();
+                prices.fromJSON(lineas.get(0));
+
+                prices.setCCB(CCB);
+                lineas.clear();
+                lineas.add(prices.toJson());
+                Files.write(pricesFile, lineas, java.nio.charset.StandardCharsets.UTF_8);
+
             }
         } catch (IOException e){ 
             EstiloGral.ShowMessage("Hubo un error al guardar en el archivo del CCB", EstiloGral.INFO_MESSAGE);
@@ -114,9 +143,10 @@ public class PersistenciaManager {
 
     public Double getCCB(){
         try{
-            List<String> lineas = Files.readAllLines(rutaTarifas, java.nio.charset.StandardCharsets.UTF_8);        //crea una lista con todas las lineas del archivo
-            String linea = lineas.get(0);                             
-            return Double.parseDouble(linea);
+            List<String> lineas = Files.readAllLines(pricesFile, java.nio.charset.StandardCharsets.UTF_8);        //crea una lista con todas las lineas del archivo
+            Prices prices = new Prices();
+            prices.fromJSON(lineas.get(0));
+            return prices.getCCB();
         }
         catch (IOException e){ 
             EstiloGral.ShowMessage("Hubo un error al leer en el archivo del CCB", EstiloGral.INFO_MESSAGE);
@@ -124,107 +154,123 @@ public class PersistenciaManager {
         return 0.0;
     }
 
-    public Boolean isUserInDataBase(String cedula, String role){
+    public boolean isUserInDataBase(String cedula, String role){
         try{                             //evalua si el archivo existe
-            List<String> lineas = Files.readAllLines(rutaDataUCV, java.nio.charset.StandardCharsets.UTF_8);        //crea una lista con todas las lineas del archivo
-            for(int i=0; i<lineas.size(); i++){                           //recorre todas las lineas del archivo                                  
-                String linea = lineas.get(i);                             //obtiene la linea i
-                String[] partes = linea.split(SEPARADOR);                      //divide la linea en partes separadas por <>
-                if(partes[CEDULA_INDEX].equals(cedula) && partes[ROLE_INDEX].equals(role)){                             //si la primera parte coincide con la cedula retorna el dato solicitado
-                    return true;   
+            List<String> lineas = Files.readAllLines(UCVDataBase, java.nio.charset.StandardCharsets.UTF_8);        //crea una lista con todas las lineas del archivo
+            for(String line : lineas){
+                User user = new User();
+                user.fromJSON(line);
+
+                if(user.getCedula().equals(cedula)){
+                    return user.getRole().equals(role);
                 }
             }
+
         } catch (IOException e){ 
             EstiloGral.ShowMessage("Hubo un error al obtener el dato", EstiloGral.INFO_MESSAGE);                   
         }
         return false;                 
     }
 
-    public void guardarUsuario(User user, String imagePath){
-    String newUser= user.getNombres()+SEPARADOR+user.getCedula()+SEPARADOR+user.getPassword()+SEPARADOR+user.getEmail()+SEPARADOR+user.getFacultadSeleccionada()+SEPARADOR+user.getSaldo()+SEPARADOR+user.getRole();
+    public void guardarUsuario(User user){
+        
         if(isCedulaRegistered(user.getCedula()) || !isUserInDataBase(user.getCedula(), user.getRole())){
             return;
         }
         
-        if (imagePath != null && !imagePath.isEmpty()) {
-        try {
-            Path origen = Path.of(imagePath);    //se copia la ruta de la imagen en un path
-            Path destino = rutaImagenesPath.resolve(user.getCedula() + ".jpg");         //se crea un nuevo path con la ruta de imagenes y el nombre de la cedula con la extension jpg
-            Files.copy(origen, destino, StandardCopyOption.REPLACE_EXISTING);
-            
-        } catch (IOException e) {
-            EstiloGral.ShowMessage("Hubo un error al guardar la imagen", EstiloGral.INFO_MESSAGE);  
-        }
-        }
+        String newUser = user.toJson();
+        //Guardarlo
         try{
-            Files.writeString(rutaArchivo, newUser + System.lineSeparator(), 
+
+            Files.writeString(usersFile, newUser + System.lineSeparator(), 
             java.nio.charset.StandardCharsets.UTF_8,
             StandardOpenOption.APPEND, StandardOpenOption.CREATE);
+
         } catch (IOException e) {
             EstiloGral.ShowMessage("Hubo un error al guardar el usuario", EstiloGral.INFO_MESSAGE);  
         }
     }
+          
+    private User getUserFromCedula(String cedula){ 
+        
+        try {
+            
+            List<String> lineas = Files.readAllLines(usersFile, java.nio.charset.StandardCharsets.UTF_8);
+            for(String line : lineas){
+                User user = new User();
+                user.fromJSON(line);
 
-    private String getUserDataFromCedula(String cedula, int index){
-        try{
-            if(Files.exists(rutaArchivo)){                                    //evalua si el archivo existe
-                List<String> lineas = Files.readAllLines(rutaArchivo, java.nio.charset.StandardCharsets.UTF_8);        //crea una lista con todas las lineas del archivo
-                for(int i=0; i<lineas.size(); i++){                           //recorre todas las lineas del archivo                                  
-                    String linea = lineas.get(i);                             //obtiene la linea i
-                    String[] partes = linea.split(SEPARADOR);                      //divide la linea en partes separadas por <>
-                    if(partes[1].equals(cedula)){                             //si la primera parte coincide con la cedula retorna el dato solicitado
-                        //System.out.println("DATO" + partes[index]);
-                        return partes[index];   
-                    }
+                if(user.getCedula().equals(cedula)){
+                    return user;
                 }
             }
-        } catch (IOException e){ 
-            EstiloGral.ShowMessage("Hubo un error al obtener el dato", EstiloGral.INFO_MESSAGE);                 //caso error
+
+        } catch (IOException e) {
+            EstiloGral.ShowMessage("Hubo un error al cargar el usuario", EstiloGral.INFO_MESSAGE);  
         }
-        return null;                 //return null si no se encuentra la cedula
-    }
-          
-    public User getUserFromCedula(String cedula){ 
-        return new User(getUserDataFromCedula(cedula, User.NOMBRE_INDEX),
-        getUserDataFromCedula(cedula, User.CEDULA_INDEX),
-        getUserDataFromCedula(cedula, User.PASSWORD_INDEX),
-        getUserDataFromCedula(cedula, User.EMAIL_INDEX),
-        getUserDataFromCedula(cedula, User.FACULTAD_INDEX),
-        Double.parseDouble(getUserDataFromCedula(cedula, User.SALDO_INDEX)),   
-        getUserDataFromCedula(cedula, User.ROLE_INDEX) 
-        );
+
+        return null;
     }
 
-    private String getPasswordFromCedula(String cedula){                
-            return getUserDataFromCedula(cedula, User.PASSWORD_INDEX);
+    private String getPasswordFromCedula(String cedula){     
+        User user = getUserFromCedula(cedula);
+        if(user == null){
+            return null; 
+        }          
+        return getUserFromCedula(cedula).getPassword();
     }
 
-    public String getRoleFromCedula(String cedula) {                  
-        return getUserDataFromCedula(cedula,User.ROLE_INDEX);
+    public String getRoleFromCedula(String cedula) {   
+        User user = getUserFromCedula(cedula);
+        if(user == null){
+            return null; 
+        }                 
+        return getUserFromCedula(cedula).getRole();
     }
 
-    public Double getSaldoFromCedula(String cedula) {                  
-        return Double.parseDouble(getUserDataFromCedula(cedula,User.SALDO_INDEX));
+    public String getNameFromCedula(String cedula) {   
+        User user = getUserFromCedula(cedula);
+        if(user == null){
+            return null; 
+        }                 
+        return getUserFromCedula(cedula).getNombres();
     }
 
-    public boolean isCedulaRegistered(String cedula){                 
-        return getUserDataFromCedula(cedula,User.CEDULA_INDEX) != null; 
+    public Double getSaldoFromCedula(String cedula) {    
+        User user = getUserFromCedula(cedula);
+        if(user == null){
+            return null; 
+        }                
+        return getUserFromCedula(cedula).getSaldo();
+    }
+
+    public boolean isCedulaRegistered(String cedula){       
+        User user = getUserFromCedula(cedula);
+        return user != null;
     }
 
     public boolean autenticar(String cedula, String password){
-        boolean cedulaExists = isCedulaRegistered(cedula);
-        String storedPassword = getPasswordFromCedula(cedula);
-        return cedulaExists && storedPassword.equals(password);
+
+        try {
+            boolean cedulaExists = isCedulaRegistered(cedula);
+            String storedPassword = getPasswordFromCedula(cedula);
+            return cedulaExists && storedPassword.equals(ModelUtils.encriptar(password));
+        } catch (Exception e) {
+            EstiloGral.ShowMessage("Hubo un error al autenticar el usuario", EstiloGral.INFO_MESSAGE);
+        }
+
+        return false;
     }
 
-    public void guardarMenu(String nombre, String ingredientes, TipoMenu tipo, String fecha){
-        String menuString = nombre + SEPARADOR + ingredientes + SEPARADOR + fecha;
-        Path rutaDestino = (tipo == TipoMenu.DESAYUNO) ? rutaMenuDesayuno : rutaMenuAlmuerzo;
+    public void guardarMenu(Menu menu){
+
+        String menuStr = menu.toJson();
+        Path rutaDestino = (menu.getTipo() == TipoMenu.DESAYUNO) ? desayunoFile : almuerzoFile;
 
         try {
             Files.writeString(
                 rutaDestino, 
-                menuString + System.lineSeparator(), 
+                menuStr + System.lineSeparator(), 
                 StandardOpenOption.TRUNCATE_EXISTING, 
                 StandardOpenOption.CREATE
             );
@@ -234,32 +280,34 @@ public class PersistenciaManager {
     }
 
     public Menu getMenu(TipoMenu tipo){
-        Menu menu = new Menu(null, null, tipo, null);
         try{
-            Path ruta = (tipo == TipoMenu.DESAYUNO) ? rutaMenuDesayuno : rutaMenuAlmuerzo;
+            Path ruta = (tipo == TipoMenu.DESAYUNO) ? desayunoFile : almuerzoFile;
             if(Files.exists(ruta)){                                    //evalua si el archivo existe
                 List<String> lineas = Files.readAllLines(ruta);        //crea una lista con todas las lineas del archivo
                 if(!lineas.isEmpty()){
                     String linea = lineas.get(0);                             
-                    String[] partes = linea.split(SEPARADOR);                      //divide la linea en partes separadas por <>
-                    
-                    menu = new Menu(partes[0], partes[1], tipo, partes[2]);
+                    Menu menu = new Menu();
+                    menu.fromJson(linea);
+                    return menu;
                 }
             }
         } catch (IOException e){ 
             EstiloGral.ShowMessage("Hubo un error al leer del archivo del Menu", EstiloGral.INFO_MESSAGE);
-    }
-    return menu;
+        }
+        return null;
     }
 
-    public String getRoleFromCedulaInDataBase(String cedula){
+    public User getUserFromCedulaInDataBase(String cedula){
+
+        
         try{                             //evalua si el archivo existe
-            List<String> lineas = Files.readAllLines(rutaDataUCV, java.nio.charset.StandardCharsets.UTF_8);        //crea una lista con todas las lineas del archivo
-            for(int i=0; i<lineas.size(); i++){                           //recorre todas las lineas del archivo
-                String linea = lineas.get(i);                             //obtiene la linea i
-                String[] partes = linea.split(SEPARADOR);                      //divide la linea en partes separadas por <>
-                if(partes[CEDULA_INDEX].equals(cedula)){                             //si la primera parte coincide con la cedula retorna el dato solicitado
-                    return partes[ROLE_INDEX];
+            List<String> lineas = Files.readAllLines(UCVDataBase, java.nio.charset.StandardCharsets.UTF_8);        //crea una lista con todas las lineas del archivo
+            for(String line : lineas){
+                User user = new User();
+                user.fromJSON(line);
+
+                if(user.getCedula().equals(cedula)){
+                    return user;
                 }
             }
         } catch (IOException e){ 

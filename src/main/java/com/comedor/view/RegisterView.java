@@ -1,440 +1,393 @@
 package com.comedor.view;
 
-import javax.swing.*;
+import com.comedor.model.User;
 
-import com.comedor.view.components.*;
+import aura.animations.AnimateBackground;
+import aura.animations.AnimateShake;
+import aura.components.AuraButton;
+import aura.components.AuraImage;
+import aura.components.AuraInput;
+import aura.components.AuraSpacer;
+import aura.components.AuraText;
+import aura.components.AuraWindow;
+import aura.core.AuraBox;
+import aura.layouts.AuraColumn;
+import aura.layouts.AuraGrid;
+import aura.layouts.AuraRow;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.File;
+public class RegisterView extends AuraWindow {
 
-public class RegisterView extends JFrame {
-
-    private JTextField usernameInput;
-    private JTextField emailInput;
-    private JTextField cedulaInput;
-    private JComboBox <String>facultadSelect;
-    private JPasswordField passInput;
-    private JPasswordField confirmPassInput;
-    private JButton registerButton;
-    private JButton backButton;
-    private JButton profileImagFileChooser;
-    private String profileImagePath;
-    private JLabel imageContainer;
-    private JComboBox <String> rolSelect;
+    private String imagePath;
 
     public RegisterView() {
-        
-        setTitle("Registro - SGCU");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setLocationRelativeTo(null);
-        setResizable(false);
-        setIconImage(cargarIcono("/images/logoColor.png", 100, 100, false).getImage());
-        setLayout(new BorderLayout());
+        super("SGCU - Registro");
 
-        JPanel mainPanel = new ImagePanel(cargarIcono("/images/comedor.png", 1920, 1080, false).getImage());
-        mainPanel.setLayout(new BorderLayout());
+        fullScreen()
+        .noResizable()
+        .background(new AuraImage(getResourcePath("/images/comedor.png")))
+        .icon(new AuraImage(getResourcePath("/images/logoColor.png")));
 
-        JPanel header = new JPanel(new GridBagLayout());
-        GridBagConstraints headerGbc = new GridBagConstraints();
-        headerGbc.gridx = 0;
-        headerGbc.gridy = 0;
-        headerGbc.anchor = GridBagConstraints.WEST;
-        headerGbc.insets = new Insets(0, 40, 20, 20);
-        header.setOpaque(false);
+        insert(
+            new AuraColumn()
+                .fillParent()
+                .content(column -> {
 
-        JLabel titleLabel = new JLabel("SGCU - Registro"); 
-        titleLabel.setFont(EstiloGral.TITLE_FONT);
-        titleLabel.setForeground(EstiloGral.BG_COLOR);
+                    column.insert(
+                        new AuraRow()
+                            .gap(40)
+                            .alignSelf(AuraColumn.Alignment.LEFT)
+                            .padding(10, 40, 0, 0)
+                            .content(row -> {
+                                row.insert(
+                                    new AuraImage(getResourcePath("/images/logoWhite.png"))
+                                        .size(200, 200)
+                                );
 
-        JLabel logoIcon = new JLabel(cargarIcono("/images/logoWhite.png", 200, 200, false));
+                                row.insert(
+                                    new AuraText("SGCU - Registro")
+                                        .font(EstiloGral.TITLE_FONT)
+                                        .textColor(EstiloGral.BG_COLOR)
+                                );
+                            })
+                    );
 
-        header.add(logoIcon, headerGbc);
-        headerGbc.gridx++;
-        header.add(titleLabel, headerGbc);
-        mainPanel.add(header, BorderLayout.NORTH);
+                    column.insert(
+                        new AuraText("Ingresa tu Cedula")
+                                .alignSelf(AuraColumn.Alignment.LEFT)
+                                .font(EstiloGral.LABEL_FONT)
+                                .textColor(EstiloGral.BG_COLOR)
+                                .margin(100, 250, 10, 0)
+                    );
 
-        headerGbc.gridx++;
-        headerGbc.weightx = 1.0;
-        header.add(Box.createHorizontalGlue(), headerGbc);
+                    column.insert(
+                        new AuraRow()
+                            .gap(40)
+                            .fillWidth()
+                            .margin(0,200,0,0)
+                            .content(cedulaRow -> {
 
-        JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setOpaque(false);
-        GridBagConstraints centerGbc = new GridBagConstraints();
-        centerGbc.gridx = 0;
-        centerGbc.gridy = 0;
-        centerGbc.anchor = GridBagConstraints.SOUTHWEST;
-        centerGbc.insets = new Insets(5, 40, 0, 10);
+                                cedulaRow.insert(
+                                    new AuraInput()
+                                        .weight(0.5f)
+                                        .padding(15)
+                                        .radius(15)
+                                        .font(EstiloGral.INPUT_FONT)
+                                        .background(EstiloGral.WHITE_TRANSP_COLOR)
+                                        .info(createInfo("Cedula sin puntos Ej: 12345678"), 1, 0, 1, 1)
+                                        .id("cedula")
+                                );
 
-        JLabel cedulaLabel = new JLabel("CEDULA");
-        cedulaLabel.setFont(EstiloGral.LABEL_FONT);
-        cedulaLabel.setForeground(EstiloGral.BG_COLOR);
-        cedulaLabel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
-        formPanel.add(cedulaLabel, centerGbc);
-        centerGbc.gridy++;
+                                cedulaRow.insert(
+                                    new AuraButton("Buscar")
+                                        .font(EstiloGral.MIDDLE_FONT)
+                                        .textColor(EstiloGral.BG_COLOR)
+                                        .background(EstiloGral.BUTTON_COLOR)
+                                        .radius(15)
+                                        .fillHeight()
+                                        .id("findUser")
+                                );
 
-        JPanel inputCedulaPanel = new GradientPanelRedondeado(10, 0, EstiloGral.WHITE_TRANSP_COLOR);
-        cedulaInput = new JTextField(22);
-        cedulaInput.setFont(EstiloGral.INPUT_FONT);
-        cedulaInput.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        cedulaInput.setOpaque(false);
-        inputCedulaPanel.add(cedulaInput);
-        formPanel.add(inputCedulaPanel, centerGbc);
-        
-        centerGbc.gridy++;
-        JLabel usernameLabel = new JLabel("NOMBRE Y APELLIDO");
-        usernameLabel.setFont(EstiloGral.LABEL_FONT);
-        usernameLabel.setForeground(EstiloGral.BG_COLOR);
-        usernameLabel.setBorder(BorderFactory.createEmptyBorder(40, 20, 0, 0));
-        formPanel.add(usernameLabel, centerGbc);
+                                cedulaRow.insert(
+                                    new AuraSpacer()
+                                );
 
-        centerGbc.gridy++;
-        JPanel inputUsernamePanel = new GradientPanelRedondeado(10, 0, EstiloGral.WHITE_TRANSP_COLOR);
-        usernameInput = new JTextField(22);
-        usernameInput.setFont(EstiloGral.INPUT_FONT);
-        usernameInput.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        usernameInput.setOpaque(false);
-        inputUsernamePanel.add(usernameInput);
-        formPanel.add(inputUsernamePanel, centerGbc);
+                            })
+                    );
 
-        centerGbc.gridy++;
-        JLabel passLabel = new JLabel("CONTRASEÑA");
-        passLabel.setFont(EstiloGral.LABEL_FONT);
-        passLabel.setForeground(EstiloGral.BG_COLOR);
-        passLabel.setBorder(BorderFactory.createEmptyBorder(40, 20, 0, 0));
-        formPanel.add(passLabel, centerGbc);
 
-        centerGbc.gridy++;
-        JPanel inputPassPanel = new GradientPanelRedondeado(10, 0, EstiloGral.WHITE_TRANSP_COLOR);
-        passInput = new JPasswordField(22);
-        passInput.setFont(EstiloGral.INPUT_FONT);
-        passInput.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        passInput.setOpaque(false);
-        inputPassPanel.add(passInput);
-        formPanel.add(inputPassPanel, centerGbc);
+                     column.insert(
+                        new AuraRow()
+                            .fillWidth()
+                            .margin(50,200)
+                            .content(dataInfo -> {
+                                dataInfo.insert(
+                                    new AuraGrid(2, 3)
+                                        .weight(1f)
+                                        .alignSelf(AuraRow.Alignment.BOTTOM)
+                                        .gap(40)
+                                        .margin(0,0,0,80)
+                                        .content(gridInfo -> {
+                                            gridInfo.insert(
+                                                new AuraColumn()
+                                                    .gap(10)
+                                                    .colSpan(2)
+                                                    .content(usernameCol -> {
+                                                        usernameCol.insert(
+                                                            new AuraText("Nombre")
+                                                                .font(EstiloGral.LABEL_FONT)
+                                                                .textColor(EstiloGral.BG_COLOR)
+                                                                .margin(0,50,0,0)
+                                                                .alignSelf(AuraColumn.Alignment.LEFT)
+                                                                .id("usernameLabel")
+                                                        );
 
-        centerGbc.gridy++;
-        JLabel rolLabel = new JLabel("ROL");
-        rolLabel.setFont(EstiloGral.LABEL_FONT);
-        rolLabel.setForeground(EstiloGral.BG_COLOR);
-        rolLabel.setBorder(BorderFactory.createEmptyBorder(40, 20, 0, 0));
-        formPanel.add(rolLabel, centerGbc);
+                                                        usernameCol.insert(
+                                                            new AuraText(" ")
+                                                                .font(EstiloGral.INPUT_FONT)
+                                                                .fillWidth()
+                                                                .background(EstiloGral.WHITE_TRANSP_COLOR)
+                                                                .padding(15)
+                                                                .radius(15)
+                                                                .id("username")
+                                                        );
 
-        centerGbc.gridy++;
-        JPanel rolPanel = new GradientPanelRedondeado(10, 0, EstiloGral.WHITE_TRANSP_COLOR);
-        String[] roles = {"Estudiante","Profesor","Trabajador","Admin"};
-        rolSelect = new JComboBox<String>(roles);
-        rolSelect.setFont(EstiloGral.INPUT_FONT);
-        rolSelect.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        rolSelect.setOpaque(false);
-        rolSelect.setFocusable(true);
-        rolSelect.setBackground(EstiloGral.BG_COLOR);
-        rolSelect.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-        rolSelect.setForeground(EstiloGral.DARK_COLOR);
-        rolPanel.add(rolSelect);
-        formPanel.add(rolPanel, centerGbc);
+                                                        AuraInput emailInput = new AuraInput()
+                                                                                .font(EstiloGral.INPUT_FONT)
+                                                                                .fillWidth()
+                                                                                .background(EstiloGral.WHITE_TRANSP_COLOR)
+                                                                                .padding(15)
+                                                                                .radius(15)
+                                                                                .id("email");
 
-        centerGbc.gridy=0;
-        centerGbc.gridx++;
+                                                        emailInput.setVisible(false);
 
-        JLabel emailLabel = new JLabel("EMAIL");
-        emailLabel.setFont(EstiloGral.LABEL_FONT);
-        emailLabel.setForeground(EstiloGral.BG_COLOR);
-        emailLabel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
-        formPanel.add(emailLabel, centerGbc);
+                                                        usernameCol.insert(
+                                                            emailInput
+                                                        );
+                                                    })
+                                            );
 
-        centerGbc.gridy++;
-        JPanel inputEmailPanel = new GradientPanelRedondeado(10, 0, EstiloGral.WHITE_TRANSP_COLOR);
-        emailInput = new JTextField(22);
-        emailInput.setFont(EstiloGral.INPUT_FONT);
-        emailInput.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        emailInput.setOpaque(false);
-        inputEmailPanel.add(emailInput);
-        formPanel.add(inputEmailPanel, centerGbc);
+                                            gridInfo.insert(
+                                                new AuraSpacer()
+                                            );
 
-        centerGbc.gridy++;
-        JLabel facultadLabel = new JLabel("FACULTAD");
-        facultadLabel.setFont(EstiloGral.LABEL_FONT);
-        facultadLabel.setForeground(EstiloGral.BG_COLOR);
-        facultadLabel.setBorder(BorderFactory.createEmptyBorder(40, 20, 0, 0));
-        formPanel.add(facultadLabel, centerGbc);
+                                            gridInfo.insert(
+                                                new AuraColumn()
+                                                    .gap(10)
+                                                    .content(facuCol -> {
+                                                        facuCol.insert(
+                                                            new AuraText("Facultad")
+                                                                .font(EstiloGral.LABEL_FONT)
+                                                                .textColor(EstiloGral.BG_COLOR)
+                                                                .margin(0,50,0,0)
+                                                                .alignSelf(AuraColumn.Alignment.LEFT)
+                                                                .id("facuLabel")
+                                                        );
 
-        centerGbc.gridy++;
-        JPanel selectFacultadPanel = new GradientPanelRedondeado(10, 0, EstiloGral.WHITE_TRANSP_COLOR);
-        String[] facultades = {"Agronomía", "Arquitectura y Urbanismo", "Ciencias", "Ciencias económicas y sociales", "Ciencias jurídicas y políticas", "Ciencias veterinarias", "Farmacia", "Humanidades y educación", "Ingieneria", "Medicina", "Odontología"};
-        facultadSelect = new JComboBox<>(facultades);
-        facultadSelect.setFont(EstiloGral.INPUT_FONT);
-        facultadSelect.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        facultadSelect.setOpaque(false);
-        facultadSelect.setFocusable(true);
-        facultadSelect.setBackground(EstiloGral.BG_COLOR);
-        facultadSelect.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-        facultadSelect.setForeground(EstiloGral.DARK_COLOR);
-        selectFacultadPanel.add(facultadSelect);
-        formPanel.add(selectFacultadPanel, centerGbc);
+                                                        AuraInput passwordInput = new AuraInput()
+                                                                                .font(EstiloGral.INPUT_FONT)
+                                                                                .fillWidth()
+                                                                                .background(EstiloGral.WHITE_TRANSP_COLOR)
+                                                                                .padding(15)
+                                                                                .radius(15)
+                                                                                .id("password");
 
-        centerGbc.gridy++;
-        JLabel confirmPassLabel = new JLabel("CONFIRMAR CONTRASEÑA");
-        confirmPassLabel.setFont(EstiloGral.LABEL_FONT);
-        confirmPassLabel.setForeground(EstiloGral.BG_COLOR);
-        confirmPassLabel.setBorder(BorderFactory.createEmptyBorder(40, 20, 0, 0));
-        formPanel.add(confirmPassLabel, centerGbc);
+                                                        passwordInput.setVisible(false);
 
-        centerGbc.gridy++;
-        GradientPanelRedondeado inputConfirmPassPanel = new GradientPanelRedondeado(10, 0, EstiloGral.WHITE_TRANSP_COLOR);
-        confirmPassInput = new JPasswordField(22);
-        confirmPassInput.setFont(EstiloGral.INPUT_FONT);
-        confirmPassInput.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        confirmPassInput.setOpaque(false);
-        inputConfirmPassPanel.add(confirmPassInput);
-        formPanel.add(inputConfirmPassPanel, centerGbc);
+                                                        facuCol.insert(
+                                                            passwordInput
+                                                        );
 
-        mainPanel.add(formPanel, BorderLayout.WEST);
+                                                        facuCol.insert(
+                                                            new AuraText(" ")
+                                                                .font(EstiloGral.INPUT_FONT)
+                                                                .fillWidth()
+                                                                .background(EstiloGral.WHITE_TRANSP_COLOR)
+                                                                .padding(15)
+                                                                .radius(15)
+                                                                .id("facultad")
+                                                        );
+                                                    })
+                                            );
 
-        JPanel imgPanel = new JPanel(new GridBagLayout());
-        imgPanel.setOpaque(false);
-        GridBagConstraints imgGbc = new GridBagConstraints();
-        imgGbc.gridx = 0;
-        imgGbc.gridy = 0;
-        imgGbc.anchor = GridBagConstraints.CENTER;
-        imgGbc.insets = new Insets(0, 0, 0, 80);
+                                            gridInfo.insert(
+                                                new AuraColumn()
+                                                    .gap(10)
+                                                    .content(roleCol -> {
+                                                        roleCol.insert(
+                                                            new AuraText("Rol")
+                                                                .font(EstiloGral.LABEL_FONT)
+                                                                .textColor(EstiloGral.BG_COLOR)
+                                                                .margin(0,50,0,0)
+                                                                .alignSelf(AuraColumn.Alignment.LEFT)
+                                                                .id("roleLabel")
+                                                        );
 
-        GradientPanelRedondeado imgIconRectangle = new GradientPanelRedondeado(20, 0, EstiloGral.WHITE_TRANSP_COLOR);
+                                                        AuraInput passwordInput = new AuraInput()
+                                                                                .font(EstiloGral.INPUT_FONT)
+                                                                                .fillWidth()
+                                                                                .background(EstiloGral.WHITE_TRANSP_COLOR)
+                                                                                .padding(15)
+                                                                                .radius(15)
+                                                                                .id("confirmPassword");
 
-        imageContainer = new JLabel(cargarIcono("/images/logoColor.png", 300, 300, false));
-        imageContainer.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+                                                        passwordInput.setVisible(false);
 
-        imgIconRectangle.add(imageContainer);
+                                                        roleCol.insert(
+                                                            passwordInput
+                                                        );
 
-        imgPanel.add(imgIconRectangle, imgGbc);
+                                                        roleCol.insert(
+                                                            new AuraText(" ")
+                                                                .font(EstiloGral.INPUT_FONT)
+                                                                .fillWidth()
+                                                                .background(EstiloGral.WHITE_TRANSP_COLOR)
+                                                                .padding(15)
+                                                                .radius(15)
+                                                                .id("role")
+                                                        );
+                                                    })
+                                            );
+                                        })
+                                );
 
-        imgGbc.gridy++;
-        imgGbc.weightx = 1.0;
+                                dataInfo.insert(
+                                    new AuraColumn()
+                                        .gap(20)
+                                        .id("imageColumn")
+                                        .content(imageCol -> {
+                                            imageCol.insert(
+                                                new AuraImage(" ")
+                                                    .size(300,300)
+                                                    .id("image")
+                                                    .radius(15)
+                                            );
+                                        })
+                                );
+                            })
+                    );
 
-        profileImagFileChooser = new JButton("SELECCIONAR");
-        profileImagFileChooser.setBackground(EstiloGral.TRANSPARENT_COLOR);
-        profileImagFileChooser.setContentAreaFilled(false);
-        profileImagFileChooser.setForeground(EstiloGral.BG_COLOR);
-        profileImagFileChooser.setFont(EstiloGral.SMALL_FONT);
-        profileImagFileChooser.setCursor(EstiloGral.HOVER_CURSOR);
-        profileImagFileChooser.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+                    column.insert(
+                        new AuraSpacer()
+                    );
 
-        imgPanel.add(profileImagFileChooser, imgGbc);
 
-        mainPanel.add(imgPanel, BorderLayout.EAST);
+                    column.insert(
+                        new AuraRow()
+                            .fillWidth()
+                            .margin(40,80)
+                            .gap(40)
+                            .content(footer -> {
 
-        JPanel footerPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        footerPanel.setOpaque(false);
+                                footer.insert(
+                                    new AuraSpacer()
+                                );
 
-        JPanel backButtonPanel = new GradientPanelRedondeado(10, 0, EstiloGral.WHITE_TRANSP_COLOR);
-        backButton = new JButton("CANCELAR");
-        backButton.setFont(EstiloGral.MIDDLE_FONT);
-        backButton.setForeground(EstiloGral.BG_COLOR);
-        backButton.setContentAreaFilled(false);
-        backButton.setBorderPainted(false);
-        backButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-        backButton.setCursor(EstiloGral.HOVER_CURSOR);
-        backButtonPanel.add(backButton);
-        footerPanel.add(backButtonPanel);
+                                footer.insert(
+                                    new AuraButton("Volver")
+                                        .background(EstiloGral.GREY_COLOR)
+                                        .font(EstiloGral.MIDDLE_FONT)
+                                        .textColor(EstiloGral.BG_COLOR)
+                                        .id("backBtn")
+                                );
 
-        GradientPanelRedondeado registerButtonPanel = new GradientPanelRedondeado(10, 20, EstiloGral.DARK_COLOR, EstiloGral.DARK_COLOR, GradientPanelRedondeado.HORIZONTAL);
-        registerButton = new JButton("REGISTRARSE");
-        registerButton.setFont(EstiloGral.MIDDLE_FONT);
-        registerButton.setForeground(EstiloGral.BG_COLOR);
-        registerButton.setContentAreaFilled(false);
-        registerButton.setBorderPainted(false);
-        registerButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-        registerButton.setCursor(EstiloGral.HOVER_CURSOR);
+                                AuraButton registerButton = new AuraButton("Registrar")
+                                                                .background(EstiloGral.BUTTON_COLOR)
+                                                                .font(EstiloGral.MIDDLE_FONT)
+                                                                .textColor(EstiloGral.BG_COLOR)
+                                                                .id("registerBtn");
 
-        registerButton.addMouseListener(new MouseAdapter() {
-           @Override
-           public void mouseEntered(MouseEvent env){
-                registerButtonPanel.setColor1(EstiloGral.BG_COLOR);
-                registerButtonPanel.setColor2(EstiloGral.GREY_COLOR);
-                registerButton.setForeground(EstiloGral.DARK_COLOR);
-           }
+                                registerButton.setVisible(false);
 
-           @Override
-           public void mouseExited(MouseEvent env){
-                registerButtonPanel.setColor1(EstiloGral.DARK_COLOR);
-                registerButtonPanel.setColor2(EstiloGral.DARK_COLOR);
-                registerButton.setForeground(EstiloGral.BG_COLOR);
-           }
-        });
+                                footer.insert(
+                                    registerButton
+                                );
 
-        registerButtonPanel.add(registerButton);
-        footerPanel.add(registerButtonPanel);
+                                footer.insert(
+                                    new AuraButton("Continuar")
+                                        .background(EstiloGral.BUTTON_COLOR)
+                                        .font(EstiloGral.MIDDLE_FONT)
+                                        .textColor(EstiloGral.BG_COLOR)
+                                        .id("nextBtn")
+                                );
+                            })
+                    );
 
-        mainPanel.add(footerPanel, BorderLayout.SOUTH);
-
-        add(mainPanel, BorderLayout.CENTER);
+                })
+        );
     }
 
-    public JTextField getCedulaInput() {
-        return cedulaInput;
+    public void setData(User user){
+        ((AuraText) find("username")).text(user.getNombres());
+        ((AuraText) find("facultad")).text(user.getFacultadSeleccionada());
+        ((AuraText) find("role")).text(user.getRole());
+        ((AuraImage) find("image")).background(new AuraImage(EstiloGral.getImgPath(user.getCedula())));
     }
 
-    public JPasswordField getPassInput() {
-        return passInput;
+
+    private static String getResourcePath(String ruta) {
+        return LoginView.class.getResource(ruta).getFile();
     }
 
-    public JPasswordField getConfirmPassInput() {
-        return confirmPassInput;
-    }
+    public void InvalidateInputs(String... ids){
 
-    public JButton getRegisterButton() {
-        return registerButton;
-    }
+        for(String id : ids){
 
-    public JButton getBackButton() {
-        return backButton;
-    }
+            AuraBox<?> component = find(id);
 
-    public JTextField getUsernameInput() {
-        return usernameInput;
-    }
+            component.background(EstiloGral.WHITE_TRANSP_COLOR);
 
-    public JTextField getEmailInput() {
-        return emailInput;
-    }
+            AnimateBackground t = new AnimateBackground(component, EstiloGral.ERROR_COLOR, 200)
+                                    .pingPong()
+                                    .cancelPrev(true);
 
-    public String getFacultadSelect() {
-        return facultadSelect.getItemAt(facultadSelect.getSelectedIndex());
-    }
+            AnimateShake t2 = new AnimateShake(component, 5, 500);
 
-    public String getProfileImagePath() {
-        return profileImagePath;
-    }
-
-    public JButton getProfileImagFileChooser() {
-        return profileImagFileChooser;
-    }
-
-    public String getRoleSelect(){
-        return rolSelect.getItemAt(rolSelect.getSelectedIndex());
-    }
-
-    public void setImagePath(String path) {
-
-        this.imageContainer.setIcon(cargarIcono(path, 300, 300, true));
-        this.profileImagePath = path;
-        this.imageContainer.revalidate();
-        this.imageContainer.repaint();
-    }
-
-    public void InvalidateInputs(Component input){
-
-        GradientPanelRedondeado target = (input.getParent() instanceof GradientPanelRedondeado) ? (GradientPanelRedondeado) input.getParent() : null;
-
-        if(target == null){
-            return;
+            t.parallel(t2).start();
         }
 
-        target.cancelTimers();
-
-        Timer shaTimer = shakeComponent(target);
-    
-        Color colorError = EstiloGral.ERROR_COLOR;
-        Color colorOriginal = target.getColor2();
-
-        target.setColor1(colorError);
-
-        Timer timer = new Timer(15, null);
-        
-        timer.addActionListener(new ActionListener() {
-            float ratio = 0.0f;
-            
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ratio += 0.02f; 
-                
-                if (ratio >= 1.0f) {
-                    target.setColor1(colorOriginal);
-                    timer.stop();
-                } else {
-                    
-                    int r = (int) (colorError.getRed() + (colorOriginal.getRed() - colorError.getRed()) * ratio);
-                    int g = (int) (colorError.getGreen() + (colorOriginal.getGreen() - colorError.getGreen()) * ratio);
-                    int b = (int) (colorError.getBlue() + (colorOriginal.getBlue() - colorError.getBlue()) * ratio);
-                    int a = (int) (colorError.getAlpha() + (colorOriginal.getAlpha() - colorError.getAlpha()) * ratio);
-                    
-                    target.setColor1(new Color(r, g, b, a));
-                }
-            }
-        });
-
-        timer.setInitialDelay(200); 
-        timer.start();
-
-        target.setTimers(timer, shaTimer);
     }
 
-    public Timer shakeComponent(Component c) {
-        Point originalLoc = c.getLocation();
-        Timer timer = new Timer(20, null);
-        timer.addActionListener(new ActionListener() {
-            int count = 0;
-            int delta = 2; // Cuánto se mueve a los lados
+    public void nextStep(){
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (count >= 10) { // 10 movimientos
-                    c.setLocation(originalLoc);
-                    timer.stop();
-                } else {
-                    // Alterna entre sumar y restar a la X
-                    int newX = (count % 2 == 0) ? originalLoc.x + delta : originalLoc.x - delta;
-                    c.setLocation(newX, originalLoc.y);
-                    count++;
-                }
-            }
-        });
-        timer.start();
-        return timer;
+        if(getUsername().trim().isEmpty()) return;
+
+        //Borrar imagen
+        ((AuraImage) find("image")).opacity(0f);
+
+        //Cambiar nombre de los Label
+        ((AuraText) find("usernameLabel")).text("Correo");
+        ((AuraText) find("facuLabel")).text("Contraseña");
+        ((AuraText) find("roleLabel")).text("Confirmar Contraseña");
+
+        //Intercambiar text por inputs
+        ((AuraText) find("username")).setVisible(false);
+        ((AuraInput) find("email")).setVisible(true);
+
+        ((AuraText) find("facultad")).setVisible(false);
+        ((AuraInput) find("password")).setVisible(true);
+
+        ((AuraText) find("username")).setVisible(false);
+        ((AuraInput) find("email")).setVisible(true);
+
+        ((AuraText) find("role")).setVisible(false);
+        ((AuraInput) find("confirmPassword")).setVisible(true);
+
+        //Cambiar boton de next por Registrar
+        ((AuraButton) find("nextBtn")).setVisible(false);
+        ((AuraButton) find("registerBtn")).setVisible(true);
     }
 
-    private ImageIcon cargarIcono(String ruta, int ancho, int alto, boolean isAbsolute) {
-
-        if(!isAbsolute){
-            java.net.URL imgURL = getClass().getResource(ruta);
-            if(imgURL != null){
-                ImageIcon icon = new ImageIcon(imgURL);
-
-                Image img = icon.getImage().getScaledInstance(alto, ancho, Image.SCALE_SMOOTH);
-                return new ImageIcon(img);
-
-            } else {
-                System.err.println("No se pudo cargar el icono: " + ruta);
-                return null;
-            }
-        }
-        else{
-            File file = new File(ruta);
-            ImageIcon icon = new ImageIcon(file.getAbsolutePath());
-            Image img = icon.getImage().getScaledInstance(alto, ancho, Image.SCALE_SMOOTH);
-            return new ImageIcon(img);
-        }
-        
-    }
-    public String getUsernameText() {
-        return usernameInput.getText();
+    public String getCedula(){
+        return ((AuraInput) find("cedula")).getText();
     }
 
-    public String getCedulaText() {
-        return cedulaInput.getText();
+    public String getPassword(){
+        return ((AuraInput) find("password")).getText();
     }
 
-    public String getPassText() {
-        return new String(passInput.getPassword());
+    public String getEmail(){
+        return ((AuraInput) find("email")).getText();
     }
 
-    public String getConfirmPassText() {
-        return new String(confirmPassInput.getPassword());
+    public String getFacultad(){
+        return ((AuraText) find("facultad")).getText();
     }
 
-    public String getEmailText() {
-        return emailInput.getText();
+    public String getConfirmPassword(){
+        return ((AuraInput) find("confirmPassword")).getText();
     }
 
+    public String getUsername(){
+        return ((AuraText) find("username")).getText();
+    }
+
+    private AuraText createInfo(String text){
+        return new AuraText(text)
+            .background(EstiloGral.BG_COLOR)
+            .radius(8)
+            .font(EstiloGral.SMALL_FONT)
+            .padding(3, 6)
+            .margin(0, 0, 10, 25);
+    }
 }

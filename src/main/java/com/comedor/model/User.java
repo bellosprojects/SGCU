@@ -1,5 +1,7 @@
 package com.comedor.model;
 
+import com.comedor.utils.ModelUtils;
+
 public class User {
     private String fullname;
     private String cedula;
@@ -8,19 +10,12 @@ public class User {
     private String email;
     private String facultadSeleccionada;
     private Double saldo;
-    public static final int NOMBRE_INDEX = 0;
-    public static final int CEDULA_INDEX = 1;
-    public static final int PASSWORD_INDEX = 2;
-    public static final int EMAIL_INDEX = 3;
-    public static final int FACULTAD_INDEX = 4;
-    public static final int SALDO_INDEX = 5;
-    public static final int ROLE_INDEX = 6;
 
     public User(){
         this.fullname = "";
         this.cedula = "";
         this.password = "";
-        this.role = "user";
+        this.role = null;
         this.email = "";
         this.facultadSeleccionada = "";
         this.saldo = 0.0;
@@ -60,5 +55,71 @@ public class User {
     }
     public String getNombres() {
         return fullname;
+    }
+
+    public String toJson(){
+
+        try{
+
+            return String.format(
+                "{\"name\":\"%s\",\"ci\":\"%s\",\"pass\":\"%s\",\"email\":\"%s\",\"facultad\":\"%s\",\"saldo\":\"%s\",\"role\":\"%s\"}",
+                fullname,
+                cedula,
+                ModelUtils.encriptar(password),
+                email,
+                facultadSeleccionada,
+                saldo.toString(),
+                role
+            );
+
+        } catch (Exception e){
+            return "{}";
+        } 
+    }
+
+    public void fromJSON(String jsonUser){
+
+        String clean = jsonUser.replace("{", "").replace("}", "").replace("\"", "");
+        String[] pares = clean.split(",");
+
+
+        for(String par : pares){
+            String[] kv = par.split(":");
+            String key = kv[0].trim();
+
+            String value;
+            if(par.length() == key.length() + 1){
+                value = "";
+            } else {
+                value = kv[1].trim();
+            }
+
+            switch (key) {
+                case "name":
+                    fullname = value;
+                    break;
+                case "ci":
+                    cedula = value;
+                    break;
+                case "pass":
+                    password = value;
+                    break;
+                case "email":
+                    email = value;
+                    break;
+                case "facultad":
+                    facultadSeleccionada = value;
+                    break;
+                case "saldo":
+                    saldo = Double.parseDouble(value);
+                    break;
+                case "role":
+                    role = value;
+                    break;
+                default:
+                    break;
+            }
+        }
+
     }
 }

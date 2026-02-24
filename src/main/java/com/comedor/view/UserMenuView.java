@@ -1,340 +1,514 @@
 package com.comedor.view;
 
-import com.comedor.model.*;
+import java.awt.Color;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+
 import com.comedor.model.Menu;
-import com.comedor.view.components.GradientPanelRedondeado;
-import com.comedor.view.components.ImageCircular;
-import com.comedor.view.components.Separator;
-import com.comedor.view.components.SuperBoton;
-import com.comedor.view.components.TextMultilinea;
+import com.comedor.model.User;
 
-import javax.swing.*;
-import java.awt.*;
-import java.io.File;
+import aura.animations.AnimateBackground;
+import aura.animations.AnimateFloat;
+import aura.animations.AnimateShake;
+import aura.animations.AnimateString;
+import aura.components.AuraButton;
+import aura.components.AuraContainer;
+import aura.components.AuraImage;
+import aura.components.AuraMultiText;
+import aura.components.AuraSpacer;
+import aura.components.AuraText;
+import aura.components.AuraWindow;
+import aura.core.AuraBox;
+import aura.core.Transition;
+import aura.layouts.AuraColumn;
+import aura.layouts.AuraRow;
 
-public class UserMenuView extends JFrame {
-    
-    private SuperBoton reservarDesayunoButton;
-    private SuperBoton reservarAlmuerzoButton;
-    private SuperBoton enviarOpinionButton;
-    private SuperBoton gestionarPerfilButton;
-    private SuperBoton confirmarButton;
-    private SuperBoton salirButton;
-    private ImageCircular profileImage;
-
-    private JLabel nombre;
-    private JLabel cedula;
-    private JLabel saldo;
-
-    private JLabel menuFecha;
-    private JLabel precio;
-    private JLabel desayunoTitulo;
-    private JLabel almuerzoTitulo;
-    private TextMultilinea desayunoIngredients;
-    private TextMultilinea almuerzoIngredients;
+public class UserMenuView extends AuraWindow {
 
     public UserMenuView(){
-        setTitle("Menu de Usuario - SGCU");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setLocationRelativeTo(null);
-        setResizable(false);
-        setIconImage(cargarIcono("/images/logoColor.png", 100, 100, false).getImage());
-        setLayout(new BorderLayout());
+        super("SGCU - Menu de usuario");
 
-        GradientPanelRedondeado mainPanel = new GradientPanelRedondeado(0, 0, EstiloGral.LIGHT_COLOR, EstiloGral.GREY_COLOR, GradientPanelRedondeado.VERTICAL);
-        mainPanel.setLayout(new BorderLayout());
+        fullScreen()
+        .noResizable()
+        .background(EstiloGral.BG_COLOR)
+        .icon(new AuraImage(getResourcePath("/images/logoColor.png")));
 
-        GradientPanelRedondeado headerPanel = new GradientPanelRedondeado(20, 40, EstiloGral.BG_COLOR);
-        headerPanel.setLayout(new GridBagLayout());
-        GridBagConstraints headerGbc = new GridBagConstraints();
-        headerGbc.gridx = 0;
-        headerGbc.gridy = 0;
-        headerGbc.anchor = GridBagConstraints.WEST;
-        headerGbc.insets = new Insets(0, 0, 0, 40);
+        insert(
+            new AuraRow()
+                .fillParent()
+                .content(row -> {
 
-        JLabel icoLabel = new JLabel(cargarIcono("/images/logoColor.png", 130, 130, false));
-        icoLabel.setBorder(BorderFactory.createEmptyBorder(0, 40, 0, 0));
-        headerPanel.add(icoLabel, headerGbc);
+                    row.insert(
+                        new AuraColumn()
+                            .fillHeight()
+                            .background(new Color(33, 33, 29))
+                            .addBg(new Color(24, 24, 22), 1f)
+                            .backgroundAngle(90)
+                            .padding(20, 0)
+                            .weight(0.28f)
+                            .content(panelColumn -> {
+                                panelColumn.insert(
+                                    new AuraRow()
+                                        .gap(20)
+                                        .content(userRow -> {
+                                            userRow.insert(
+                                                new AuraImage("")
+                                                    .stroke(Color.black, 3)
+                                                    .shadow(EstiloGral.WHITE_TRANSP_COLOR, 12)
+                                                    .radius(60)
+                                                    .margin(10)
+                                                    .size(120, 120)
+                                                    .id("profileImg")
+                                            );
 
-        headerGbc.gridx++;
-        JLabel titleLabel = new JLabel("SGCU");
-        titleLabel.setForeground(EstiloGral.DARK_COLOR);
-        titleLabel.setFont(EstiloGral.TITLE_FONT);
-        headerPanel.add(titleLabel, headerGbc);
+                                            userRow.insert(
+                                                new AuraColumn()
+                                                    .content(userDataCol -> {
+                                                        userDataCol.insert(
+                                                            new AuraText("Juan Perez")
+                                                                .id("fullname")
+                                                                .textColor(EstiloGral.BG_COLOR)
+                                                                .font(EstiloGral.LABEL_BOLD_FONT)
+                                                        );
 
-        headerGbc.gridx++;
-        headerGbc.weightx = 1.0;
-        headerPanel.add(Box.createHorizontalGlue(), headerGbc);
-        
-        headerGbc.gridx++;
-        headerGbc.weightx = 0;
+                                                        userDataCol.insert(
+                                                            new AuraText("Estudiante")
+                                                                .id("role")
+                                                                .textColor(EstiloGral.LIGHT_COLOR)
+                                                                .font(EstiloGral.LABEL_FONT)
+                                                        );
+                                                    })
+                                            );
+                                        })
+                                );
 
-        JPanel userDataPanel = new JPanel(new BorderLayout());
-        userDataPanel.setOpaque(false);
+                                panelColumn.insert(
+                                    new AuraText("12345678")
+                                        .id("cedula")
+                                        .textColor(EstiloGral.LIGHT_COLOR)
+                                        .font(EstiloGral.LABEL_FONT)
+                                        .alignSelf(AuraColumn.Alignment.LEFT)
+                                        .margin(40,30)
+                                    
+                                );
 
-        nombre = new JLabel("nombre apellido");
-        nombre.setFont(EstiloGral.SMALL_BOLD_FONT);
-        nombre.setForeground(EstiloGral.DARK_COLOR);
-        nombre.setBorder(BorderFactory.createEmptyBorder(0, 0, 4, 0));
+                                panelColumn.insert(
+                                    new AuraContainer()
+                                        .fillWidth()
+                                        .height(1)
+                                        .background(new Color(71, 71, 58))  
+                                );
 
-        cedula = new JLabel("V-00000000");
-        cedula.setFont(EstiloGral.SMALL_FONT);
-        cedula.setForeground(EstiloGral.DARK_COLOR);
+                                panelColumn.insert(
+                                    new AuraText("MENUS")
+                                        .background(EstiloGral.WHITE_TRANSP_COLOR2)
+                                        .padding(20)
+                                        .margin(40,20,20,20)
+                                        .fillWidth()
+                                        .radius(10)
+                                        .cursor(EstiloGral.HOVER_CURSOR)
+                                        .textColor(EstiloGral.BG_COLOR)
+                                        .font(EstiloGral.LABEL_BOLD_FONT)
+                                );
 
-        userDataPanel.add(nombre, BorderLayout.NORTH);
-        userDataPanel.add(cedula, BorderLayout.SOUTH);
+                                panelColumn.insert(
+                                    new AuraText("RESERVACIONES")
+                                        .background(EstiloGral.WHITE_TRANSP_COLOR2)
+                                        .padding(20)
+                                        .margin(10,20,20,20)
+                                        .fillWidth()
+                                        .radius(10)
+                                        .cursor(EstiloGral.HOVER_CURSOR)
+                                        .textColor(EstiloGral.BG_COLOR)
+                                        .font(EstiloGral.LABEL_BOLD_FONT)
+                                );
 
-        headerPanel.add(userDataPanel, headerGbc);
+                                panelColumn.insert(
+                                    new AuraSpacer()
+                                );
 
-        headerGbc.gridx++;
+                                panelColumn.insert(
+                                    new AuraText("© 2026 SGCU")
+                                        .textColor(EstiloGral.LIGHT_COLOR)
+                                        .font(EstiloGral.LABEL_FONT)
+                                );
 
-        profileImage = new ImageCircular();
-        profileImage.setIcon(cargarIcono("/images/logoColor.png", 200, 200, false));
-        profileImage.setBorderSize(10);
-        profileImage.setBorderColor(EstiloGral.LIGHT_COLOR);
+                            })
 
-        headerPanel.add(profileImage, headerGbc);
+                    );
 
-        mainPanel.add(headerPanel, BorderLayout.NORTH);
+                    row.insert(
+                        new AuraColumn()
+                            .fillHeight()
+                            .weight(1f)
+                            .padding(40)
+                            .align(AuraColumn.Alignment.LEFT)
+                            .background(new Color(71, 71, 58))
+                            .addBg(new Color(36, 36, 29), 1f)
+                            .backgroundAngle(90)
+                            .content(mainColumn -> {
 
-        JPanel centerPanel = new JPanel(new BorderLayout());
-        centerPanel.setOpaque(false);
+                                mainColumn.insert(
+                                    new AuraText("Bienvenido de vuelta.")
+                                        .font(EstiloGral.TITLE_FONT)
+                                        .textColor(EstiloGral.BG_COLOR)
+                                );
 
-        JPanel menusPanel = new JPanel(new BorderLayout());
-        menusPanel.setOpaque(false);
+                                mainColumn.insert(
+                                    new AuraRow()
+                                        .fillWidth()
+                                        .gap(20)
+                                        .margin(0,0,5,0)
+                                        .align(AuraRow.Alignment.BOTTOM)
+                                        .content(optionsRow -> {
+                                            optionsRow.insert(
+                                                new AuraText("Menus disponibles en la fecha: 1 de diciembre del 2025")
+                                                    .font(EstiloGral.LABEL_FONT)
+                                                    .textColor(EstiloGral.LIGHT_COLOR)
+                                                    .id("date")
+                                            );
 
-        JPanel generalInfoPanel = new JPanel(new GridLayout(2, 1));
-        generalInfoPanel.setOpaque(false);
+                                            optionsRow.insert(
+                                                new AuraSpacer()
+                                            );
 
-        menuFecha = new JLabel("Menu del dia: Jueves 5 de Febrero");
-        menuFecha.setFont(EstiloGral.MIDDLE_FONT);
-        menuFecha.setForeground(EstiloGral.DARK_COLOR);
-        menuFecha.setBorder(BorderFactory.createEmptyBorder(20, 100, 0, 0));
+                                            optionsRow.insert(
+                                                new AuraButton("Cerrar sesión")
+                                                    .id("backBtn")
+                                                    .font(EstiloGral.LABEL_FONT)
+                                                    .radius(25)
+                                            );
+                                        })
+                                );
 
-        precio = new JLabel("Precio: 0.0Bs.");
-        precio.setFont(EstiloGral.INPUT_FONT);
-        precio.setForeground(EstiloGral.DARK_COLOR);
-        precio.setBorder(BorderFactory.createEmptyBorder(20, 100, 0, 0));
+                                mainColumn.insert(
+                                    new AuraRow()
+                                        .margin(60, 0)
+                                        .fillWidth()
+                                        .gap(40)
+                                        .content(pricesRow -> {
+                                            pricesRow.insert(
+                                                new AuraColumn()
+                                                    .align(AuraColumn.Alignment.LEFT)
+                                                    .padding(30, 40, 30, 100)
+                                                    .gap(10)
+                                                    .background(EstiloGral.WHITE_TRANSP_COLOR2)
+                                                    .stroke(EstiloGral.WHITE_TRANSP_COLOR, 1)
+                                                    .content(carterColumn -> {
+                                                        carterColumn.insert(
+                                                            new AuraText("Fondos disponibles")
+                                                                .textColor(EstiloGral.LIGHT_COLOR)
+                                                                .font(EstiloGral.LABEL_FONT)
+                                                        );
 
-        generalInfoPanel.add(menuFecha);
-        generalInfoPanel.add(precio);
-        menusPanel.add(generalInfoPanel, BorderLayout.NORTH);
+                                                        carterColumn.insert(
+                                                            new AuraText("0,00Bs")
+                                                                .id("credits")
+                                                                .font(EstiloGral.MIDDLE_FONT2)
+                                                                .textColor(EstiloGral.BG_COLOR)
+                                                        );
 
-        JPanel menusPanel2 = new JPanel(new GridBagLayout());
-        menusPanel2.setOpaque(false);
-        GridBagConstraints menusPanel2Gbc = new GridBagConstraints();
-        menusPanel2Gbc.gridx = 0;
-        menusPanel2Gbc.gridy = 0;
-        menusPanel2Gbc.anchor = GridBagConstraints.NORTH;
+                                                        carterColumn.insert(
+                                                            new AuraButton("Recargar")
+                                                                .radius(25)
+                                                                .id("recharge")
+                                                                .font(EstiloGral.LABEL_FONT)
+                                                                .margin(10, 0, 0, 0)
+                                                        );
+                                                    })
+                                            );
 
-        GradientPanelRedondeado panelDesayuno = new GradientPanelRedondeado(20, 40, EstiloGral.BG_COLOR);
-        panelDesayuno.setLayout(new GridBagLayout());
-        GridBagConstraints panelDesayunoGbc = new GridBagConstraints();
-        panelDesayunoGbc.gridx = 0;
-        panelDesayunoGbc.gridy = 0;
-        panelDesayunoGbc.weighty = 1;
-        panelDesayunoGbc.anchor = GridBagConstraints.NORTH;
-        panelDesayunoGbc.insets = new Insets(40, 0, 0, 0);
+                                            pricesRow.insert(
+                                                new AuraColumn()
+                                                    .align(AuraColumn.Alignment.LEFT)
+                                                    .padding(30, 40, 30, 100)
+                                                    .gap(10)
+                                                    .background(EstiloGral.WHITE_TRANSP_COLOR2)
+                                                    .stroke(EstiloGral.WHITE_TRANSP_COLOR, 1)
+                                                    .fillHeight()
+                                                    .content(ccbColumn -> {
+                                                        ccbColumn.insert(
+                                                            new AuraText("Costo de la bandeja")
+                                                                .textColor(EstiloGral.LIGHT_COLOR)
+                                                                .font(EstiloGral.LABEL_FONT)
+                                                        );
 
-        ImageCircular solImage = new ImageCircular();
-        solImage.setIcon(cargarIcono("/images/sol.png", 100, 100, false));
-        solImage.setBorderColor(EstiloGral.LIGHT_COLOR);
+                                                        ccbColumn.insert(
+                                                            new AuraText("0,00Bs")
+                                                                .id("price")
+                                                                .font(EstiloGral.MIDDLE_FONT2)
+                                                                .textColor(EstiloGral.BG_COLOR)
+                                                        );
 
-        panelDesayuno.add(solImage, panelDesayunoGbc);
+                                                        ccbColumn.insert(
+                                                            new AuraSpacer()
+                                                        );
 
-        panelDesayunoGbc.gridy++;
-        desayunoTitulo = new JLabel("Desayuno");
-        desayunoTitulo.setFont(EstiloGral.MIDDLE_FONT);
-        desayunoTitulo.setForeground(EstiloGral.DARK_COLOR);
-        desayunoTitulo.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 10));
-        panelDesayuno.add(desayunoTitulo, panelDesayunoGbc);
+                                                        ccbColumn.insert(
+                                                            new AuraText("Precio para: Estudiante")
+                                                                .textColor(EstiloGral.LIGHT_COLOR)
+                                                                .font(EstiloGral.LABEL_FONT)
+                                                                .id("rolePrice")
+                                                        );
+                                                    })
+                                            );
 
-        panelDesayunoGbc.gridy++;
-        desayunoIngredients = new TextMultilinea("\n\n\n", 500, EstiloGral.INPUT_FONT);
+                                            pricesRow.insert(
+                                                new AuraSpacer()
+                                            );
 
-        desayunoIngredients.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 30));
-        desayunoIngredients.setForeground(EstiloGral.DARK_COLOR);
-        panelDesayuno.add(desayunoIngredients, panelDesayunoGbc);
+                                            pricesRow.insert(
+                                                new AuraText("")
+                                                    .textColor(EstiloGral.BG_COLOR)
+                                                    .font(EstiloGral.CLOCK_FONT)
+                                                    .alignSelf(AuraRow.Alignment.TOP)
+                                                    .margin(10, 20)
+                                                    .id("animate")
+                                            );
 
-        panelDesayunoGbc.gridy++;
-        reservarDesayunoButton = new SuperBoton("Reservar", EstiloGral.BUTTON_COLOR, 20, 20);
-        reservarDesayunoButton.setFont(EstiloGral.INPUT_FONT);
-        panelDesayuno.add(reservarDesayunoButton, panelDesayunoGbc);
+                                        })      
+                                );
 
-        panelDesayunoGbc.gridy++;
-        panelDesayuno.add(new Separator(0, 35), panelDesayunoGbc);
+                                mainColumn.insert(
+                                    new AuraText("Menus disponibles")
+                                        .textColor(EstiloGral.BG_COLOR)
+                                        .font(EstiloGral.MIDDLE_FONT)
+                                        .margin(0,20,0,0)
+                                );
 
-        menusPanel2.add(panelDesayuno, menusPanel2Gbc);
-        menusPanel2Gbc.gridx++;
+                                mainColumn.insert(
+                                    new AuraRow()
+                                        .fillWidth()
+                                        .margin(60,0,0,0)
+                                        .gap(40)
+                                        .weight(1f)
+                                        .content(menusRow -> {
 
-        GradientPanelRedondeado panelAlmuerzo = new GradientPanelRedondeado(20, 40, EstiloGral.BG_COLOR);
-        panelAlmuerzo.setLayout(new GridBagLayout());
-        GridBagConstraints panelAlmuerzoGbc = new GridBagConstraints();
-        panelAlmuerzoGbc.gridx = 0;
-        panelAlmuerzoGbc.gridy = 0;
-        panelAlmuerzoGbc.weighty = 1;
-        panelAlmuerzoGbc.anchor = GridBagConstraints.NORTH;
-        panelAlmuerzoGbc.insets = new Insets(40, 0, 0, 0);
+                                            menusRow.insert(
+                                                new AuraColumn()
+                                                    .weight(1f)
+                                                    .fillHeight()
+                                                    .content(desayunoColumn -> {
+                                                        desayunoColumn.insert(
+                                                            new AuraText("Desayuno")
+                                                                .textColor(EstiloGral.BG_COLOR)
+                                                                .font(EstiloGral.INPUT_FONT)
+                                                                .alignSelf(AuraColumn.Alignment.LEFT)
+                                                                .margin(0,60)
+                                                        );
 
-        ImageCircular cubiertosImage = new ImageCircular();
-        cubiertosImage.setIcon(cargarIcono("/images/cubiertos.png", 100, 100, false));
-        cubiertosImage.setBorderColor(EstiloGral.LIGHT_COLOR);
+                                                        desayunoColumn.insert(
+                                                            new AuraColumn()
+                                                                .weight(1f)
+                                                                .fillWidth()
+                                                                .margin(30, 0, 0, 10)
+                                                                .radius(20)
+                                                                .background(new AuraImage(getResourcePath("/images/desayunoBackground.jpg")))
+                                                                .content(desayuno -> {
+                                                                    desayuno.insert(
+                                                                        new AuraButton("Reservar")
+                                                                            .alignSelf(AuraColumn.Alignment.RIGHT)
+                                                                            .radius(0, 20, 10, 0)
+                                                                            .background(EstiloGral.BUTTON_COLOR)
+                                                                            .font(EstiloGral.LABEL_BOLD_FONT)
+                                                                            .textColor(EstiloGral.BG_COLOR)
+                                                                            .id("reservarDesayunoBtn")
+                                                                    );
 
-        panelAlmuerzo.add(cubiertosImage, panelAlmuerzoGbc);
+                                                                    desayuno.insert(
+                                                                        new AuraMultiText("")
+                                                                            .textColor(EstiloGral.LIGHT_COLOR)
+                                                                            .weight(1f)
+                                                                            .id("desayunoIng")
+                                                                            .block()
+                                                                            .background(EstiloGral.TRANSPARENT_COLOR)
+                                                                            .font(EstiloGral.LABEL_FONT)
+                                                                            .fillWidth()
+                                                                            .margin(20, 35)
+                                                                    );
 
-        panelAlmuerzoGbc.gridy++;
-        almuerzoTitulo = new JLabel("Almuerzo");
-        almuerzoTitulo.setFont(EstiloGral.MIDDLE_FONT);
-        almuerzoTitulo.setForeground(EstiloGral.DARK_COLOR);
-        almuerzoTitulo.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 10));
-        panelAlmuerzo.add(almuerzoTitulo, panelAlmuerzoGbc);
+                                                                    desayuno.insert(
+                                                                        new AuraText("Arepa")
+                                                                            .textColor(EstiloGral.BG_COLOR)
+                                                                            .font(EstiloGral.MIDDLE_FONT)
+                                                                            .padding(20, 0)
+                                                                            .fillWidth()
+                                                                            .radius(0, 20)
+                                                                            .background(EstiloGral.WHITE_TRANSP_COLOR2)
+                                                                            .id("desayuno")
 
-        panelAlmuerzoGbc.gridy++;
-        almuerzoIngredients = new TextMultilinea("\n\n\n", 500, EstiloGral.INPUT_FONT);
+                                                                    );
+                                                                })
+                                                        );
+                                                    })
+                    
+                                            );
 
-        almuerzoIngredients.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 30));
-        almuerzoIngredients.setForeground(EstiloGral.DARK_COLOR);
-        panelAlmuerzo.add(almuerzoIngredients, panelAlmuerzoGbc);
+                                            menusRow.insert(
+                                                new AuraColumn()
+                                                    .weight(1f)
+                                                    .fillHeight()
+                                                    .content(almuerzoColumn -> {
+                                                        almuerzoColumn.insert(
+                                                            new AuraText("Almuerzo")
+                                                                .textColor(EstiloGral.BG_COLOR)
+                                                                .font(EstiloGral.INPUT_FONT)
+                                                                .alignSelf(AuraColumn.Alignment.LEFT)
+                                                                .margin(0,60)
+                                                        );
 
-        panelAlmuerzoGbc.gridy++;
-        reservarAlmuerzoButton = new SuperBoton("Reservar", EstiloGral.BUTTON_COLOR, 20, 20);
-        reservarAlmuerzoButton.setFont(EstiloGral.INPUT_FONT);
-        panelAlmuerzo.add(reservarAlmuerzoButton, panelAlmuerzoGbc);
+                                                        almuerzoColumn.insert(
+                                                            new AuraColumn()
+                                                                .weight(1f)
+                                                                .fillWidth()
+                                                                .margin(30, 0, 0, 10)
+                                                                .radius(20)
+                                                                .background(new AuraImage(getResourcePath("/images/almuerzoBackground.jpg")))
+                                                                .content(almuerzo -> {
+                                                                    almuerzo.insert(
+                                                                        new AuraButton("Reservar")
+                                                                            .alignSelf(AuraColumn.Alignment.RIGHT)
+                                                                            .radius(0, 20, 10, 0)
+                                                                            .background(EstiloGral.BUTTON_COLOR)
+                                                                            .font(EstiloGral.LABEL_BOLD_FONT)
+                                                                            .textColor(EstiloGral.BG_COLOR)
+                                                                            .id("reservarAlmuerzoBtn")
+                                                                    );
 
-        panelAlmuerzoGbc.gridy++;
-        panelAlmuerzo.add(new Separator(0, 35), panelAlmuerzoGbc);
+                                                                    almuerzo.insert(
+                                                                        new AuraMultiText("")
+                                                                            .textColor(EstiloGral.LIGHT_COLOR)
+                                                                            .weight(1f)
+                                                                            .id("almuerzoIng")
+                                                                            .block()
+                                                                            .background(EstiloGral.TRANSPARENT_COLOR)
+                                                                            .font(EstiloGral.LABEL_FONT)
+                                                                            .fillWidth()
+                                                                            .margin(20, 35)
+                                                                    );
 
-        menusPanel2.add(panelAlmuerzo, menusPanel2Gbc);
+                                                                    almuerzo.insert(
+                                                                        new AuraText("Arroz")
+                                                                            .textColor(EstiloGral.BG_COLOR)
+                                                                            .font(EstiloGral.MIDDLE_FONT)
+                                                                            .padding(20, 0)
+                                                                            .fillWidth()
+                                                                            .radius(0, 20)
+                                                                            .background(EstiloGral.WHITE_TRANSP_COLOR2)
+                                                                            .id("almuerzo")
 
-        menusPanel.add(menusPanel2, BorderLayout.CENTER);
+                                                                    );
+                                                                })
+                                                        );
+                                                    })
+                    
+                                            );
 
-        centerPanel.add(menusPanel, BorderLayout.CENTER);
+                                        })
+                                );
 
-        JPanel optionsPanel = new JPanel(new GridBagLayout());
-        optionsPanel.setOpaque(false);
+                            })
+                    );
 
-        GridBagConstraints optionsPanelGbc = new GridBagConstraints();
-        optionsPanelGbc.gridx = 0;
-        optionsPanelGbc.gridy = 0;
-        optionsPanelGbc.anchor = GridBagConstraints.CENTER;
-        optionsPanelGbc.insets = new Insets(0, 20, 0, 80);
+                })
+        );
 
-        enviarOpinionButton = new SuperBoton("Enviar opinion", EstiloGral.BUTTON_COLOR, 15, 10);
-        enviarOpinionButton.setFont(EstiloGral.INPUT_FONT);
-        enviarOpinionButton.setForeground(EstiloGral.BG_COLOR);
-
-        optionsPanel.add(enviarOpinionButton, optionsPanelGbc);
-
-        optionsPanelGbc.gridy++;
-        GradientPanelRedondeado extraPanel = new GradientPanelRedondeado(20, 20, EstiloGral.BG_COLOR);
-        JPanel saldoPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); 
-        saldoPanel.setOpaque(false);
-
-        JLabel saldoDisponibleLabel = new JLabel("Saldo disponible: ");
-        saldoDisponibleLabel.setFont(EstiloGral.LABEL_FONT);
-        saldoDisponibleLabel.setForeground(EstiloGral.LABEL_COLOR);
-
-        saldo = new JLabel("0.0Bs.");
-        saldo.setFont(EstiloGral.MIDDLE_FONT);
-        saldo.setForeground(EstiloGral.DARK_COLOR);
-
-        saldoPanel.add(saldoDisponibleLabel);
-        saldoPanel.add(saldo);
-
-        extraPanel.add(saldoPanel);
-
-        optionsPanel.add(extraPanel, optionsPanelGbc);
-
-        optionsPanelGbc.gridy++;
-        salirButton = new SuperBoton("VOLVER", EstiloGral.BUTTON_COLOR, 20, 10);
-        salirButton.setFont(EstiloGral.INPUT_FONT);
-        salirButton.setForeground(EstiloGral.BG_COLOR);
-
-        optionsPanel.add(salirButton, optionsPanelGbc);
-
-        centerPanel.add(optionsPanel, BorderLayout.EAST);
-
-        mainPanel.add(centerPanel, BorderLayout.CENTER);
-
-        add(mainPanel, BorderLayout.CENTER);
+        new AnimateFloat(0, 1, 8000, v -> {
+            if(v == 0f) startAnimation();
+        })
+        .loop()
+        .start();
     }
 
-    public void setDesayuno(Menu menu){
+    private void startAnimation(){
 
-        this.menuFecha.setText("Menu del dia: " + menu.getFecha());
-        this.desayunoTitulo.setText(menu.getPlato());
-        this.desayunoIngredients.setText(menu.getIngredientes());
+        AuraText component = (AuraText) find("animate");
+
+        new AnimateString(LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm a")), 3000, value -> {
+
+            component.text(value);
+
+        })
+        .type(Transition.TransitionType.BOUNCE_IN)
+        .start();
 
     }
 
-    public void setAlmuerzo(Menu menu){
+    public void setDesayuno(Menu desayuno){
 
-        this.menuFecha.setText("Menu del dia: " + menu.getFecha());
-        this.almuerzoTitulo.setText(menu.getPlato());
-        this.almuerzoIngredients.setText(menu.getIngredientes());
+        if(desayuno == null) return;
+
+        ((AuraText) find("date")).text("Menus disponibles en la fecha: " + desayuno.getFecha());
+
+        ((AuraText) find("desayuno")).text(desayuno.getPlato());
+
+        ((AuraMultiText) find("desayunoIng")).text("Ingredientes: " + desayuno.getIngredientes());
+
+    }
+
+    public void setAlmuerzo(Menu almuerzo){
+
+        if(almuerzo == null) return;
+
+        ((AuraText) find("date")).text("Menus disponibles en la fecha: " + almuerzo.getFecha());
+
+        ((AuraText) find("almuerzo")).text(almuerzo.getPlato());
+
+        ((AuraMultiText) find("almuerzoIng")).text("Ingredientes: " + almuerzo.getIngredientes());
 
     }
 
     public void setUser(User user){
+        find("profileImg").background(new AuraImage(EstiloGral.getImgPath(user.getCedula())));
+        ((AuraText) find("fullname")).text(user.getNombres());
+        ((AuraText) find("role")).text(user.getRole());
+        ((AuraText) find("rolePrice")).text("Precio para: " + user.getRole());
+        ((AuraText) find("cedula")).text("C.I: " + user.getCedula());
 
-        this.nombre.setText(user.getNombres());
-        this.cedula.setText("V-" + user.getCedula());
-        this.saldo.setText(user.getSaldo() + "Bs.");
+        AuraText credits = (AuraText) find("credits");
+        
+        new AnimateFloat(0.0f, (float) (double) user.getSaldo() , 1800, value -> {
 
-        this.profileImage.setIcon(cargarIcono("C:/SGCU/imagenes/" + user.getCedula() + ".jpg", 100, 100, true));
-        this.profileImage.revalidate();
-        this.profileImage.repaint();
-    }
+            credits.text(String.format("%.2fBs", value));
 
-    public SuperBoton getReservarDesayunoButton(){
-        return this.reservarDesayunoButton;
-    }
-
-    public SuperBoton getReservarAlmuerzoButton(){
-        return this.reservarAlmuerzoButton;
-    }
-
-    public SuperBoton getEnviarOpinionButton(){
-        return this.enviarOpinionButton;
-    }
-
-    public SuperBoton getGestionarPerfilButton(){
-        return this.gestionarPerfilButton;
-    }
-
-    public SuperBoton getConfirmarButton(){
-        return this.confirmarButton;
-    }
-
-    public SuperBoton getSalirButton(){
-        return this.salirButton;
+        })
+        .delay(1500)
+        .start();
     }
 
     public void setPrecio(double precio){
-        this.precio.setText("Precio: " + precio + "Bs.");
+        AuraText price = (AuraText) find("price");
+
+        new AnimateFloat(0.0f, (float) precio, 1800, value -> {
+
+            price.text(String.format("%.2fBs", value));
+
+        })
+        .delay(1500)
+        .start();
     }
 
-    private ImageIcon cargarIcono(String ruta, int ancho, int alto, boolean isAbsolute) {
-        if(!isAbsolute){
-            java.net.URL imgURL = getClass().getResource(ruta);
-            if(imgURL != null){
-                ImageIcon icon = new ImageIcon(imgURL);
+    private static String getResourcePath(String ruta) {
+        return LoginView.class.getResource(ruta).getFile();
+    }
 
-                Image img = icon.getImage().getScaledInstance(alto, ancho, Image.SCALE_SMOOTH);
-                return new ImageIcon(img);
+    public void InvalidateInputs(String... ids){
 
-            } else {
-                System.err.println("No se pudo cargar el icono: " + ruta);
-                return null;
-            }
+        for(String id : ids){
+
+            AuraBox<?> component = find(id);
+
+            component.background(EstiloGral.WHITE_TRANSP_COLOR);
+
+            AnimateBackground t = new AnimateBackground(component, EstiloGral.ERROR_COLOR, 200)
+                                    .pingPong()
+                                    .cancelPrev(true);
+
+            AnimateShake t2 = new AnimateShake(component, 5, 500);
+
+            t.parallel(t2).start();
         }
-        else{
-            File file = new File(ruta);
-            ImageIcon icon = new ImageIcon(file.getAbsolutePath());
-            Image img = icon.getImage().getScaledInstance(alto, ancho, Image.SCALE_SMOOTH);
-            return new ImageIcon(img);
-        }
+
     }
 
 }
