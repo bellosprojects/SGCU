@@ -34,7 +34,7 @@ public class RegisterController {
                 EstiloGral.ShowMessage("Esta cedula no esta registrada en la base de datos", EstiloGral.ERROR_MESSAGE);
             }
         });
-        
+
         registerView.find("backBtn").onClick(b -> {
             goToLoginView();
         });
@@ -46,6 +46,7 @@ public class RegisterController {
             if(user != null){
                 registerView.setData(user);
             } else {
+                registerView.InvalidateInputs("cedula");
                 EstiloGral.ShowMessage("Esta cedula no esta registrada en la base de datos", EstiloGral.ERROR_MESSAGE);
             }
 
@@ -81,15 +82,18 @@ public class RegisterController {
 
         if (password.length() < 8) {
             registerView.InvalidateInputs("password", "confirmPassword");
+            EstiloGral.ShowMessage("La contraseña debe tener al menos 8 caracteres", EstiloGral.ERROR_MESSAGE);
             flag = false;
         }
 
         if (!password.equals(confirmPassword)) {
             registerView.InvalidateInputs("confirmPassword");
+            EstiloGral.ShowMessage("Las contraseñas no coinciden", EstiloGral.ERROR_MESSAGE);
             flag = false;
         }
         if (!isEmailValid(email)) {
             registerView.InvalidateInputs("email");
+            EstiloGral.ShowMessage("Ingrese un correo electrónico válido", EstiloGral.ERROR_MESSAGE);
             flag = false;
         }
 
