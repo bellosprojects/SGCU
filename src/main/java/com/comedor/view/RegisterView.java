@@ -304,7 +304,7 @@ public class RegisterView extends AuraWindow {
 
 
     private String getResourcePath(String ruta) {
-        return getClass().getResource(ruta).getFile();
+        return getClass().getResource(ruta).toString();
     }
 
     public void InvalidateInputs(String... ids){
