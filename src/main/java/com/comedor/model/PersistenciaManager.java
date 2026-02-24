@@ -7,22 +7,21 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 import com.comedor.model.Menu.TipoMenu;
+import com.comedor.model.Reserva.EstadoReserva;
 import com.comedor.utils.ModelUtils;
 import com.comedor.view.EstiloGral;
 
 public class PersistenciaManager {
 
     private final Path localDir = Path.of("C:", "SGCU", "data");
-
     private final Path usersFile = localDir.resolve("UsuariosRegistrados.json");
     private final Path desayunoFile = localDir.resolve("Desayuno.json");
     private final Path almuerzoFile = localDir.resolve("Almuerzo.json");
     private final Path pricesFile = localDir.resolve("Tarifas.json");
-
-    private final Path UCVDataBase = Paths.get("src/main/java/com/comedor/database","users.json");
-
+    private final Path UCVDataBase = Paths.get("src/main/java/com/comedor/database","Users.json");
+    private final Path reservaDesayuno = Paths.get("src/main/java/com/comedor/database","ReservaDesayuno.json");
+    private final Path reservaAlmuerzo = Paths.get("src/main/java/com/comedor/database","ReservaAlmuerzo.json");
     public static final String SEPARATOR = "<>";
-    
     public PersistenciaManager(){
         createLocalData();
     }
@@ -173,11 +172,9 @@ public class PersistenciaManager {
     }
 
     public void guardarUsuario(User user){
-        
         if(isCedulaRegistered(user.getCedula()) || !isUserInDataBase(user.getCedula(), user.getRole())){
             return;
         }
-        
         String newUser = user.toJson();
         //Guardarlo
         try{
@@ -244,6 +241,25 @@ public class PersistenciaManager {
         return getUserFromCedula(cedula).getSaldo();
     }
 
+    public void recargarSaldo(String cedula, double nuevoSaldo) {
+        try {
+            List<String> lineas = Files.readAllLines(usersFile, java.nio.charset.StandardCharsets.UTF_8);
+            for (int i = 0; i < lineas.size(); i++) {
+                User user = new User();
+                user.fromJSON(lineas.get(i));
+
+                if (user.getCedula().equals(cedula)) {
+                    user.setSaldo(nuevoSaldo);
+                    lineas.set(i, user.toJson());
+                    break;
+                }
+            }
+            Files.write(usersFile, lineas, java.nio.charset.StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            EstiloGral.ShowMessage("Hubo un error al recargar el saldo", EstiloGral.INFO_MESSAGE);
+        }
+    }
+
     public boolean isCedulaRegistered(String cedula){       
         User user = getUserFromCedula(cedula);
         return user != null;
@@ -263,10 +279,8 @@ public class PersistenciaManager {
     }
 
     public void guardarMenu(Menu menu){
-
-        String menuStr = menu.toJson();
         Path rutaDestino = (menu.getTipo() == TipoMenu.DESAYUNO) ? desayunoFile : almuerzoFile;
-
+        String menuStr = menu.toJson();
         try {
             Files.writeString(
                 rutaDestino, 
@@ -298,8 +312,6 @@ public class PersistenciaManager {
     }
 
     public User getUserFromCedulaInDataBase(String cedula){
-
-        
         try{                             //evalua si el archivo existe
             List<String> lineas = Files.readAllLines(UCVDataBase, java.nio.charset.StandardCharsets.UTF_8);        //crea una lista con todas las lineas del archivo
             for(String line : lineas){
@@ -314,5 +326,122 @@ public class PersistenciaManager {
             EstiloGral.ShowMessage("Hubo un error al leer en el archivo de la Base de datos", EstiloGral.INFO_MESSAGE);
         }
         return null;
+    }
+
+    private void vaciarListaDesayuno(){
+        try {
+            Files.writeString(desayunoFile, "", StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (IOException e) {
+            EstiloGral.ShowMessage("Hubo un error al vaciar el archivo del Desayuno", EstiloGral.INFO_MESSAGE);
+        }
+    }
+    private void vaciarListaAlmuerzo(){
+        try {
+            Files.writeString(almuerzoFile, "", StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (IOException e) {
+            EstiloGral.ShowMessage("Hubo un error al vaciar el archivo del Almuerzo", EstiloGral.INFO_MESSAGE);
+        }
+    }         
+    //hacer otra funcion aparte para privacidad
+
+    private void modificarEstado(Reserva usuario, TipoMenu tipo){
+        try{
+            Path ruta = (tipo == TipoMenu.DESAYUNO) ? reservaDesayuno : reservaAlmuerzo;
+            if(Files.exists(ruta)){                                    
+                List<String> lineas = Files.readAllLines(ruta);    
+                Reserva reserva= new Reserva();  
+                for(int i = 0; i < lineas.size(); i++){
+                    reserva.fromJSON(lineas.get(i)); 
+                    if(usuario.getCedula().equals(reserva.getCedula())&&reserva.getEstadoReserva()!=EstadoReserva.CANCELADO){
+                        if(usuario.getEstadoReserva()==EstadoReserva.CANCELADO){
+                            reserva.setEstadoReserva(usuario.getEstadoReserva());
+                            aumentarCupo(tipo);
+                        }
+                        else if(reserva.getEstadoReserva()==EstadoReserva.EN_ESPERA&&usuario.getEstadoReserva()==EstadoReserva.RESERVADO){
+                            reserva.setEstadoReserva(usuario.getEstadoReserva());
+                        }
+                        lineas.set(i, reserva.toJSON());
+                    }
+                }
+                Files.write(ruta, lineas, StandardOpenOption.TRUNCATE_EXISTING);
+            }
+        } catch (IOException e){ 
+            EstiloGral.ShowMessage("Hubo un error al modificar el estado de la reserva", EstiloGral.INFO_MESSAGE);
+        }
+    }  
+
+    public void cancelarReserva(String cedula, TipoMenu tipo){
+        modificarEstado(new Reserva(cedula, EstadoReserva.CANCELADO), tipo);
+    }
+
+    public void aceptarReserva(String cedula, TipoMenu tipo){
+        modificarEstado(new Reserva(cedula, EstadoReserva.RESERVADO), tipo);
+    }
+
+    public Boolean reservarMenu(String cedula, TipoMenu tipo){
+        try{
+            Path ruta = (tipo == TipoMenu.DESAYUNO) ? reservaDesayuno : reservaAlmuerzo;
+            if(Files.exists(ruta)){                                    
+                List<String> lineas = Files.readAllLines(ruta);    
+                Reserva reserva= new Reserva();  
+                for(int i = 0; i < lineas.size(); i++){
+                    reserva.fromJSON(lineas.get(i)); 
+                    if(reserva.getCedula().equals(cedula)){
+                        return false;
+                    }
+                }
+                reserva= new Reserva(cedula, EstadoReserva.EN_ESPERA);
+                lineas.add(reserva.toJSON());
+                if(!disminuirCupo(tipo)){
+                    return false;
+                }
+                Files.write(ruta, lineas, StandardOpenOption.TRUNCATE_EXISTING);
+                return true;
+            }
+        } catch (IOException e){ 
+            EstiloGral.ShowMessage("Hubo un error al intentar reservar el menú", EstiloGral.INFO_MESSAGE);
+        }
+        return false;
+    }
+
+    private void aumentarCupo(TipoMenu tipo){
+        try{
+            Path ruta = (tipo == TipoMenu.DESAYUNO) ? desayunoFile : almuerzoFile;
+            if(Files.exists(ruta)){                                    //evalua si el archivo existe
+                List<String> lineas = Files.readAllLines(ruta);        //crea una lista con todas las lineas del archivo
+                if(!lineas.isEmpty()){
+                    String linea = lineas.get(0);                             
+                    Menu menu = new Menu();
+                    menu.fromJson(linea);
+                    menu.añadirCupos();
+                    guardarMenu(menu);
+                }
+            }
+        } catch (IOException e){ 
+            EstiloGral.ShowMessage("Hubo un error al leer del archivo del Menu", EstiloGral.INFO_MESSAGE);
+        }
+    }
+
+    private Boolean disminuirCupo(TipoMenu tipo){
+        try{
+            Path ruta = (tipo == TipoMenu.DESAYUNO) ? desayunoFile : almuerzoFile;
+            if(Files.exists(ruta)){                                    //evalua si el archivo existe
+                List<String> lineas = Files.readAllLines(ruta);        //crea una lista con todas las lineas del archivo
+                if(!lineas.isEmpty()){
+                    String linea = lineas.get(0);                             
+                    Menu menu = new Menu();
+                    menu.fromJson(linea);
+                    if(Integer.parseInt(menu.getCupos())<=0){
+                    menu.sustraerCupos();
+                    guardarMenu(menu);
+                    return true;
+                    }
+                    return false;
+                }
+            }
+        } catch (IOException e){ 
+            EstiloGral.ShowMessage("Hubo un error al leer del archivo del Menu", EstiloGral.INFO_MESSAGE);
+        }
+        return false;
     }
 }
