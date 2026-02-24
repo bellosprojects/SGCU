@@ -488,8 +488,8 @@ public class UserMenuView extends AuraWindow {
         .start();
     }
 
-    private static String getResourcePath(String ruta) {
-        return LoginView.class.getResource(ruta).getFile();
+    private String getResourcePath(String ruta) {
+        return getClass().getResource(ruta).getFile();
     }
 
     public void InvalidateInputs(String... ids){

@@ -17,8 +17,6 @@ import aura.layouts.AuraRow;
 
 public class RegisterView extends AuraWindow {
 
-    private String imagePath;
-
     public RegisterView() {
         super("SGCU - Registro");
 
@@ -305,8 +303,8 @@ public class RegisterView extends AuraWindow {
     }
 
 
-    private static String getResourcePath(String ruta) {
-        return LoginView.class.getResource(ruta).getFile();
+    private String getResourcePath(String ruta) {
+        return getClass().getResource(ruta).getFile();
     }
 
     public void InvalidateInputs(String... ids){
