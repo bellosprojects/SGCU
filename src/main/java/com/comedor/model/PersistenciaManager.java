@@ -20,8 +20,8 @@ public class PersistenciaManager {
     private final Path almuerzoFile = localDir.resolve("Almuerzo.json");
     private final Path pricesFile = localDir.resolve("Tarifas.json");
     private final Path UCVDataBase = Paths.get("src/main/java/com/comedor/database","Users.json");
-    private final Path reservaDesayuno = Paths.get("src/main/java/com/comedor/database","ReservaDesayuno.json");
-    private final Path reservaAlmuerzo = Paths.get("src/main/java/com/comedor/database","ReservaAlmuerzo.json");
+    private final Path reservaDesayuno = localDir.resolve("ReservaDesayuno.json");
+    private final Path reservaAlmuerzo = localDir.resolve("ReservaAlmuerzo.json");
     public static final String SEPARATOR = "<>";
     public PersistenciaManager(){
         createLocalData();
@@ -34,6 +34,7 @@ public class PersistenciaManager {
             EstiloGral.ShowMessage("Hubo un error al crear el archivo de usuarios registrados", EstiloGral.INFO_MESSAGE);
         }
     }
+
 
     private void createLocalData() {
 
@@ -51,8 +52,31 @@ public class PersistenciaManager {
         if(!Files.exists(pricesFile)){
             crearTarifa();
         }
+        if(!Files.exists(reservaDesayuno)){
+            crearReservaDesayuno();
+        }
+        if(!Files.exists(reservaAlmuerzo)){
+            crearReservaAlmuerzo();
+        }
 
     }
+
+    private void crearReservaDesayuno(){
+        try {
+            Files.createFile(reservaDesayuno);
+        } catch (IOException e) {
+            EstiloGral.ShowMessage("Hubo un error al crear el archivo de reserva de usuarios", EstiloGral.INFO_MESSAGE);
+        }
+    }
+
+    private void crearReservaAlmuerzo(){
+        try {
+            Files.createFile(reservaAlmuerzo);
+        } catch (IOException e) {
+            EstiloGral.ShowMessage("Hubo un error al crear el archivo de reserva de usuarios", EstiloGral.INFO_MESSAGE);
+        }
+    }
+    
 
     private void crearTarifa(){
 
