@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Image;
+import java.util.List;
 import java.util.function.Consumer;
 
 import javax.swing.JFrame;
@@ -125,5 +126,9 @@ public class AuraWindow extends JFrame {
 
         return main.find(id);
 
+    }
+
+    public List<AuraBox<?>> findAll(String id) {
+        return main.findAll(id);
     }
 }

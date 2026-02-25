@@ -52,7 +52,7 @@ public class Menu{
         cuposDisponibles= String.valueOf(Integer.parseInt(cuposDisponibles)-1);
     }
 
-    public void añadirCupos(){
+    public void agregarCupos(){
         cuposDisponibles= String.valueOf(Integer.parseInt(cuposDisponibles)+1);
     }
 
@@ -63,17 +63,18 @@ public class Menu{
 
     //Falta añadir el cupos
     public String toJson(){
-        return String.format("{\"cuposDisponibles\":\"%s\",\"plato\":\"%s\",\"ingredientes\":\"%s\",\"fecha\":\"%s\",\"tipo\":\"%s\"}",
+        return String.format("{\"cuposDisponibles\":\"%s\"<>\"plato\":\"%s\"<>\"ingredientes\":\"%s\"<>\"fecha\":\"%s\"<>\"tipo\":\"%s\"}",
             cuposDisponibles,
             plato,
             ingredientes,
-            fecha
+            fecha,
+            tipo.toString()
         );
     }
 
     public void fromJson(String jsonMenu){
         String clean = jsonMenu.replace("{", "").replace("}", "").replace("\"", "");
-        String[] pares = clean.split(",");
+        String[] pares = clean.split("<>");
 
         for(String par : pares){
 
@@ -95,6 +96,8 @@ public class Menu{
                 case "cuposDisponibles":
                     cuposDisponibles = value;
                     break;
+                case "tipo":
+                    tipo = TipoMenu.valueOf(value);
                 default:
                     break;
             }

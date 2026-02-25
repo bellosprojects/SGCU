@@ -1,62 +1,97 @@
 package com.comedor.control;
 
+import java.util.Queue;
+
+import com.comedor.model.Menu;
 import com.comedor.model.PersistenciaManager;
+import com.comedor.model.Prices;
+import com.comedor.model.Reserva;
 import com.comedor.view.EstiloGral;
 import com.comedor.view.PanelAdminView;
+import aura.core.AuraBox;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import aura.layouts.AuraColumn;
 
-public class PanelAdminController implements ActionListener {
-    private NavigationDelegate delegate;
-    private PanelAdminView panelAdminView;
-    private PersistenciaManager persistenciaManager;
-    private Double porcentajeEstudiante;
-    private Double porcentajeProfesor;
-    private Double porcentajeTrabajador;
+public class PanelAdminController {
+    private final NavigationDelegate delegate;
+    private final PanelAdminView panelAdminView;
+    private final PersistenciaManager persistenciaManager;
 
-    public PanelAdminController(PanelAdminView panelAdminView, PersistenciaManager persistenciaManager,
-            NavigationDelegate delegate) {
+    public PanelAdminController(PanelAdminView panelAdminView, PersistenciaManager persistenciaManager, NavigationDelegate delegate) {
         this.panelAdminView = panelAdminView;
         this.persistenciaManager = persistenciaManager;
         this.delegate = delegate;
-        this.porcentajeEstudiante = 25.0;
-        this.porcentajeProfesor = 85.0;
-        this.porcentajeTrabajador = 100.0;
-        //guardarTarifasPorDefecto();
         setupListeners();
+        sendData();
+        sendReservas();
     }
 
-    public void actionPerformed(ActionEvent e) {
+    private void sendData(){
+        
+        Double ccb = persistenciaManager.getCCB();
+        Double student = persistenciaManager.getPorcentajeFromRole("Estudiante");
+        Double teacher = persistenciaManager.getPorcentajeFromRole("Profesor");
+        Double worker = persistenciaManager.getPorcentajeFromRole("Trabajador");
 
-        if (e.getSource() == panelAdminView.getCCBButton()) {
-            goToCalcularCCB();
-        } else if (e.getSource() == panelAdminView.getGuardarButton()) {
-            actualizarTarifa();
-        } else if (e.getSource() == panelAdminView.getVolverButton()) {
-            gotoLoginView();
-        } else if (e.getSource() == panelAdminView.getMenuButton()) {
-            goToMenuGestion();
+        panelAdminView.setPrices(new Prices(student, teacher, worker, ccb));
+
+        Menu desayuno = persistenciaManager.getMenu(Menu.TipoMenu.DESAYUNO);
+        String platoDesayuno = desayuno == null? null : desayuno.getPlato();
+
+        Menu almuerzo = persistenciaManager.getMenu(Menu.TipoMenu.ALMUERZO);
+        String platoAlmuerzo = almuerzo == null? null : almuerzo.getPlato();
+
+        panelAdminView.setMenus(platoDesayuno, platoAlmuerzo);
+    }
+
+    private void sendReservas(){
+         Queue<Reserva> almmuerzoRes = persistenciaManager.AlmuerzoWaitingQueue();
+
+        panelAdminView.setReservas(almmuerzoRes);
+
+        AuraColumn reservasColumn = (AuraColumn) panelAdminView.find("reservas");
+
+        for(AuraBox<?> b : panelAdminView.findAll("cancelarBtn")){
+            b.onClick(button -> {
+                AuraColumn parent = (AuraColumn) button.getParent().getParent();
+                String cedula = parent.getId();
+                persistenciaManager.cancelarReserva(cedula, Menu.TipoMenu.ALMUERZO);
+                reservasColumn.remove(parent);
+                reservasColumn.revalidate();
+                EstiloGral.ShowMessage("Reserva cancelada exitosamente.", EstiloGral.SUCCESS_MESSAGE);
+            });
         }
 
+        for(AuraBox<?> b : panelAdminView.findAll("confirmarBtn")){
+            b.onClick(button -> {
+                AuraColumn parent = (AuraColumn) button.getParent().getParent();
+                String cedula = parent.getId();
+                persistenciaManager.aceptarReserva(cedula, Menu.TipoMenu.ALMUERZO);
+                reservasColumn.remove(parent);
+                reservasColumn.revalidate();
+                EstiloGral.ShowMessage("Reserva confirmada exitosamente.", EstiloGral.SUCCESS_MESSAGE);
+            });
+        }
     }
 
     private void actualizarTarifa() {
+
         String newPorcentaje = panelAdminView.getPorcentaje();
         if (newPorcentaje == null || newPorcentaje.trim().isEmpty()) {
-            panelAdminView.InvalidateInputs(panelAdminView.getPorcentajeComponent());
-        return;
+            panelAdminView.InvalidateInputs("porcentaje");
+            return;
         }
 
         try {
-            Double nuevoPorcentaje = Double.parseDouble(panelAdminView.getPorcentaje());
-            String Role = panelAdminView.getRolSelect();
+            String Role = panelAdminView.getRole();
 
-            if (nuevoPorcentaje < 0) {
-            EstiloGral.ShowMessage("Porcentaje no puede ser negativo.", EstiloGral.ERROR_MESSAGE);
-            return;
-        }
-            persistenciaManager.guardarTarifa(nuevoPorcentaje, Role);
+            double parsedPorcentaje = Double.parseDouble(newPorcentaje);
+            if (parsedPorcentaje < 0) {
+                EstiloGral.ShowMessage("Porcentaje no puede ser negativo.", EstiloGral.ERROR_MESSAGE);
+                return;
+            }
+            persistenciaManager.guardarTarifa(parsedPorcentaje, Role);
+            sendData();
             EstiloGral.ShowMessage("Tarifa actualizada exitosamente para " + Role, EstiloGral.SUCCESS_MESSAGE);
 
         } catch (NumberFormatException ex) {
@@ -64,29 +99,36 @@ public class PanelAdminController implements ActionListener {
         }
     }
 
-    void setupListeners() {
-        this.panelAdminView.getMenuButton().addActionListener(this);
-        this.panelAdminView.getGuardarButton().addActionListener(this);
-        this.panelAdminView.getVolverButton().addActionListener(this);
-        this.panelAdminView.getCCBButton().addActionListener(this);
+    private void setupListeners() {
+        
+        panelAdminView.find("backBtn").onClick(b -> 
+            gotoLoginView()
+        );
+
+        panelAdminView.find("ccbBtn").onClick(b -> 
+            goToCalcularCCB()
+        );
+
+        panelAdminView.find("menuBtn").onClick(b -> 
+            goToMenuGestion()
+        );
+
+        panelAdminView.find("update").onClick(b -> 
+            actualizarTarifa()
+        );
+
     }
 
-    void gotoLoginView() {
+    private void gotoLoginView() {
         delegate.onBackToLoginRequested();
     }
 
-    void goToCalcularCCB() {
+    private void goToCalcularCCB() {
         delegate.onCalcularCCBRequested();
     }
 
-    void goToMenuGestion() {
+    private void goToMenuGestion() {
         delegate.onGestionarMenuRequested();
-    }
-
-    void guardarTarifasPorDefecto() {
-        persistenciaManager.guardarTarifa(this.porcentajeTrabajador, "Trabajador");
-        persistenciaManager.guardarTarifa(this.porcentajeEstudiante, "Estudiante");
-        persistenciaManager.guardarTarifa(this.porcentajeProfesor, "Profesor");
     }
 
 }

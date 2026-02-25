@@ -1,68 +1,76 @@
 package com.comedor.control;
 
 import com.comedor.model.PersistenciaManager;
+import com.comedor.utils.ModelUtils;
 import com.comedor.view.EstiloGral;
 import com.comedor.view.GestionarCCBView;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+public class CCBCalculoController {
+    private final NavigationDelegate delegate;
+    private final GestionarCCBView calcularCCBView;
+    private final PersistenciaManager persistenciaManager;
 
-public class CCBCalculoController implements ActionListener {
-    private NavigationDelegate delegate;
-    private GestionarCCBView calcularCCBView;
-    private PersistenciaManager persistenciaManager;
-    private double precioCCB;
-
-    public CCBCalculoController(GestionarCCBView calcularCCBView, PersistenciaManager persistenciaManager,
-            NavigationDelegate delegate) {
+    public CCBCalculoController(GestionarCCBView calcularCCBView, PersistenciaManager persistenciaManager, NavigationDelegate delegate) {
         this.calcularCCBView = calcularCCBView;
         this.persistenciaManager = persistenciaManager;
         this.delegate = delegate;
-        this.precioCCB = persistenciaManager.getCCB();
-        calcularCCBView.setCCB(precioCCB);
-        setupListeners();
+        setup();
     }
 
-    public void actionPerformed(ActionEvent e) {
+    private void setup() {
 
-        if (e.getSource() == calcularCCBView.getGuardarButton()) {
-            calcularCCB();
-        } else if (e.getSource() == calcularCCBView.getBackButton()) {
-            gotoPanelAdminView();
+        Double ccb = persistenciaManager.getCCB();
+        if (ccb != null) {
+            calcularCCBView.setCCB(ccb);
         }
+
+        calcularCCBView.find("backBtn").onClick(b -> {
+            gotoPanelAdminView();
+        });
+
+        calcularCCBView.find("calcularBtn").onClick(b -> {
+            calcularCCB();
+        });
+
+        calcularCCBView.find("clearBtn").onClick(b -> {
+            calcularCCBView.limpiarFormulario();
+        });
+        
     }
 
-    void setupListeners() {
-        this.calcularCCBView.getGuardarButton().addActionListener(this);
-        this.calcularCCBView.getBackButton().addActionListener(this);
-    }
+    private void calcularCCB() {
+        
+        String CFStr = calcularCCBView.getCostosFijos();
+        String CVStr = calcularCCBView.getCostosVariables();
+        String NBStr = calcularCCBView.getCantidadBandejas();
+        String porcMermaStr = calcularCCBView.getPorcentajeMerma();
 
-    void calcularCCB() {
-         if (!IsValidInputs()){
+         if (!IsValidInputs(CFStr, CVStr, NBStr, porcMermaStr)){
             EstiloGral.ShowMessage("Datos invalidos", EstiloGral.ERROR_MESSAGE); 
             return;
         }
 
-        Double CF = Double.parseDouble(calcularCCBView.getCostosFijos());
-        Double CV = Double.parseDouble(calcularCCBView.getCostosVariables());
-        Integer NB = Integer.parseInt(calcularCCBView.getCantidadBandejas());
-        Double porcMerma = Double.parseDouble(calcularCCBView.getPorcentajeMerma());
+        double CF = Double.parseDouble(CFStr);
+        double CV = Double.parseDouble(CVStr);
+        int NB = Integer.parseInt(NBStr);
+        double porcMerma = Double.parseDouble(porcMermaStr);
+
         
-        this.precioCCB = procesarCalculo(CF, CV, NB, porcMerma);
-        persistenciaManager.guardarCCB(this.precioCCB);
-        EstiloGral.ShowMessage("CCB guardado exitosamenmte", EstiloGral.SUCCESS_MESSAGE); 
+        double precioCCB = procesarCalculo(CF, CV, NB, porcMerma);
+        persistenciaManager.guardarCCB(precioCCB);
+        EstiloGral.ShowMessage("CCB guardado exitosamente", EstiloGral.SUCCESS_MESSAGE); 
         gotoPanelAdminView();
     }
 
-    void gotoPanelAdminView() {
+    private void gotoPanelAdminView() {
         delegate.onAdminPanelRequested();
     }
 
-    public double procesarCalculo(double CF, double CV, int NB, double porcMerma) {
+    private double procesarCalculo(double CF, double CV, int NB, double porcMerma) {
         porcMerma = porcMerma / 100.0;
 
         if (NB <= 0) {
-            System.out.println("Error: El número de bandejas (NB) debe ser mayor a 0");
+            EstiloGral.ShowMessage("La cantidad de bandejas debe ser mayor a cero.", EstiloGral.ERROR_MESSAGE);
             return 0.0;
         }
         double costosTotales = CF + CV;
@@ -71,32 +79,25 @@ public class CCBCalculoController implements ActionListener {
         return CCB;
     }
 
-    private boolean esDecimalValido(String texto) {
-    return texto.matches("^[0-9]+(\\.[0-9]+)?$");
-}
-
-    private boolean IsValidInputs (){
-        String CF = calcularCCBView.getCostosFijos();
-        String CV = calcularCCBView.getCostosVariables();
-        String NB = calcularCCBView.getCantidadBandejas();
-        String porcMerma = calcularCCBView.getPorcentajeMerma();
+    private boolean IsValidInputs (String CF, String CV, String NB, String porcMerma){
 
         boolean flag = true;
 
-        if(CF.isEmpty() || !esDecimalValido(CF)){
+        if(CF.isEmpty() || !ModelUtils.esDecimalValido(CF)){
             flag = false;
-            calcularCCBView.InvalidateInputs(calcularCCBView.getCostosFijosComponent());
+            calcularCCBView.InvalidateInputs("costosFijos");
         }
-        if(CV.isEmpty() || !esDecimalValido(CV)){
+        if(CV.isEmpty() || !ModelUtils.esDecimalValido(CV)){
             flag = false;
-            calcularCCBView.InvalidateInputs(calcularCCBView.getCostosVariablesComponent());
+            calcularCCBView.InvalidateInputs("costosVariables");
         }
-        if(NB.isEmpty() || !NB.matches("^[0-9]+$")){
+        if(NB.isEmpty() || !ModelUtils.esEnteroValido(NB)){
             flag = false;
-            calcularCCBView.InvalidateInputs(calcularCCBView.getCantidadBAndejasComponent());        }
-        if(porcMerma.isEmpty() || !esDecimalValido(porcMerma)){
+            calcularCCBView.InvalidateInputs("cantidadBandejas");        
+        }
+        if(porcMerma.isEmpty() || !ModelUtils.esDecimalValido(porcMerma)){
             flag = false;
-            calcularCCBView.InvalidateInputs(calcularCCBView.getPorcentajeMermaComponent());
+            calcularCCBView.InvalidateInputs("porcentajeMerma");
         }
         return flag;
     }

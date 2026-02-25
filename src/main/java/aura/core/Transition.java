@@ -175,9 +175,14 @@ public abstract class Transition<T extends  Transition<T>> {
 
         new Thread(() -> {
             try {
+                
+                if(this.component != null) {
+                    if(this.cancel){
+                        this.component.cancelAnimations(animationType);
+                    }
+                    this.component.animate(this);
+                }
                 Thread.sleep(delay);
-
-                if(this.component != null) this.component.animate(this, this.cancel);
                 if(startAction != null) startAction.onStart();
 
                 startTime = System.currentTimeMillis();
@@ -200,7 +205,7 @@ public abstract class Transition<T extends  Transition<T>> {
             if(this.finishAction != null) finishAction.onFinish();
             if(this.serieT != null) this.serieT.start();
         } else if (this.step != null){
-            step.onUpdate(this.pingPong? startVal : endVal);
+            step.onUpdate(startVal);
         }
         
     }

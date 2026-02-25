@@ -10,6 +10,7 @@ import javax.swing.JLabel;
 import aura.animations.AnimateBackground;
 import aura.animations.AnimateRipple;
 import aura.core.AuraBox;
+import aura.core.Transition;
 
 public class AuraButton extends AuraBox<AuraButton> {
 
@@ -29,10 +30,11 @@ public class AuraButton extends AuraBox<AuraButton> {
 
         onClick(self -> {
 
+            cancelAnimations(Transition.AnimationType.BACKGROUND);
+
             new AnimateRipple(self, 0.95f, 200)
-                .cancelPrev(true)
                 .parallel(
-                    new AnimateBackground(self, getBackground().darker(), 100).cancelPrev(true).pingPong()
+                    new AnimateBackground(self, getBackgroundColor().brighter(), 100).pingPong()
                 )
                 .start();
 

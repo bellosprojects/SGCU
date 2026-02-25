@@ -4,7 +4,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import com.comedor.model.Menu.TipoMenu;
 import com.comedor.model.Reserva.EstadoReserva;
@@ -18,10 +20,11 @@ public class PersistenciaManager {
     private final Path desayunoFile = localDir.resolve("Desayuno.json");
     private final Path almuerzoFile = localDir.resolve("Almuerzo.json");
     private final Path pricesFile = localDir.resolve("Tarifas.json");
+    private final Path reservaDesayuno = localDir.resolve("ReservaDesayuno.json");
+    private final Path reservaAlmuerzo = localDir.resolve("ReservaAlmuerzo.json");
+
     private final Path UCVDataBase = Paths.get("src/main/java/com/comedor/database","Users.json");
-    private final Path reservaDesayuno = Paths.get("src/main/java/com/comedor/database","ReservaDesayuno.json");
-    private final Path reservaAlmuerzo = Paths.get("src/main/java/com/comedor/database","ReservaAlmuerzo.json");
-    public static final String SEPARATOR = "<>";
+
     public PersistenciaManager(){
         createLocalData();
     }
@@ -33,6 +36,8 @@ public class PersistenciaManager {
             EstiloGral.ShowMessage("Hubo un error al crear el archivo de usuarios registrados", EstiloGral.INFO_MESSAGE);
         }
     }
+
+    
 
     private void createLocalData() {
 
@@ -50,7 +55,29 @@ public class PersistenciaManager {
         if(!Files.exists(pricesFile)){
             crearTarifa();
         }
+        if(!Files.exists(reservaDesayuno)){
+            crearReservaDesayuno();
+        }
+        if(!Files.exists(reservaAlmuerzo)){
+            crearReservaAlmuerzo();
+        }
 
+    }
+
+    private void crearReservaDesayuno(){
+        try {
+            Files.createFile(reservaDesayuno);
+        } catch (IOException e) {
+            EstiloGral.ShowMessage("Hubo un error al crear el archivo de reserva de usuarios", EstiloGral.INFO_MESSAGE);
+        }
+    }
+
+    private void crearReservaAlmuerzo(){
+        try {
+            Files.createFile(reservaAlmuerzo);
+        } catch (IOException e) {
+            EstiloGral.ShowMessage("Hubo un error al crear el archivo de reserva de usuarios", EstiloGral.INFO_MESSAGE);
+        }
     }
 
     private void crearTarifa(){
@@ -78,17 +105,13 @@ public class PersistenciaManager {
                 prices.fromJSON(lineas.get(0));
 
                 switch (role) {
-                    case "Estudiante":
-                        prices.setEstudiante(tarifaFinal);
-                        break;
-                    case "Profesor":
-                        prices.setProfesor(tarifaFinal);
-                        break;
-                    case "Trabajador":
-                        prices.setTrabajador(tarifaFinal);
-                        break;
-                    default:
-                        break;
+                    case "Estudiante" -> prices.setEstudiante(tarifaFinal);
+                    case "Profesor" -> prices.setProfesor(tarifaFinal);
+                    case "Trabajador" -> prices.setTrabajador(tarifaFinal);
+                    default -> {
+                        EstiloGral.ShowMessage("Rol no reconocido. No se guardó la tarifa.", EstiloGral.ERROR_MESSAGE);
+                        return;
+                    }
                 }
 
                 lineas.clear();
@@ -175,6 +198,9 @@ public class PersistenciaManager {
         if(isCedulaRegistered(user.getCedula()) || !isUserInDataBase(user.getCedula(), user.getRole())){
             return;
         }
+
+        user.encriptPassword();
+
         String newUser = user.toJson();
         //Guardarlo
         try{
@@ -280,7 +306,15 @@ public class PersistenciaManager {
 
     public void guardarMenu(Menu menu){
         Path rutaDestino = (menu.getTipo() == TipoMenu.DESAYUNO) ? desayunoFile : almuerzoFile;
+            
         String menuStr = menu.toJson();
+
+        if(menu.getTipo() == TipoMenu.DESAYUNO){
+            vaciarListaDesayuno();
+        } else {
+            vaciarListaAlmuerzo();
+        }
+
         try {
             Files.writeString(
                 rutaDestino, 
@@ -371,6 +405,9 @@ public class PersistenciaManager {
     }  
 
     public void cancelarReserva(String cedula, TipoMenu tipo){
+
+        recargarSaldo(cedula, getSaldoFromCedula(cedula) + getPrecioFromCedula(cedula));
+
         modificarEstado(new Reserva(cedula, EstadoReserva.CANCELADO), tipo);
     }
 
@@ -378,70 +415,116 @@ public class PersistenciaManager {
         modificarEstado(new Reserva(cedula, EstadoReserva.RESERVADO), tipo);
     }
 
-    public Boolean reservarMenu(String cedula, TipoMenu tipo){
+    public Reserva.EstadoIntento intentarReservar(String cedula, TipoMenu tipo){
+        Reserva reservaDes = getReservaFromCedula(cedula, tipo);
+        if(reservaDes != null){
+            if(reservaDes.getEstadoReserva() == EstadoReserva.CANCELADO){
+                return Reserva.EstadoIntento.RESERVA_CANCELADA;
+            }
+            return Reserva.EstadoIntento.YA_TIENE_RESERVA;
+        }
+        if(getCupos(tipo) <= 0){
+            return Reserva.EstadoIntento.NO_HAY_CUPO;
+        }
+        return (getSaldoFromCedula(cedula) >= getPrecioFromCedula(cedula))? Reserva.EstadoIntento.RESERVA_EXITOSA : Reserva.EstadoIntento.SALDO_INSUFICIENTE;
+    }
+
+    public double getPrecioFromCedula(String cedula){
+        return getPorcentajeFromRole(getRoleFromCedula(cedula)) * getCCB() / 100.0;
+    }
+
+    public void reservarMenu(String cedula, TipoMenu tipo){
+        try{
+            Path ruta = (tipo == TipoMenu.DESAYUNO) ? reservaDesayuno : reservaAlmuerzo;
+            if(Files.exists(ruta)){                                    
+                List<String> lineas = Files.readAllLines(ruta);    
+                Reserva reserva;  
+                reserva = new Reserva(cedula, EstadoReserva.EN_ESPERA);
+                lineas.add(reserva.toJSON());
+                Files.write(ruta, lineas, StandardOpenOption.TRUNCATE_EXISTING);
+            }
+        } catch (IOException e){ 
+            EstiloGral.ShowMessage("Hubo un error al intentar reservar el menú", EstiloGral.INFO_MESSAGE);
+        }
+    }
+
+    private void aumentarCupo(TipoMenu tipo){
+        Menu menu = getMenu(tipo);
+
+        menu.agregarCupos();
+        guardarMenu(menu);
+    }
+
+    private int getCupos(TipoMenu tipo){
+        try{
+            Menu menu = getMenu(tipo);
+            if(menu == null){
+                EstiloGral.ShowMessage("No se pudo obtener el menú para verificar los cupos", EstiloGral.INFO_MESSAGE);
+                return 0;
+            }
+            return Integer.parseInt(menu.getCupos());
+        } catch (NullPointerException e){
+            EstiloGral.ShowMessage("Hubo un error al obtener los cupos del menú", EstiloGral.INFO_MESSAGE);
+            return 0;
+        }
+    }
+
+    public Queue<Reserva> DesayunoWaitingQueue(){
+        Queue<Reserva> cola = new LinkedList<>();
+        try{
+            Path ruta = reservaDesayuno;
+            if(Files.exists(ruta)){                                    
+                List<String> lineas = Files.readAllLines(ruta);    
+                for(String line : lineas){
+                    Reserva reserva= new Reserva();  
+                    reserva.fromJSON(line); 
+                    if(reserva.getEstadoReserva()==EstadoReserva.EN_ESPERA){
+                        cola.add(reserva);
+                    }
+                }
+            }
+        } catch (IOException e){ 
+            EstiloGral.ShowMessage("Hubo un error al intentar reservar el menú", EstiloGral.INFO_MESSAGE);
+        }
+        return cola;
+    }
+
+    public Queue<Reserva> AlmuerzoWaitingQueue(){
+        Queue<Reserva> cola = new LinkedList<>();
+        try{
+            Path ruta = reservaAlmuerzo;
+            if(Files.exists(ruta)){                                    
+                List<String> lineas = Files.readAllLines(ruta);    
+                for(String line : lineas){
+                    Reserva reserva= new Reserva();  
+                    reserva.fromJSON(line); 
+                    if(reserva.getEstadoReserva()==EstadoReserva.EN_ESPERA){
+                        cola.add(reserva);
+                    }
+                }
+            }
+        } catch (IOException e){ 
+            EstiloGral.ShowMessage("Hubo un error al intentar reservar el menú", EstiloGral.INFO_MESSAGE);
+        }
+        return cola;
+    }
+
+    public Reserva getReservaFromCedula(String cedula, TipoMenu tipo){
         try{
             Path ruta = (tipo == TipoMenu.DESAYUNO) ? reservaDesayuno : reservaAlmuerzo;
             if(Files.exists(ruta)){                                    
                 List<String> lineas = Files.readAllLines(ruta);    
                 Reserva reserva= new Reserva();  
-                for(int i = 0; i < lineas.size(); i++){
-                    reserva.fromJSON(lineas.get(i)); 
+                for(String line : lineas){
+                    reserva.fromJSON(line); 
                     if(reserva.getCedula().equals(cedula)){
-                        return false;
+                        return reserva;
                     }
                 }
-                reserva= new Reserva(cedula, EstadoReserva.EN_ESPERA);
-                lineas.add(reserva.toJSON());
-                if(!disminuirCupo(tipo)){
-                    return false;
-                }
-                Files.write(ruta, lineas, StandardOpenOption.TRUNCATE_EXISTING);
-                return true;
             }
         } catch (IOException e){ 
-            EstiloGral.ShowMessage("Hubo un error al intentar reservar el menú", EstiloGral.INFO_MESSAGE);
+            EstiloGral.ShowMessage("Hubo un error al intentar obtener la reserva", EstiloGral.INFO_MESSAGE);
         }
-        return false;
-    }
-
-    private void aumentarCupo(TipoMenu tipo){
-        try{
-            Path ruta = (tipo == TipoMenu.DESAYUNO) ? desayunoFile : almuerzoFile;
-            if(Files.exists(ruta)){                                    //evalua si el archivo existe
-                List<String> lineas = Files.readAllLines(ruta);        //crea una lista con todas las lineas del archivo
-                if(!lineas.isEmpty()){
-                    String linea = lineas.get(0);                             
-                    Menu menu = new Menu();
-                    menu.fromJson(linea);
-                    menu.añadirCupos();
-                    guardarMenu(menu);
-                }
-            }
-        } catch (IOException e){ 
-            EstiloGral.ShowMessage("Hubo un error al leer del archivo del Menu", EstiloGral.INFO_MESSAGE);
-        }
-    }
-
-    private Boolean disminuirCupo(TipoMenu tipo){
-        try{
-            Path ruta = (tipo == TipoMenu.DESAYUNO) ? desayunoFile : almuerzoFile;
-            if(Files.exists(ruta)){                                    //evalua si el archivo existe
-                List<String> lineas = Files.readAllLines(ruta);        //crea una lista con todas las lineas del archivo
-                if(!lineas.isEmpty()){
-                    String linea = lineas.get(0);                             
-                    Menu menu = new Menu();
-                    menu.fromJson(linea);
-                    if(Integer.parseInt(menu.getCupos())<=0){
-                    menu.sustraerCupos();
-                    guardarMenu(menu);
-                    return true;
-                    }
-                    return false;
-                }
-            }
-        } catch (IOException e){ 
-            EstiloGral.ShowMessage("Hubo un error al leer del archivo del Menu", EstiloGral.INFO_MESSAGE);
-        }
-        return false;
+        return null;
     }
 }

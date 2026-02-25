@@ -788,17 +788,7 @@ public abstract class AuraBox<T extends AuraBox<T>> extends JPanel {
 
     }
 
-    public T animate(Transition<?> transition, boolean cancel){
-
-        if(cancel){
-            for(int i = 0; i < timers.size(); i ++){
-                if(timersTypes.get(i) == transition.getAnimationType()){
-                    timers.get(i).stop(true);
-                    timers.remove(i);
-                    timersTypes.remove(i);
-                }
-            }
-        }
+    public T animate(Transition<?> transition){
 
         this.timers.add(transition);
         this.timersTypes.add(transition.getAnimationType());
@@ -814,7 +804,8 @@ public abstract class AuraBox<T extends AuraBox<T>> extends JPanel {
                 timersTypes.remove(i);
             }
         }
-
+        
+        repaint();
         return (T) this;
         
     }
@@ -985,6 +976,29 @@ public abstract class AuraBox<T extends AuraBox<T>> extends JPanel {
 
     public AuraBox<?> getInfo(){
         return this.info;
+    }
+
+        /**
+     * Busca todos los AuraBox que coincidan con el ID proporcionado.
+     * @param id El identificador a buscar.
+     * @return Una lista con todos los componentes encontrados.
+     */
+    public List<AuraBox<?>> findAll(String id) {
+        List<AuraBox<?>> results = new ArrayList<>();
+        findAllRecursive(id, this, results);
+        return results;
+    }
+
+    private void findAllRecursive(String id, AuraBox<?> current, List<AuraBox<?>> results) {
+        if (id.equals(current.getId())) {
+            results.add(current);
+        }
+
+        for (Component child : current.getComponents()) {
+            if (child instanceof AuraBox) {
+                findAllRecursive(id, (AuraBox<?>) child, results);
+            }
+        }
     }
 
 }
