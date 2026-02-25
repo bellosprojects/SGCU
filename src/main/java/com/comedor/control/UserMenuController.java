@@ -72,6 +72,16 @@ public class UserMenuController {
             
         );
 
+        menuView.find("bookBreakfastBtn").onClick(b -> {
+            reservarDesayuno();
+        }
+        );
+
+        menuView.find("bookLunchBtn").onClick(b -> {
+            reservarAlmuerzo();
+        }
+        );
+
         sendUser();
         sendMenu();
     }
@@ -83,7 +93,12 @@ public class UserMenuController {
             menuView.InvalidateInputs("rechargeMonto");
             EstiloGral.ShowMessage("Ingrese un monto para recargar", EstiloGral.ERROR_MESSAGE);
             flag = false;
-        } 
+        }
+        else if(!isAllNumbers(montoStr)){
+            menuView.InvalidateInputs("rechargeMonto");
+            EstiloGral.ShowMessage("Ingrese solo nÃºmeros en el monto", EstiloGral.ERROR_MESSAGE);
+            flag = false;
+        }
         else if(numeroReferencia.isEmpty()){
             menuView.InvalidateInputs("rechargeRef");
             EstiloGral.ShowMessage("Ingrese un numero de referencia para recargar", EstiloGral.ERROR_MESSAGE);
@@ -94,11 +109,7 @@ public class UserMenuController {
             EstiloGral.ShowMessage("El numero de referencia debe tener 12 digitos", EstiloGral.ERROR_MESSAGE);
             flag = false;
         }
-        else if(!isAllNumbers(montoStr)){
-            menuView.InvalidateInputs("rechargeMonto");
-            EstiloGral.ShowMessage("Ingrese solo números en el monto", EstiloGral.ERROR_MESSAGE);
-            flag = false;
-        }
+        
         return flag;
     }
 
@@ -115,7 +126,7 @@ public class UserMenuController {
         }
 
         double nuevoSaldo = monto + persistenciaManager.getSaldoFromCedula(cedula);
-        //persistenciaManager.recargarSaldo(cedula, nuevoSaldo);
+        persistenciaManager.recargarSaldo(cedula, nuevoSaldo);
         EstiloGral.ShowMessage("Recarga exitosa. Nuevo saldo: " + nuevoSaldo, EstiloGral.SUCCESS_MESSAGE);
         menuView.hideRecharge();
         menuView.updateSaldo(nuevoSaldo);            
@@ -124,5 +135,22 @@ public class UserMenuController {
 
     public boolean isAllNumbers(String str) {
         return str != null && str.matches("\\d+(\\.\\d+)?");
+    }
+    private void reservarDesayuno(){
+        if(persistenciaManager.reservarMenu(cedula, TipoMenu.DESAYUNO)){
+            EstiloGral.ShowMessage("Solicitud en espera", EstiloGral.INFO_MESSAGE);
+        }
+        else{
+            EstiloGral.ShowMessage("Cupo ya solicitado o Cupo cancelado", EstiloGral.INFO_MESSAGE);
+        }
+    }
+
+    private void reservarAlmuerzo(){
+        if(persistenciaManager.reservarMenu(cedula, TipoMenu.ALMUERZO)){
+            EstiloGral.ShowMessage("Solicitud en espera", EstiloGral.INFO_MESSAGE);
+        }
+        else{
+            EstiloGral.ShowMessage("Cupo ya solicitado o Cupo cancelado", EstiloGral.INFO_MESSAGE);
+        }
     }
 }

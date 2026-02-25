@@ -28,6 +28,7 @@ public class GestionarMenuController {
         String plato = gestionarMenuView.getPlatoText();
         String ingredientes = gestionarMenuView.getingredientesText();
         String tipo = gestionarMenuView.getTipo();
+        String cupos= gestionarMenuView.getCupos();
         TipoMenu tipoMenu = tipo.equals("Desayuno") ? TipoMenu.DESAYUNO : TipoMenu.ALMUERZO;
 
         if (!isValidInputs(fecha, plato, ingredientes)) {
@@ -35,7 +36,7 @@ public class GestionarMenuController {
             return;
         }
 
-        persistenciaManager.guardarMenu(new Menu(plato, ingredientes, tipoMenu, fecha));
+        persistenciaManager.guardarMenu(new Menu(plato, ingredientes, tipoMenu, fecha, cupos));
         EstiloGral.ShowMessage("Menú guardado exitosamenmte", EstiloGral.SUCCESS_MESSAGE);  
         salirDeVentana();
     }

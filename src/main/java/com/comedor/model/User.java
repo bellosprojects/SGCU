@@ -57,6 +57,10 @@ public class User {
         return fullname;
     }
 
+    public void setSaldo(Double saldo) {
+        this.saldo = saldo;
+    }
+
     public String toJson(){
 
         try{
