@@ -4,8 +4,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.LinkedList;
 import java.util.List;
-
+import java.util.Queue;
 import com.comedor.model.Menu.TipoMenu;
 import com.comedor.model.Reserva.EstadoReserva;
 import com.comedor.utils.ModelUtils;
@@ -444,4 +445,46 @@ public class PersistenciaManager {
         }
         return false;
     }
+
+    public Queue<Reserva> DesayunoWaitingQueue(){
+        Queue<Reserva> cola = new LinkedList<>();
+        try{
+            Path ruta = reservaDesayuno;
+            if(Files.exists(ruta)){                                    
+                List<String> lineas = Files.readAllLines(ruta);    
+                Reserva reserva= new Reserva();  
+                for(int i = 0; i < lineas.size(); i++){
+                    reserva.fromJSON(lineas.get(i)); 
+                    if(reserva.getEstadoReserva()==EstadoReserva.EN_ESPERA){
+                        cola.add(reserva);
+                    }
+                }
+            }
+        } catch (IOException e){ 
+            EstiloGral.ShowMessage("Hubo un error al intentar reservar el menú", EstiloGral.INFO_MESSAGE);
+        }
+        return cola;
+    }
+
+    public Queue<Reserva> AlmuerzoWaitingQueue(){
+        Queue<Reserva> cola = new LinkedList<>();
+        try{
+            Path ruta = reservaAlmuerzo;
+            if(Files.exists(ruta)){                                    
+                List<String> lineas = Files.readAllLines(ruta);    
+                Reserva reserva= new Reserva();  
+                for(int i = 0; i < lineas.size(); i++){
+                    reserva.fromJSON(lineas.get(i)); 
+                    if(reserva.getEstadoReserva()==EstadoReserva.EN_ESPERA){
+                        cola.add(reserva);
+                    }
+                }
+            }
+        } catch (IOException e){ 
+            EstiloGral.ShowMessage("Hubo un error al intentar reservar el menú", EstiloGral.INFO_MESSAGE);
+        }
+        return cola;
+    }
+
+
 }
