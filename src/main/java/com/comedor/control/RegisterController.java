@@ -1,52 +1,44 @@
 package com.comedor.control;
 
-import com.comedor.view.EstiloGral;
-import com.comedor.view.RegisterView;
 import com.comedor.model.PersistenciaManager;
 import com.comedor.model.User;
+import com.comedor.view.EstiloGral;
+import com.comedor.view.RegisterView;
 
-import java.awt.event.*;
+public class RegisterController {
+    private final NavigationDelegate delegate;
+    private final RegisterView registerView;
+    private final PersistenciaManager persistenciaManager;
 
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
-public class RegisterController implements ActionListener {
-    private NavigationDelegate delegate;
-    private RegisterView registerView;
-    private PersistenciaManager persistenciaManager;
-
-    public RegisterController(RegisterView registerView, PersistenciaManager persistenciaManager,
-            NavigationDelegate delegate) {
+    public RegisterController(RegisterView registerView, PersistenciaManager persistenciaManager, NavigationDelegate delegate) {
         this.registerView = registerView;
         this.persistenciaManager = persistenciaManager;
         this.delegate = delegate;
         setupListeners();
-        this.registerView.getRootPane().setDefaultButton(registerView.getRegisterButton());
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == registerView.getRegisterButton()) {
-            handleRegister();
-
-        } else if (e.getSource() == registerView.getBackButton()) {
-
-            goToLoginView();
-
-        } else if (e.getSource() == registerView.getProfileImagFileChooser()) {
-            handleImageSelection();
-        }
     }
 
     private void setupListeners() {
-        registerView.getRegisterButton().addActionListener(this);
-        registerView.getCedulaInput().addActionListener(this);
-        registerView.getPassInput().addActionListener(this);
-        registerView.getConfirmPassInput().addActionListener(this);
-        registerView.getBackButton().addActionListener(this);
-        registerView.getUsernameInput().addActionListener(this);
-        registerView.getEmailInput().addActionListener(this);
-        registerView.getProfileImagFileChooser().addActionListener(this);
+        registerView.find("registerBtn").onClick(b -> {
+            handleRegister();
+        });
+        registerView.find("nextBtn").onClick(b -> {
+            registerView.nextStep();
+        });
+        registerView.find("backBtn").onClick(b -> {
+            goToLoginView();
+        });
+        registerView.find("findUser").onClick(b -> {
+
+            String cedula = registerView.getCedula();
+            User user = persistenciaManager.getUserFromCedulaInDataBase(cedula);
+
+            if(user != null){
+                registerView.setData(user);
+            } else {
+                EstiloGral.ShowMessage("Esta cedula no esta registrada en la base de datos", EstiloGral.ERROR_MESSAGE);
+            }
+
+        });
     }
 
     private void goToLoginView() {
@@ -66,97 +58,78 @@ public class RegisterController implements ActionListener {
         return str != null && str.matches("\\d+");
     }
 
-    public boolean isValidRegister(String fullname, String cedula, String password, String confirmPassword,
-            String email, String imagePath) {
+    public boolean isValidRegister(String fullname, String cedula, String password, String confirmPassword, String email) {
         boolean flag = true;
         if (fullname == null || fullname.isEmpty()) {
-            registerView.InvalidateInputs(registerView.getUsernameInput());
+            registerView.InvalidateInputs("username");
             flag = false;
         }
 
         if (cedula == null || cedula.isEmpty()) {
-            registerView.InvalidateInputs(registerView.getCedulaInput());
+            registerView.InvalidateInputs("cedula");
             flag = false;
         }
 
         if (password == null || password.isEmpty()) {
-            registerView.InvalidateInputs(registerView.getPassInput());
+            registerView.InvalidateInputs("password");
             flag = false;
         }
         if (confirmPassword == null || confirmPassword.isEmpty()) {
 
-            registerView.InvalidateInputs(registerView.getConfirmPassInput());
+            registerView.InvalidateInputs("confirmPassword");
             flag = false;
         }
 
         if (password.length() < 8) {
-            registerView.InvalidateInputs(registerView.getPassInput());
-            registerView.InvalidateInputs(registerView.getConfirmPassInput());
+            registerView.InvalidateInputs("password", "confirmPassword");
             flag = false;
         }
 
         if (!password.equals(confirmPassword)) {
-            registerView.InvalidateInputs(registerView.getConfirmPassInput());
+            registerView.InvalidateInputs("confirmPassword");
             flag = false;
         }
         if (!isEmailValid(email)) {
-            registerView.InvalidateInputs(registerView.getEmailInput());
+            registerView.InvalidateInputs("email");
             flag = false;
         }
 
         if (!isAllNumbers(cedula)) {
-            registerView.InvalidateInputs(registerView.getCedulaInput());
+            registerView.InvalidateInputs("cedula");
             flag = false;
         }
 
-        if (imagePath == null || imagePath.isEmpty()) {
-            //EstiloGral.ShowMessage("Necesita elegir una foto de perfil", EstiloGral.ERROR_MESSAGE);
-            flag = false;
-        }
         return flag;
     }
 
-    private void handleImageSelection() {
-        JFileChooser fileChooser = new JFileChooser();
-        FileNameExtensionFilter filtro = new FileNameExtensionFilter("Imágenes (JPG, PNG)", "jpg", "jpeg", "png");
-        fileChooser.setFileFilter(filtro);
-        int result = fileChooser.showOpenDialog(registerView);
-
-        if (result == JFileChooser.APPROVE_OPTION) {
-            String selectedFile = fileChooser.getSelectedFile().getAbsolutePath();
-            registerView.setImagePath(selectedFile);
-        }
-    }
-
     private void handleRegister() {
-        String fullname = registerView.getUsernameText();
-        String cedula = registerView.getCedulaText();
-        String password = new String(registerView.getPassText());
-        String confirmPassword = new String(registerView.getConfirmPassText());
-        String email = registerView.getEmailText();
-        String facultadSeleccionada = registerView.getFacultadSelect();
-        String tipoUsuario = registerView.getRoleSelect();
-        String imagePath = registerView.getProfileImagePath();
+        String fullname = registerView.getUsername();
+        String cedula = registerView.getCedula();
+        String password = registerView.getPassword();
+        String confirmPassword = registerView.getConfirmPassword();
+        String email = registerView.getEmail();
+        String facultadSeleccionada = registerView.getFacultad();
+        String tipoUsuario = "usuario";
 
-        if (isValidRegister(fullname, cedula, password, confirmPassword, email, imagePath)) {
+        if (isValidRegister(fullname, cedula, password, confirmPassword, email)) {
             //EstiloGral.ShowMessage("Complete todos los campos", EstiloGral.ERROR_MESSAGE);
             boolean isCedulaRegistered = persistenciaManager.isCedulaRegistered(cedula);
-            String auxiliar = persistenciaManager.getRoleFromCedulaInDataBase(cedula);
+            String auxiliar = persistenciaManager.getUserFromCedulaInDataBase(cedula).getRole();
             if (auxiliar == null) {
                 EstiloGral.ShowMessage("La cédula ingresada no está registrada en la base de datos de la UCV. Por favor, verifica tu cédula y tipo de usuario.", EstiloGral.ERROR_MESSAGE);
-                registerView.InvalidateInputs(registerView.getCedulaInput());
+                registerView.InvalidateInputs("cedula");
                 return;
             } else if (!auxiliar.equals(tipoUsuario)) {
-                registerView.InvalidateInputs(registerView.getCedulaInput());
+                registerView.InvalidateInputs("cedula");
                 EstiloGral.ShowMessage("La cédula ingresada ya está registrada en la DB. Por favor, verifica tu rol.", EstiloGral.ERROR_MESSAGE);
                 return;
             } else if (isCedulaRegistered) {
-                registerView.InvalidateInputs(registerView.getCedulaInput());
+                registerView.InvalidateInputs("cedula");
                 EstiloGral.ShowMessage("La cédula ingresada ya está registrada en el sistema. Debes iniciar sesión", EstiloGral.ERROR_MESSAGE);
                 return;
             }
             User user = new User(fullname, cedula, password, email, facultadSeleccionada, 0.0, tipoUsuario);
-            persistenciaManager.guardarUsuario(user, imagePath);
+            persistenciaManager.guardarUsuario(user);
             EstiloGral.ShowMessage("Usuario Registrado con exito", EstiloGral.SUCCESS_MESSAGE);
             goToLoginView();
         } else {

@@ -5,6 +5,7 @@ import javax.swing.SwingUtilities;
 import com.comedor.control.AppCoordinator;
 
 public class Main {
+
     public static void main(String[] args) {
 
         SwingUtilities.invokeLater(() -> {
@@ -14,4 +15,5 @@ public class Main {
         });
 
     }
+    
 }

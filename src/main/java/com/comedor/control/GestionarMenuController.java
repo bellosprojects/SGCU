@@ -1,37 +1,25 @@
 package com.comedor.control;
 
+import com.comedor.model.Menu;
 import com.comedor.model.PersistenciaManager;
 import com.comedor.model.Menu.TipoMenu;
 import com.comedor.view.EstiloGral;
 import com.comedor.view.GestionarMenuView;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+public class GestionarMenuController {
+    private final NavigationDelegate delegate;
+    private final GestionarMenuView gestionarMenuView;
+    private final PersistenciaManager persistenciaManager;
 
-public class GestionarMenuController implements ActionListener {
-    private NavigationDelegate delegate;
-    private GestionarMenuView gestionarMenuView;
-    private PersistenciaManager persistenciaManager;
-
-    public GestionarMenuController(GestionarMenuView gestionarMenuView, PersistenciaManager persistenciaManager,
-            NavigationDelegate delegate) {
+    public GestionarMenuController(GestionarMenuView gestionarMenuView, PersistenciaManager persistenciaManager, NavigationDelegate delegate) {
         this.gestionarMenuView = gestionarMenuView;
         this.persistenciaManager = persistenciaManager;
         this.delegate = delegate;
-        this.gestionarMenuView.getPublicarButton().addActionListener(this);
-        this.gestionarMenuView.getBtnLimpiarFormulario().addActionListener(this);
-        this.gestionarMenuView.getBackButton().addActionListener(this);
+        setupListeners();
     }
 
-    public void actionPerformed(ActionEvent e) {
+    private void setupListeners(){
 
-        if (e.getSource() == gestionarMenuView.getPublicarButton()) {
-            guardarDatosDelMenu();
-        } else if (e.getSource() == gestionarMenuView.getBtnLimpiarFormulario()) {
-            gestionarMenuView.limpiarFormulario();
-        } else if (e.getSource() == gestionarMenuView.getBackButton()) {
-            salirDeVentana();
-        }
     }
 
     private void guardarDatosDelMenu() {
@@ -40,6 +28,7 @@ public class GestionarMenuController implements ActionListener {
         String plato = gestionarMenuView.getPlatoText();
         String ingredientes = gestionarMenuView.getingredientesText();
         String tipo = gestionarMenuView.getTipo();
+        String cupos= gestionarMenuView.getCupos();
         TipoMenu tipoMenu = tipo.equals("Desayuno") ? TipoMenu.DESAYUNO : TipoMenu.ALMUERZO;
 
         if (!isValidInputs(fecha, plato, ingredientes)) {
@@ -47,7 +36,7 @@ public class GestionarMenuController implements ActionListener {
             return;
         }
 
-        persistenciaManager.guardarMenu(plato, ingredientes, tipoMenu, fecha);
+        persistenciaManager.guardarMenu(new Menu(plato, ingredientes, tipoMenu, fecha, cupos));
         EstiloGral.ShowMessage("Menú guardado exitosamenmte", EstiloGral.SUCCESS_MESSAGE);  
         salirDeVentana();
     }

@@ -9,7 +9,9 @@ import com.comedor.view.components.SuperBoton;
 import java.awt.*;
 import java.awt.event.*;
 
-public class GestionarMenuView extends JFrame {
+import aura.components.AuraWindow;
+
+public class GestionarMenuView extends AuraWindow {
     
     private JTextField fechaInput;
     private JTextField platoInput;
@@ -20,7 +22,7 @@ public class GestionarMenuView extends JFrame {
     private SuperBoton btnVolver;
 
     public GestionarMenuView(){
-        setTitle("Gestionar Menu - SGCU");
+        super("Gestionar Menu - SGCU");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLocationRelativeTo(null);

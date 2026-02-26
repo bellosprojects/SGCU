@@ -1,18 +1,19 @@
 package com.comedor.control;
 
-import javax.swing.JFrame;
-
 import com.comedor.model.PersistenciaManager;
-import com.comedor.view.LoginView;
-import com.comedor.view.RegisterView;
-import com.comedor.view.UserMenuView;
-import com.comedor.view.PanelAdminView;
 import com.comedor.view.GestionarCCBView;
 import com.comedor.view.GestionarMenuView;
+import com.comedor.view.LoginView;
+import com.comedor.view.PanelAdminView;
+import com.comedor.view.RegisterView;
+import com.comedor.view.UserMenuView;
+
+import aura.components.AuraWindow;
 
 public class AppCoordinator implements NavigationDelegate {
-    private PersistenciaManager model;
-    private JFrame mainFrame;
+    
+    private final PersistenciaManager model;
+    private AuraWindow mainFrame;
 
     public AppCoordinator() {
         this.model = new PersistenciaManager();
@@ -31,7 +32,7 @@ public class AppCoordinator implements NavigationDelegate {
         LoginView view = new LoginView();
         mainFrame = view;
         new LoginController(view, model, this);
-        view.setVisible(true);
+        view.display();
     }
 
     private void showRegister() {
@@ -42,7 +43,7 @@ public class AppCoordinator implements NavigationDelegate {
         RegisterView registerView = new RegisterView();
         mainFrame = registerView;
         new RegisterController(registerView, model, this);
-        registerView.setVisible(true);
+        registerView.display();
     }
 
     private void showUserMenu(String cedula) {
@@ -53,7 +54,7 @@ public class AppCoordinator implements NavigationDelegate {
         UserMenuView UserDashboardView = new UserMenuView();
         mainFrame = UserDashboardView;
         new UserMenuController(model, cedula, UserDashboardView, this);
-        UserDashboardView.setVisible(true);
+        UserDashboardView.display();
     }
 
     private void showAdminDashboard() {
@@ -64,7 +65,7 @@ public class AppCoordinator implements NavigationDelegate {
         PanelAdminView AdminDashboardView = new PanelAdminView();
         mainFrame = AdminDashboardView;
         new PanelAdminController(AdminDashboardView, model, this);
-        AdminDashboardView.setVisible(true);
+        AdminDashboardView.display();
     }
 
     private void showGestionarMenuView() {
@@ -75,7 +76,7 @@ public class AppCoordinator implements NavigationDelegate {
         GestionarMenuView gestionarMenuView = new GestionarMenuView();
         mainFrame = gestionarMenuView;
         new GestionarMenuController(gestionarMenuView, model, this);
-        gestionarMenuView.setVisible(true);
+        gestionarMenuView.display();
     }
 
     private void showCalcularCCBView() {
@@ -86,7 +87,7 @@ public class AppCoordinator implements NavigationDelegate {
         GestionarCCBView calcularCCBView = new GestionarCCBView();
         mainFrame = calcularCCBView;
         new CCBCalculoController(calcularCCBView, model, this);
-        calcularCCBView.setVisible(true);
+        calcularCCBView.display();
     }
 
     @Override

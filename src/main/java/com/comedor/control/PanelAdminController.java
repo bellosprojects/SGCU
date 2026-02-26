@@ -23,7 +23,7 @@ public class PanelAdminController implements ActionListener {
         this.porcentajeEstudiante = 25.0;
         this.porcentajeProfesor = 85.0;
         this.porcentajeTrabajador = 100.0;
-        guardarTarifasPorDefecto();
+        //guardarTarifasPorDefecto();
         setupListeners();
     }
 

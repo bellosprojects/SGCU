@@ -1,16 +1,14 @@
 package com.comedor.control;
 
+import com.comedor.model.PersistenciaManager;
 import com.comedor.view.EstiloGral;
 import com.comedor.view.LoginView;
-import com.comedor.model.PersistenciaManager;
 
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+public class LoginController {
 
-public class LoginController implements ActionListener {
-    private NavigationDelegate delegate;
-    private LoginView loginView;
-    private PersistenciaManager persistenciaManager;
+    private final NavigationDelegate delegate;
+    private final LoginView loginView;
+    private final PersistenciaManager persistenciaManager;
 
     public LoginController(LoginView loginView, PersistenciaManager persistenciaManager, NavigationDelegate delegate) {
         this.loginView = loginView;
@@ -19,28 +17,21 @@ public class LoginController implements ActionListener {
         setupListeners();
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == loginView.getLoginButton()) {
-            handleLogin();
-        } else if (e.getSource() == loginView.getRegisterButton()) {
-            goToRegisterView();
-        } else if (e.getSource() == loginView.getForgotPassButton()) {
-            // Lógica para recuperar la contraseña
-        }
-    }
-
     private void setupListeners() {
-        loginView.getCedulaInput().addActionListener(this);
-        loginView.getPassInput().addActionListener(this);
-        loginView.getLoginButton().addActionListener(this);
-        loginView.getRegisterButton().addActionListener(this);
-        loginView.getForgotPassButton().addActionListener(this);
+        
+        loginView.find("loginBtn").onClick(b -> 
+            handleLogin()
+        );
+
+        loginView.find("registerBtn").onClick(b -> 
+            goToRegisterView()
+        );
+
     }
 
     private void handleLogin() {
-        String cedula = loginView.getCedulaText();
-        String password = loginView.getPassText();
+        String cedula = loginView.getCedula();
+        String password = loginView.getPassword();
 
         if (!isValidInputs(cedula, password)) {
             EstiloGral.ShowMessage("Por favor completa todos los campos", EstiloGral.ERROR_MESSAGE); 
@@ -52,8 +43,7 @@ public class LoginController implements ActionListener {
         if (isAuthenticated) {
             goToMenuView(cedula);
         } else {
-            loginView.InvalidateInputs(loginView.getCedulaInput());
-            loginView.InvalidateInputs(loginView.getPassInput());
+            loginView.InvalidateInputs("cedula", "password");
             EstiloGral.ShowMessage("Cédula o contraseña incorrectas. Por favor, inténtalo de nuevo.", EstiloGral.ERROR_MESSAGE);
         }
     }
@@ -61,12 +51,12 @@ public class LoginController implements ActionListener {
     private boolean isValidInputs(String cedula, String password) {
         boolean flag = true;
         if (cedula.isEmpty() || !isAllNumbers(cedula)) {
-            loginView.InvalidateInputs(loginView.getCedulaInput());
+            loginView.InvalidateInputs("cedula");
             flag = false;
         }
 
         if (password.isEmpty()) {
-            loginView.InvalidateInputs(loginView.getPassInput());
+            loginView.InvalidateInputs("password");
             flag = false;
 
         }
