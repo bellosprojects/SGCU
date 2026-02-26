@@ -45,20 +45,15 @@ public class UserMenuController {
         Double precioFinal = (persistenciaManager.getCCB() * persistenciaManager.getPorcentajeFromRole(tipoUsuario)) / 100;
         menuView.setPrecio(precioFinal);
     }
-
+//MODIFICADAAA
     private void sendUser() {
-        User user = new User(
-            persistenciaManager.getNameFromCedula(cedula),
-            cedula,
-            "",
-            "",
-            "",
-            persistenciaManager.getSaldoFromCedula(cedula),
-            persistenciaManager.getRoleFromCedula(cedula)
-        );
-
-        this.tipoUsuario = user.getRole();
-        menuView.setUser(user);
+        User user = persistenciaManager.getUserByCedula(cedula); 
+        if (user != null) {
+            this.tipoUsuario = user.getRole();
+            menuView.setUser(user);
+            double precio = persistenciaManager.getPrecioForUser(tipoUsuario);
+            menuView.setPrecio(precio);
+        }
     }
 
     private void setup() {
@@ -162,12 +157,10 @@ public class UserMenuController {
             EstiloGral.ShowMessage("Ingrese un monto mayor a 0", EstiloGral.ERROR_MESSAGE);
             return;
         }
-
-        double nuevoSaldo = monto + persistenciaManager.getSaldoFromCedula(cedula);
-        persistenciaManager.recargarSaldo(cedula, nuevoSaldo);
-        EstiloGral.ShowMessage("Recarga exitosa. Nuevo saldo: " + nuevoSaldo, EstiloGral.SUCCESS_MESSAGE);
+        persistenciaManager.sumarSaldo(cedula, monto);
+        EstiloGral.ShowMessage("Recarga exitosa. Nuevo saldo: " + monto, EstiloGral.SUCCESS_MESSAGE);
         menuView.hideRecharge();
-        menuView.updateSaldo(nuevoSaldo);            
+        menuView.updateSaldo(persistenciaManager.getSaldoFromCedula(cedula));            
     }
 
     private void reservarDesayuno(){
@@ -217,8 +210,8 @@ public class UserMenuController {
                             } else {
                                 reservarAlmuerzo();
                             }
-                            persistenciaManager.recargarSaldo(cedula, persistenciaManager.getSaldoFromCedula(cedula) - persistenciaManager.getPrecioFromCedula(cedula));
-                            menuView.updateSaldo(persistenciaManager.getSaldoFromCedula(cedula));
+                            double monto = persistenciaManager.getPrecioForUser(persistenciaManager.getRoleFromCedula(cedula));
+                            menuView.updateSaldo(persistenciaManager.sumarSaldo(cedula, -monto));
                             sendReservas();
                         } else {
                             persistenciaManager.cancelarReserva(cedula, tipo);
