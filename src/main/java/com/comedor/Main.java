@@ -11,7 +11,7 @@ public class Main {
         SwingUtilities.invokeLater(() -> {
 
             AppCoordinator app = new AppCoordinator();
-            app.onLoginSuccess("31960615");
+            app.start();
         });
 
     }
