@@ -52,7 +52,7 @@ public class GestionarMenuController {
         salirDeVentana();
     }
 
-    private boolean isValidInputs(String fecha, String plato, String ingredientes, String cupos) {
+    public boolean isValidInputs(String fecha, String plato, String ingredientes, String cupos) {
         boolean flag = true;
         if (fecha.isEmpty()) {
             gestionarMenuView.InvalidateInputs("fecha");
