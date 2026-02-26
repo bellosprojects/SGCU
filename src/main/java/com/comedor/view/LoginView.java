@@ -175,8 +175,8 @@ public class LoginView extends AuraWindow {
         );
     }
 
-    private static String getResourcePath(String ruta) {
-        return LoginView.class.getResource(ruta).getFile();
+    private String getResourcePath(String ruta) {
+        return getClass().getResource(ruta).toString();
     }
 
     public void InvalidateInputs(String... ids){

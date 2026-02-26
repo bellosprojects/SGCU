@@ -22,8 +22,19 @@ public class RegisterController {
             handleRegister();
         });
         registerView.find("nextBtn").onClick(b -> {
-            registerView.nextStep();
+            if(registerView.getCedula().isEmpty()){
+                registerView.InvalidateInputs("cedula");
+                EstiloGral.ShowMessage("Ingrese su cedula para continuar", EstiloGral.ERROR_MESSAGE);
+                return;
+            } else if(!registerView.getUsername().trim().isEmpty()){
+                EstiloGral.ShowMessage("Complete el siguiente formulario", EstiloGral.INFO_MESSAGE);
+                registerView.nextStep(); 
+            } else {
+                registerView.InvalidateInputs("cedula");
+                EstiloGral.ShowMessage("Esta cedula no esta registrada en la base de datos", EstiloGral.ERROR_MESSAGE);
+            }
         });
+
         registerView.find("backBtn").onClick(b -> {
             goToLoginView();
         });
@@ -35,6 +46,7 @@ public class RegisterController {
             if(user != null){
                 registerView.setData(user);
             } else {
+                registerView.InvalidateInputs("cedula");
                 EstiloGral.ShowMessage("Esta cedula no esta registrada en la base de datos", EstiloGral.ERROR_MESSAGE);
             }
 
@@ -54,22 +66,10 @@ public class RegisterController {
                 || (emailLower.endsWith("@hotmail.com") && emailLower.length() > 12);
     }
 
-    public boolean isAllNumbers(String str) {
-        return str != null && str.matches("\\d+");
-    }
+    
 
-    public boolean isValidRegister(String fullname, String cedula, String password, String confirmPassword, String email) {
+    public boolean isValidRegister(String password, String confirmPassword, String email) {
         boolean flag = true;
-        if (fullname == null || fullname.isEmpty()) {
-            registerView.InvalidateInputs("username");
-            flag = false;
-        }
-
-        if (cedula == null || cedula.isEmpty()) {
-            registerView.InvalidateInputs("cedula");
-            flag = false;
-        }
-
         if (password == null || password.isEmpty()) {
             registerView.InvalidateInputs("password");
             flag = false;
@@ -82,20 +82,18 @@ public class RegisterController {
 
         if (password.length() < 8) {
             registerView.InvalidateInputs("password", "confirmPassword");
+            EstiloGral.ShowMessage("La contraseña debe tener al menos 8 caracteres", EstiloGral.ERROR_MESSAGE);
             flag = false;
         }
 
         if (!password.equals(confirmPassword)) {
             registerView.InvalidateInputs("confirmPassword");
+            EstiloGral.ShowMessage("Las contraseñas no coinciden", EstiloGral.ERROR_MESSAGE);
             flag = false;
         }
         if (!isEmailValid(email)) {
             registerView.InvalidateInputs("email");
-            flag = false;
-        }
-
-        if (!isAllNumbers(cedula)) {
-            registerView.InvalidateInputs("cedula");
+            EstiloGral.ShowMessage("Ingrese un correo electrónico válido", EstiloGral.ERROR_MESSAGE);
             flag = false;
         }
 
@@ -104,26 +102,17 @@ public class RegisterController {
 
     private void handleRegister() {
         String fullname = registerView.getUsername();
-        String cedula = registerView.getCedula();
+        String cedula = registerView.getCedula().trim();
         String password = registerView.getPassword();
         String confirmPassword = registerView.getConfirmPassword();
         String email = registerView.getEmail();
         String facultadSeleccionada = registerView.getFacultad();
-        String tipoUsuario = "usuario";
+        String tipoUsuario = persistenciaManager.getUserFromCedulaInDataBase(cedula).getRole();
 
-        if (isValidRegister(fullname, cedula, password, confirmPassword, email)) {
+        if (isValidRegister(password, confirmPassword, email)) {
             //EstiloGral.ShowMessage("Complete todos los campos", EstiloGral.ERROR_MESSAGE);
             boolean isCedulaRegistered = persistenciaManager.isCedulaRegistered(cedula);
-            String auxiliar = persistenciaManager.getUserFromCedulaInDataBase(cedula).getRole();
-            if (auxiliar == null) {
-                EstiloGral.ShowMessage("La cédula ingresada no está registrada en la base de datos de la UCV. Por favor, verifica tu cédula y tipo de usuario.", EstiloGral.ERROR_MESSAGE);
-                registerView.InvalidateInputs("cedula");
-                return;
-            } else if (!auxiliar.equals(tipoUsuario)) {
-                registerView.InvalidateInputs("cedula");
-                EstiloGral.ShowMessage("La cédula ingresada ya está registrada en la DB. Por favor, verifica tu rol.", EstiloGral.ERROR_MESSAGE);
-                return;
-            } else if (isCedulaRegistered) {
+            if (isCedulaRegistered) {
                 registerView.InvalidateInputs("cedula");
                 EstiloGral.ShowMessage("La cédula ingresada ya está registrada en el sistema. Debes iniciar sesión", EstiloGral.ERROR_MESSAGE);
                 return;

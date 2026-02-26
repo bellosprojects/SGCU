@@ -1,8 +1,8 @@
 package com.comedor.control;
 
 import com.comedor.model.Menu;
-import com.comedor.model.PersistenciaManager;
 import com.comedor.model.Menu.TipoMenu;
+import com.comedor.model.PersistenciaManager;
 import com.comedor.view.EstiloGral;
 import com.comedor.view.GestionarMenuView;
 

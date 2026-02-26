@@ -7,21 +7,10 @@ import java.time.format.DateTimeFormatter;
 import com.comedor.model.Menu;
 import com.comedor.model.User;
 
-import aura.animations.AnimateBackground;
-import aura.animations.AnimateFloat;
-import aura.animations.AnimateShake;
-import aura.animations.AnimateString;
-import aura.components.AuraButton;
-import aura.components.AuraContainer;
-import aura.components.AuraImage;
-import aura.components.AuraMultiText;
-import aura.components.AuraSpacer;
-import aura.components.AuraText;
-import aura.components.AuraWindow;
-import aura.core.AuraBox;
-import aura.core.Transition;
-import aura.layouts.AuraColumn;
-import aura.layouts.AuraRow;
+import aura.components.*;
+import aura.core.*;
+import aura.animations.*;
+import aura.layouts.*;
 
 public class UserMenuView extends AuraWindow {
 
@@ -488,8 +477,8 @@ public class UserMenuView extends AuraWindow {
         .start();
     }
 
-    private static String getResourcePath(String ruta) {
-        return LoginView.class.getResource(ruta).getFile();
+    private String getResourcePath(String ruta) {
+        return getClass().getResource(ruta).toString();
     }
 
     public void InvalidateInputs(String... ids){
