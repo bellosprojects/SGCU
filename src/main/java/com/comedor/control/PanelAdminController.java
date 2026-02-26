@@ -8,8 +8,8 @@ import com.comedor.model.Prices;
 import com.comedor.model.Reserva;
 import com.comedor.view.EstiloGral;
 import com.comedor.view.PanelAdminView;
-import aura.core.AuraBox;
 
+import aura.core.AuraBox;
 import aura.layouts.AuraColumn;
 
 public class PanelAdminController {
@@ -46,16 +46,21 @@ public class PanelAdminController {
 
     private void sendReservas(){
          Queue<Reserva> almmuerzoRes = persistenciaManager.AlmuerzoWaitingQueue();
+         Queue<Reserva> desayunoRes = persistenciaManager.DesayunoWaitingQueue();
 
-        panelAdminView.setReservas(almmuerzoRes);
+        panelAdminView.setReservasDesayuno(desayunoRes);
+        panelAdminView.setReservasAlmuerzo(almmuerzoRes);
 
         AuraColumn reservasColumn = (AuraColumn) panelAdminView.find("reservas");
 
         for(AuraBox<?> b : panelAdminView.findAll("cancelarBtn")){
             b.onClick(button -> {
                 AuraColumn parent = (AuraColumn) button.getParent().getParent();
-                String cedula = parent.getId();
-                persistenciaManager.cancelarReserva(cedula, Menu.TipoMenu.ALMUERZO);
+                String data = parent.getId();
+                String[] parts = data.split("-");
+                String cedula = parts[0];
+                String estadoReserva = parts[1];
+                persistenciaManager.cancelarReserva(cedula, Menu.TipoMenu.valueOf(estadoReserva));
                 reservasColumn.remove(parent);
                 reservasColumn.revalidate();
                 EstiloGral.ShowMessage("Reserva cancelada exitosamente.", EstiloGral.SUCCESS_MESSAGE);
@@ -65,8 +70,11 @@ public class PanelAdminController {
         for(AuraBox<?> b : panelAdminView.findAll("confirmarBtn")){
             b.onClick(button -> {
                 AuraColumn parent = (AuraColumn) button.getParent().getParent();
-                String cedula = parent.getId();
-                persistenciaManager.aceptarReserva(cedula, Menu.TipoMenu.ALMUERZO);
+                String data = parent.getId();
+                String[] parts = data.split("-");
+                String cedula = parts[0];
+                String estadoReserva = parts[1];
+                persistenciaManager.aceptarReserva(cedula, Menu.TipoMenu.valueOf(estadoReserva));
                 reservasColumn.remove(parent);
                 reservasColumn.revalidate();
                 EstiloGral.ShowMessage("Reserva confirmada exitosamente.", EstiloGral.SUCCESS_MESSAGE);

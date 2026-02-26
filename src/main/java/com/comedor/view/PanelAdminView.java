@@ -3,6 +3,8 @@ package com.comedor.view;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import com.comedor.model.Menu;
+import com.comedor.model.Menu.TipoMenu;
 import com.comedor.model.Prices;
 import com.comedor.model.Reserva;
 
@@ -334,7 +336,7 @@ public class PanelAdminView extends AuraWindow {
 
     }
 
-    public void setReservas(Queue<Reserva> reservas){
+    public void setReservasDesayuno(Queue<Reserva> reservas){
 
         AuraColumn reservasColumn = (AuraColumn) find("reservas");
 
@@ -353,21 +355,52 @@ public class PanelAdminView extends AuraWindow {
 
                 if(reservasColumn.find(r.getCedula()) == null){
 
+                    AuraColumn reservaCol = createReserva(r, Menu.TipoMenu.DESAYUNO);
+
                     reservasColumn.insert(
-                        createReserva(r)
+                        reservaCol
                     );
                 }
             }
         }
     }
 
-    private AuraColumn createReserva(Reserva res){
+    public void setReservasAlmuerzo(Queue<Reserva> reservas){
+
+        AuraColumn reservasColumn = (AuraColumn) find("reservas");
+
+        Queue<Reserva> listaLimpia = new LinkedList<>();
+        for(Reserva r : reservas){
+            if(r.getEstadoReserva() == Reserva.EstadoReserva.EN_ESPERA){
+                listaLimpia.add(r);
+            }
+        }
+
+        if(listaLimpia.isEmpty()){
+            ((AuraText) find("isNotR")).setVisible(true);       
+        }else{
+            ((AuraText) find("isNotR")).setVisible(false);
+            for(Reserva r : listaLimpia){
+
+                if(reservasColumn.find(r.getCedula()) == null){
+
+                    AuraColumn reservaCol = createReserva(r, Menu.TipoMenu.ALMUERZO);
+
+                    reservasColumn.insert(
+                        reservaCol
+                    );
+                }
+            }
+        }
+    }
+
+    private AuraColumn createReserva(Reserva res, Menu.TipoMenu tipo){
         return new AuraColumn()
                     .margin(40,40,0,40)
                     .padding(20)
                     .radius(15)
                     .gap(20)
-                    .id(res.getCedula())
+                    .id(res.getCedula() + "-" + tipo.toString())
                     .background(EstiloGral.WHITE_TRANSP_COLOR)
                     .content(r -> {
                         r.insert(
@@ -375,7 +408,7 @@ public class PanelAdminView extends AuraWindow {
                                 .font(EstiloGral.LABEL_BOLD_FONT)
                                 .textColor(EstiloGral.BG_COLOR)
                         );
-
+ 
                         r.insert(
                             new AuraRow()
                                 .gap(20)

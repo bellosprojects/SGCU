@@ -363,19 +363,18 @@ public class PersistenciaManager {
 
     private void vaciarListaDesayuno(){
         try {
-            Files.writeString(desayunoFile, "", StandardOpenOption.TRUNCATE_EXISTING);
+            Files.writeString(reservaDesayuno, "", StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
             EstiloGral.ShowMessage("Hubo un error al vaciar el archivo del Desayuno", EstiloGral.INFO_MESSAGE);
         }
     }
     private void vaciarListaAlmuerzo(){
         try {
-            Files.writeString(almuerzoFile, "", StandardOpenOption.TRUNCATE_EXISTING);
+            Files.writeString(reservaAlmuerzo, "", StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
             EstiloGral.ShowMessage("Hubo un error al vaciar el archivo del Almuerzo", EstiloGral.INFO_MESSAGE);
         }
     }         
-    //hacer otra funcion aparte para privacidad
 
     private void modificarEstado(Reserva usuario, TipoMenu tipo){
         try{
@@ -388,7 +387,6 @@ public class PersistenciaManager {
                     if(usuario.getCedula().equals(reserva.getCedula())&&reserva.getEstadoReserva()!=EstadoReserva.CANCELADO){
                         if(usuario.getEstadoReserva()==EstadoReserva.CANCELADO){
                             reserva.setEstadoReserva(usuario.getEstadoReserva());
-                            aumentarCupo(tipo);
                         }
                         else if(reserva.getEstadoReserva()==EstadoReserva.EN_ESPERA&&usuario.getEstadoReserva()==EstadoReserva.RESERVADO){
                             reserva.setEstadoReserva(usuario.getEstadoReserva());
@@ -406,7 +404,7 @@ public class PersistenciaManager {
     public void cancelarReserva(String cedula, TipoMenu tipo){
 
         recargarSaldo(cedula, getSaldoFromCedula(cedula) + getPrecioFromCedula(cedula));
-
+        aumentarCupo(tipo);
         modificarEstado(new Reserva(cedula, EstadoReserva.CANCELADO), tipo);
     }
 
@@ -440,6 +438,7 @@ public class PersistenciaManager {
                 Reserva reserva;  
                 reserva = new Reserva(cedula, EstadoReserva.EN_ESPERA);
                 lineas.add(reserva.toJSON());
+                disminuirCupo(tipo);
                 Files.write(ruta, lineas, StandardOpenOption.TRUNCATE_EXISTING);
             }
         } catch (IOException e){ 
@@ -451,6 +450,14 @@ public class PersistenciaManager {
         Menu menu = getMenu(tipo);
 
         menu.agregarCupos();
+
+        guardarMenu(menu);
+    }
+
+    private void disminuirCupo(TipoMenu tipo){
+        Menu menu = getMenu(tipo);
+
+        menu.sustraerCupos();
         guardarMenu(menu);
     }
 
