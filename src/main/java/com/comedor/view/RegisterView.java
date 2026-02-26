@@ -354,6 +354,11 @@ public class RegisterView extends AuraWindow {
         //Cambiar boton de next por Registrar
         ((AuraButton) find("nextBtn")).setVisible(false);
         ((AuraButton) find("registerBtn")).setVisible(true);
+
+        ((AuraButton) find("findUser")).setVisible(false);
+
+        //Blquear input de cedula
+        ((AuraInput) find("cedula")).block();
     }
 
     public String getCedula(){

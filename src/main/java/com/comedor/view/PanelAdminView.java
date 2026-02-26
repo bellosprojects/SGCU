@@ -9,6 +9,7 @@ import com.comedor.model.Reserva;
 
 import aura.animations.AnimateBackground;
 import aura.animations.AnimateFloat;
+import aura.animations.AnimateInteger;
 import aura.animations.AnimateShake;
 import aura.animations.AnimateString;
 import aura.components.AuraButton;
@@ -430,6 +431,24 @@ public class PanelAdminView extends AuraWindow {
                                 })
                         );
                     });
+    }
+
+    public void removeReserva(AuraColumn reservaCol){
+
+        AuraColumn reservasColumn = (AuraColumn) find("reservas");
+
+        new AnimateInteger(0, reservaCol.getPreferredSize().width, 300, value -> {
+            reservaCol.offset(-value, 0);
+            reservasColumn.revalidate();
+        })
+        .then(() -> {
+            reservasColumn.remove(reservaCol);
+            if(reservasColumn.findAll("cancelarBtn").isEmpty()){
+                ((AuraText) find("isNotR")).setVisible(true);
+            }
+            reservasColumn.revalidate();
+        })
+        .start();
     }
 
     public void setMenus(String desayuno, String almuerzo){

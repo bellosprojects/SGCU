@@ -51,8 +51,6 @@ public class PanelAdminController {
         panelAdminView.setReservasDesayuno(desayunoRes);
         panelAdminView.setReservasAlmuerzo(almmuerzoRes);
 
-        AuraColumn reservasColumn = (AuraColumn) panelAdminView.find("reservas");
-
         for(AuraBox<?> b : panelAdminView.findAll("cancelarBtn")){
             b.onClick(button -> {
                 AuraColumn parent = (AuraColumn) button.getParent().getParent();
@@ -62,7 +60,7 @@ public class PanelAdminController {
                 String estadoReserva = parts[1];
                 persistenciaManager.cancelarReserva(cedula, Menu.TipoMenu.valueOf(estadoReserva));
                 EstiloGral.ShowMessage("Reserva cancelada exitosamente.", EstiloGral.SUCCESS_MESSAGE);
-                reservasColumn.remove(parent);
+                panelAdminView.removeReserva(parent);
             });
         }
 
@@ -75,7 +73,7 @@ public class PanelAdminController {
                 String estadoReserva = parts[1];
                 persistenciaManager.aceptarReserva(cedula, Menu.TipoMenu.valueOf(estadoReserva));
                 EstiloGral.ShowMessage("Reserva confirmada exitosamente.", EstiloGral.SUCCESS_MESSAGE);
-                reservasColumn.remove(parent);
+                panelAdminView.removeReserva(parent);
             });
         }
     }

@@ -82,6 +82,16 @@ public class AuraInput extends AuraBox<AuraInput> {
         return this;
     }
 
+    public AuraInput block(){
+        this.input.setEnabled(false);
+        return this;
+    }
+
+    public AuraInput unblock(){
+        this.input.setEnabled(true);
+        return this;
+    }
+
     @Override
         public void setBounds(int x, int y, int width, int height) {
         super.setBounds(x, y, width, height);
