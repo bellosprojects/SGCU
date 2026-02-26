@@ -25,7 +25,6 @@ public class RegisterController {
             if(registerView.getCedula().isEmpty()){
                 registerView.InvalidateInputs("cedula");
                 EstiloGral.ShowMessage("Ingrese su cedula para continuar", EstiloGral.ERROR_MESSAGE);
-                return;
             } else if(!registerView.getUsername().trim().isEmpty()){
                 EstiloGral.ShowMessage("Complete el siguiente formulario", EstiloGral.INFO_MESSAGE);
                 registerView.nextStep(); 
@@ -80,13 +79,13 @@ public class RegisterController {
             flag = false;
         }
 
-        if (password.length() < 8) {
+        if (password != null && password.length() < 8) {
             registerView.InvalidateInputs("password", "confirmPassword");
             EstiloGral.ShowMessage("La contraseña debe tener al menos 8 caracteres", EstiloGral.ERROR_MESSAGE);
             flag = false;
         }
 
-        if (!password.equals(confirmPassword)) {
+        if (password != null && !password.equals(confirmPassword)) {
             registerView.InvalidateInputs("confirmPassword");
             EstiloGral.ShowMessage("Las contraseñas no coinciden", EstiloGral.ERROR_MESSAGE);
             flag = false;

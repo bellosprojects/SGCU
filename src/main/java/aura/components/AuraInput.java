@@ -71,6 +71,17 @@ public class AuraInput extends AuraBox<AuraInput> {
         return this.input.getText();
     }
 
+    public AuraInput text(String text){
+        this.input.setText(text);
+        repaint();
+        return this;
+    }
+
+    public AuraInput carterColor(Color color){
+        this.input.setCaretColor(color);
+        return this;
+    }
+
     @Override
         public void setBounds(int x, int y, int width, int height) {
         super.setBounds(x, y, width, height);

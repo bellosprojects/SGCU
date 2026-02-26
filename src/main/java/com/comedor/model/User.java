@@ -21,6 +21,14 @@ public class User {
         this.saldo = 0.0;
     }
 
+    public void encriptPassword(){
+        try{
+            this.password = ModelUtils.encriptar(password);
+        } catch (Exception e){
+            
+        }
+    }
+
     public User(String fullname, String cedula, String password, String email, String facultadSeleccionada, Double saldo, String role){
         this.fullname = fullname; //0
         this.cedula = cedula;     //1
@@ -69,7 +77,7 @@ public class User {
                 "{\"name\":\"%s\",\"ci\":\"%s\",\"pass\":\"%s\",\"email\":\"%s\",\"facultad\":\"%s\",\"saldo\":\"%s\",\"role\":\"%s\"}",
                 fullname,
                 cedula,
-                ModelUtils.encriptar(password),
+                password,
                 email,
                 facultadSeleccionada,
                 saldo.toString(),

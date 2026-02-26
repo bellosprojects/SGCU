@@ -11,6 +11,7 @@ import aura.components.AuraSpacer;
 import aura.components.AuraText;
 import aura.components.AuraWindow;
 import aura.core.AuraBox;
+import aura.core.Transition;
 import aura.layouts.AuraColumn;
 import aura.layouts.AuraGrid;
 import aura.layouts.AuraRow;
@@ -313,11 +314,10 @@ public class RegisterView extends AuraWindow {
 
             AuraBox<?> component = find(id);
 
-            component.background(EstiloGral.WHITE_TRANSP_COLOR);
+            component.cancelAnimations(Transition.AnimationType.BACKGROUND);
 
             AnimateBackground t = new AnimateBackground(component, EstiloGral.ERROR_COLOR, 200)
-                                    .pingPong()
-                                    .cancelPrev(true);
+                                    .pingPong();
 
             AnimateShake t2 = new AnimateShake(component, 5, 500);
 

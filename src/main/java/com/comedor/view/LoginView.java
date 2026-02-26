@@ -1,7 +1,6 @@
 package com.comedor.view;
 
 import aura.animations.AnimateBackground;
-import aura.animations.AnimateColor;
 import aura.animations.AnimateScale;
 import aura.animations.AnimateShake;
 import aura.components.AuraButton;
@@ -11,6 +10,7 @@ import aura.components.AuraSpacer;
 import aura.components.AuraText;
 import aura.components.AuraWindow;
 import aura.core.AuraBox;
+import aura.core.Transition;
 import aura.layouts.AuraColumn;
 import aura.layouts.AuraGrid;
 import aura.layouts.AuraRow;
@@ -33,11 +33,9 @@ public class LoginView extends AuraWindow {
                                         .shadow(EstiloGral.WHITE_TRANSP_COLOR, 7)
                                         .id("loginBtn")
                                         .onHover((b, h) -> {
-                                            new AnimateBackground(b, h? EstiloGral.LIGHT_COLOR : EstiloGral.DARK_COLOR, 250).start();
-                                            new AnimateColor(h ? EstiloGral.BG_COLOR : EstiloGral.DARK_COLOR, h? EstiloGral.DARK_COLOR : EstiloGral.BG_COLOR, 250, color -> {
-                                                b.textColor(color);
-                                            }).start();
-                                            new AnimateScale(b, h? 1.03f : 1, 150).start();
+                                            b.cancelAnimations(Transition.AnimationType.BACKGROUND);
+                                            new AnimateBackground(b, h? b.getBackgroundColor().brighter() : b.getBackgroundColor(), 150).start();
+                                            new AnimateScale(b, h? 1.05f : 1, 150).start();
                                         });
         
         AuraText registerButton = new AuraText("¿No tienes cuenta? Registrate")
@@ -185,11 +183,10 @@ public class LoginView extends AuraWindow {
 
             AuraBox<?> component = find(id);
 
-            component.background(EstiloGral.WHITE_TRANSP_COLOR);
+            component.cancelAnimations(Transition.AnimationType.BACKGROUND);
 
             AnimateBackground t = new AnimateBackground(component, EstiloGral.ERROR_COLOR, 200)
-                                    .pingPong()
-                                    .cancelPrev(true);
+                                    .pingPong();
 
             AnimateShake t2 = new AnimateShake(component, 5, 500);
 

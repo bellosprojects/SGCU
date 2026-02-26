@@ -6,6 +6,8 @@ import com.comedor.model.PersistenciaManager;
 import com.comedor.view.EstiloGral;
 import com.comedor.view.GestionarMenuView;
 
+import com.comedor.utils.ModelUtils;
+
 public class GestionarMenuController {
     private final NavigationDelegate delegate;
     private final GestionarMenuView gestionarMenuView;
@@ -19,19 +21,29 @@ public class GestionarMenuController {
     }
 
     private void setupListeners(){
+        gestionarMenuView.find("backBtn").onClick(b -> {
+            salirDeVentana();
+        });
 
+        gestionarMenuView.find("clear").onClick(b -> {
+            gestionarMenuView.limpiarFormulario();
+        });
+
+        gestionarMenuView.find("save").onClick(b -> {
+            guardarDatosDelMenu();
+        });
     }
 
     private void guardarDatosDelMenu() {
 
-        String fecha = gestionarMenuView.getFechaText();
-        String plato = gestionarMenuView.getPlatoText();
-        String ingredientes = gestionarMenuView.getingredientesText();
+        String fecha = gestionarMenuView.getFecha();
+        String plato = gestionarMenuView.getPlato();
+        String ingredientes = gestionarMenuView.getIngredientes();
         String tipo = gestionarMenuView.getTipo();
         String cupos= gestionarMenuView.getCupos();
         TipoMenu tipoMenu = tipo.equals("Desayuno") ? TipoMenu.DESAYUNO : TipoMenu.ALMUERZO;
 
-        if (!isValidInputs(fecha, plato, ingredientes)) {
+        if (!isValidInputs(fecha, plato, ingredientes, cupos)) {
             EstiloGral.ShowMessage("Datos invalidos", EstiloGral.ERROR_MESSAGE); 
             return;
         }
@@ -41,18 +53,22 @@ public class GestionarMenuController {
         salirDeVentana();
     }
 
-    private boolean isValidInputs(String fecha, String plato, String ingredientes) {
+    private boolean isValidInputs(String fecha, String plato, String ingredientes, String cupos) {
         boolean flag = true;
         if (fecha.isEmpty()) {
-            gestionarMenuView.InvalidateInputs(gestionarMenuView.getFechaComponent());
+            gestionarMenuView.InvalidateInputs("fecha");
             flag = false;
         }
         if (plato.isEmpty()) {
-            gestionarMenuView.InvalidateInputs(gestionarMenuView.getPlatoComponent());
+            gestionarMenuView.InvalidateInputs("plato");
             flag = false;
         }
         if (ingredientes.isEmpty()) {
-            gestionarMenuView.InvalidateInputs(gestionarMenuView.getIngredientsComponents());
+            gestionarMenuView.InvalidateInputs("ingredientes");
+            flag = false;
+        }
+        if (cupos.isEmpty() || !ModelUtils.esEnteroValido(cupos)) {
+            gestionarMenuView.InvalidateInputs("cupos");
             flag = false;
         }
         return flag;

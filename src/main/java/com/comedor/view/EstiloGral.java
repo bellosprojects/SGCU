@@ -24,6 +24,11 @@ public abstract class EstiloGral {
     public static final Color ERROR_COLOR = new Color(248, 10, 3);
     public static final Color BUTTON_COLOR = new Color(158, 10, 34);
 
+    public static final Color GREEN_COLOR = new Color(40, 167, 69);
+
+    public static final Color DARK_BG__COLOR = new Color(33,33,29);
+    public static final Color DARK_BG__COLOR2 = new Color(71,71,58);
+
     public static final Font LABEL_FONT = new Font("SansSerif", Font.PLAIN, 25);
     public static final Font LABEL_BOLD_FONT = new Font("SansSerif", Font.BOLD, 25);
     public static final Font TITLE_FONT = new Font("SansSerif", Font.BOLD, 60);

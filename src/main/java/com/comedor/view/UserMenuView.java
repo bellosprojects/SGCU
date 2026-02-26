@@ -4,15 +4,34 @@ import java.awt.Color;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
+import javax.swing.SwingUtilities;
+
 import com.comedor.model.Menu;
+import com.comedor.model.Reserva;
 import com.comedor.model.User;
 
-import aura.components.*;
-import aura.core.*;
-import aura.animations.*;
-import aura.layouts.*;
+import aura.animations.AnimateBackground;
+import aura.animations.AnimateFloat;
+import aura.animations.AnimateInteger;
+import aura.animations.AnimateShake;
+import aura.animations.AnimateString;
+import aura.components.AuraButton;
+import aura.components.AuraContainer;
+import aura.components.AuraImage;
+import aura.components.AuraInput;
+import aura.components.AuraModal;
+import aura.components.AuraMultiText;
+import aura.components.AuraSpacer;
+import aura.components.AuraText;
+import aura.components.AuraWindow;
+import aura.core.AuraBox;
+import aura.core.Transition;
+import aura.layouts.AuraColumn;
+import aura.layouts.AuraRow;
 
 public class UserMenuView extends AuraWindow {
+
+    private AuraModal modal;
 
     public UserMenuView(){
         super("SGCU - Menu de usuario");
@@ -22,6 +41,10 @@ public class UserMenuView extends AuraWindow {
         .background(EstiloGral.BG_COLOR)
         .icon(new AuraImage(getResourcePath("/images/logoColor.png")));
 
+        SwingUtilities.invokeLater(() -> 
+            createModal()
+        );
+
         insert(
             new AuraRow()
                 .fillParent()
@@ -30,8 +53,8 @@ public class UserMenuView extends AuraWindow {
                     row.insert(
                         new AuraColumn()
                             .fillHeight()
-                            .background(new Color(33, 33, 29))
-                            .addBg(new Color(24, 24, 22), 1f)
+                            .background(EstiloGral.DARK_BG__COLOR)
+                            .addBg(EstiloGral.DARK_BG__COLOR.darker(), 1f)
                             .backgroundAngle(90)
                             .padding(20, 0)
                             .weight(0.28f)
@@ -98,6 +121,7 @@ public class UserMenuView extends AuraWindow {
                                         .cursor(EstiloGral.HOVER_CURSOR)
                                         .textColor(EstiloGral.BG_COLOR)
                                         .font(EstiloGral.LABEL_BOLD_FONT)
+                                        .id("menusBtn")
                                 );
 
                                 panelColumn.insert(
@@ -110,6 +134,7 @@ public class UserMenuView extends AuraWindow {
                                         .cursor(EstiloGral.HOVER_CURSOR)
                                         .textColor(EstiloGral.BG_COLOR)
                                         .font(EstiloGral.LABEL_BOLD_FONT)
+                                        .id("reservationsBtn")
                                 );
 
                                 panelColumn.insert(
@@ -126,15 +151,47 @@ public class UserMenuView extends AuraWindow {
 
                     );
 
+                    AuraColumn reservationsCol = new AuraColumn()
+                                                    .fillHeight()
+                                                    .background(EstiloGral.DARK_BG__COLOR2)
+                                                    .addBg(EstiloGral.DARK_BG__COLOR2.darker(), 1f)
+                                                    .backgroundAngle(90)
+                                                    .padding(40)
+                                                    .weight(1f)
+                                                    .align(AuraColumn.Alignment.LEFT)
+                                                    .id("reservationsPanel")
+                                                    .content(reservaCol -> {
+                                                        reservaCol.insert(
+                                                            new AuraText("Mis reservaciones")
+                                                                .font(EstiloGral.TITLE_FONT)
+                                                                .textColor(EstiloGral.BG_COLOR)
+                                                        );
+
+                                                        reservaCol.insert(
+                                                            new AuraText("No tienes reservaciones activas.")
+                                                                .font(EstiloGral.LABEL_FONT)
+                                                                .textColor(EstiloGral.LIGHT_COLOR)
+                                                                .margin(20)
+                                                                .id("haveNotR")
+                                                        );
+                                                    });
+
+                    reservationsCol.setVisible(false);
+
+                    row.insert(
+                        reservationsCol
+                    );
+
                     row.insert(
                         new AuraColumn()
                             .fillHeight()
                             .weight(1f)
                             .padding(40)
                             .align(AuraColumn.Alignment.LEFT)
-                            .background(new Color(71, 71, 58))
-                            .addBg(new Color(36, 36, 29), 1f)
+                            .background(EstiloGral.DARK_BG__COLOR2)
+                            .addBg(EstiloGral.DARK_BG__COLOR2.darker(), 1f)
                             .backgroundAngle(90)
+                            .id("MenuPanel")
                             .content(mainColumn -> {
 
                                 mainColumn.insert(
@@ -200,9 +257,10 @@ public class UserMenuView extends AuraWindow {
                                                         carterColumn.insert(
                                                             new AuraButton("Recargar")
                                                                 .radius(25)
-                                                                .id("recharge")
+                                                                .id("rechargeBtn")
                                                                 .font(EstiloGral.LABEL_FONT)
                                                                 .margin(10, 0, 0, 0)
+
                                                         );
                                                     })
                                             );
@@ -301,7 +359,7 @@ public class UserMenuView extends AuraWindow {
                                                                             .background(EstiloGral.BUTTON_COLOR)
                                                                             .font(EstiloGral.LABEL_BOLD_FONT)
                                                                             .textColor(EstiloGral.BG_COLOR)
-                                                                            .id("reservarDesayunoBtn")
+                                                                            .id("bookBreakfastBtn")
                                                                     );
 
                                                                     desayuno.insert(
@@ -361,7 +419,7 @@ public class UserMenuView extends AuraWindow {
                                                                             .background(EstiloGral.BUTTON_COLOR)
                                                                             .font(EstiloGral.LABEL_BOLD_FONT)
                                                                             .textColor(EstiloGral.BG_COLOR)
-                                                                            .id("reservarAlmuerzoBtn")
+                                                                            .id("bookLunchBtn")
                                                                     );
 
                                                                     almuerzo.insert(
@@ -421,6 +479,74 @@ public class UserMenuView extends AuraWindow {
         .type(Transition.TransitionType.BOUNCE_IN)
         .start();
 
+    } 
+
+    public void showReservas(){
+        ((AuraColumn) find("reservationsPanel")).setVisible(true);
+        ((AuraColumn) find("MenuPanel")).setVisible(false);
+    }
+
+    public void showMenus(){
+        ((AuraColumn) find("reservationsPanel")).setVisible(false);
+        ((AuraColumn) find("MenuPanel")).setVisible(true);
+    }
+
+    public void addReserva(Reserva reserva, Menu.TipoMenu tipo){
+
+        if(reserva == null) return;
+
+        ((AuraText) find("haveNotR")).setVisible(false);
+
+        ((AuraColumn) find("reservationsPanel")).insert(createReservaCard(reserva, tipo));
+
+    }
+
+    private AuraRow createReservaCard(Reserva reserva, Menu.TipoMenu tipo){
+
+        Color stateColor = switch(reserva.getEstadoReserva()) {
+            case RESERVADO -> EstiloGral.GREEN_COLOR;
+            case CANCELADO -> EstiloGral.ERROR_COLOR;
+            case EN_ESPERA -> EstiloGral.LIGHT_COLOR;
+        };
+
+        return new AuraRow()
+                    .fillWidth()
+                    .gap(20)
+                    .padding(20)
+                    .margin(20,0)
+                    .background(EstiloGral.WHITE_TRANSP_COLOR2)
+                    .radius(15)
+                    .id(tipo.toString())
+                    .content(row -> {
+                        row.insert(
+
+                            new AuraText(tipo.toString())
+                                .font(EstiloGral.INPUT_FONT)
+                                .textColor(EstiloGral.BG_COLOR)
+                        );
+
+                        row.insert(
+                            new AuraSpacer()
+                        );
+
+                        row.insert(
+                            new AuraText(reserva.getEstadoReserva().toString())
+                                .font(EstiloGral.MIDDLE_FONT)
+                                .textColor(stateColor)
+                        );
+
+                        if(reserva.getEstadoReserva() != Reserva.EstadoReserva.CANCELADO){
+                            row.insert(
+                                new AuraButton("Cancelar")
+                                    .background(EstiloGral.ERROR_COLOR)
+                                    .font(EstiloGral.LABEL_FONT)
+                                    .textColor(EstiloGral.BG_COLOR)
+                                    .radius(15)
+                                    .id("cancelarReserva")
+                            );
+                        }
+
+                    });
     }
 
     public void setDesayuno(Menu desayuno){
@@ -486,12 +612,13 @@ public class UserMenuView extends AuraWindow {
         for(String id : ids){
 
             AuraBox<?> component = find(id);
+            if(component == null){
+                component = modal.find(id);
+            }
 
-            component.background(EstiloGral.WHITE_TRANSP_COLOR);
-
+            component.cancelAnimations(Transition.AnimationType.BACKGROUND);
             AnimateBackground t = new AnimateBackground(component, EstiloGral.ERROR_COLOR, 200)
-                                    .pingPong()
-                                    .cancelPrev(true);
+                                    .pingPong();
 
             AnimateShake t2 = new AnimateShake(component, 5, 500);
 
@@ -500,4 +627,207 @@ public class UserMenuView extends AuraWindow {
 
     }
 
+    private void createModal(){
+
+        modal = new AuraModal(this);
+
+        AuraColumn columnModal = new AuraColumn()
+                        .background(EstiloGral.BG_COLOR)
+                        .radius(15)
+                        .padding(30)
+                        .content(col -> {
+                            col.insert(
+                                new AuraText("Recargar")
+                                    .font(EstiloGral.MIDDLE_FONT)
+                                    .textColor(EstiloGral.DARK_COLOR)
+                                    .margin(5,120,40,120)
+                            );
+
+                            col.insert(
+                                new AuraText("Monto")
+                                    .font(EstiloGral.LABEL_FONT)
+                                    .alignSelf(AuraColumn.Alignment.LEFT)
+                                    .margin(0,50,10,0)
+                            );
+
+                            col.insert(
+                                new AuraInput()
+                                    .radius(15)
+                                    .padding(15)
+                                    .font(EstiloGral.INPUT_FONT)
+                                    .textColor(EstiloGral.BG_COLOR)
+                                    .carterColor(EstiloGral.BG_COLOR)
+                                    .background(EstiloGral.DARK_COLOR)
+                                    .fillWidth()
+                                    .id("rechargeMonto")
+                            );
+
+                            col.insert(
+                                new AuraText("Nro. de Referencia")
+                                    .font(EstiloGral.LABEL_FONT)
+                                    .alignSelf(AuraColumn.Alignment.LEFT)
+                                    .margin(40,50,10,0)
+                            );
+
+                            col.insert(
+                                new AuraInput()
+                                    .radius(15)
+                                    .padding(15)
+                                    .font(EstiloGral.INPUT_FONT)
+                                    .textColor(EstiloGral.BG_COLOR)
+                                    .carterColor(EstiloGral.BG_COLOR)
+                                    .background(EstiloGral.DARK_COLOR)
+                                    .fillWidth()
+                                    .id("rechargeRef")
+                            );
+
+                            col.insert(
+                                new AuraRow()
+                                    .gap(40)
+                                    .margin(40,0,0,0)
+                                    .content(optionsRow -> {
+                                        optionsRow.insert(
+                                            new AuraButton("Cancelar")
+                                                .background(EstiloGral.GREY_COLOR)
+                                                .font(EstiloGral.INPUT_FONT)
+                                                .textColor(EstiloGral.BG_COLOR)
+                                                .onClick(b -> {
+                                                    modal.close();
+                                                })
+                                        );
+
+                                        optionsRow.insert(
+                                            new AuraButton("Confirmar")
+                                                .background(EstiloGral.BUTTON_COLOR)
+                                                .font(EstiloGral.INPUT_FONT)
+                                                .textColor(EstiloGral.BG_COLOR)
+                                                .id("confirmRechargeBtn")
+                                        );
+                                    })
+                            );
+                        });
+
+
+        modal.content(columnModal);
+    }
+
+    public void showRecharge(){ 
+        modal.display();
+    }
+
+    public void hideRecharge(){
+        ((AuraInput) modal.find("rechargeMonto")).text("");
+        ((AuraInput) modal.find("rechargeRef")).text("");
+        modal.close();
+    }
+
+    public AuraModal getModal(){
+        return this.modal;
+    }
+
+    public void updateSaldo(Double saldo){
+        AuraText credits = (AuraText) find("credits");
+        
+        new AnimateFloat(0.0f, (float) (double) saldo , 1800, value -> {
+
+            credits.text(String.format("%.2fBs", value));
+
+        })
+        .delay(1000)
+        .start();
+    }
+
+    public String getMonto(){
+        return ((AuraInput) modal.find("rechargeMonto")).getText();
+    }
+
+    public String getNumeroReferencia(){
+        return ((AuraInput) modal.find("rechargeRef")).getText();
+    }
+
+    public void verificarFaceId(String path){
+        AuraModal faceIdModal = new AuraModal(this);
+
+        AuraContainer barra = new AuraContainer()
+                                .background(EstiloGral.GREEN_COLOR)
+                                .size(300, 2);
+
+        AuraContainer barra2 = new AuraContainer()
+                                .background(EstiloGral.GREEN_COLOR)
+                                .size(300, 2);
+
+        AuraColumn content = new AuraColumn()
+                            .gap(40)
+                            .padding(20)
+                            .radius(15)
+                            .background(EstiloGral.BG_COLOR)
+                            .content(col -> {
+                                col.insert(
+                                    new AuraText("Verificando identidad...")
+                                        .font(EstiloGral.MIDDLE_FONT)
+                                        .textColor(EstiloGral.DARK_COLOR)
+                                );
+
+                                col.insert(
+                                    new AuraRow()
+                                        .gap(50)
+                                        .content(row -> {
+                                            row.insert(
+                                                new AuraContainer()
+                                                    .radius(15)
+                                                    .clipChildrens(true)
+                                                    .size(300, 300)
+                                                    .content(f1 -> {
+                                                        f1.insert(
+                                                            barra
+                                                            , 0, -2
+                                                        );
+
+                                                        f1.insert(
+                                                            new AuraImage(path)
+                                                                .radius(15)
+                                                                .size(300,300)
+                                                        );
+
+                                                    })
+                                            );
+
+                                            row.insert(
+                                                new AuraContainer()
+                                                    .radius(15)
+                                                    .size(300, 300)
+                                                    .content(f2 -> {
+                                                        f2.insert(
+                                                            barra2
+                                                            , 0, -2
+                                                        );
+
+                                                        f2.insert(
+                                                            new AuraImage(EstiloGral.getImgPath(((AuraText) find("cedula")).getText().replace("C.I: ", "")))
+                                                                .radius(15)
+                                                                .size(300,300)
+                                                        );
+
+                                                    })
+                                            );
+                                        })
+                                );
+                            });
+
+        faceIdModal.content(content);
+        faceIdModal.display();
+
+        new AnimateInteger(-2, 300, 1000, value -> {
+            barra.setLocation(0, value);
+            barra2.setLocation(0, value);
+        })
+        .delay(500)
+        .type(Transition.TransitionType.EASE_IN_OUT)
+        .pingPong()
+        .then(() -> {
+            faceIdModal.close();
+        })
+        .start();
+
+    }
 }

@@ -17,7 +17,6 @@ public class AuraSelect extends AuraText {
 
     private final List<String> options;
     private AuraColumn popup;
-    private Color textColor;
 
     public AuraSelect(String... options) {
         super(options[0]);
@@ -49,7 +48,7 @@ public class AuraSelect extends AuraText {
                         
                         col.insert(
                         new AuraText(opt)
-                            .textColor(textColor)
+                            .textColor(getTextColor())
                             .fillWidth()
                             .clipChildrens(true)
                             .padding(4)

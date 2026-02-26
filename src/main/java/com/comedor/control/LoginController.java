@@ -1,6 +1,7 @@
 package com.comedor.control;
 
 import com.comedor.model.PersistenciaManager;
+import com.comedor.utils.ModelUtils;
 import com.comedor.view.EstiloGral;
 import com.comedor.view.LoginView;
 
@@ -50,7 +51,7 @@ public class LoginController {
 
     private boolean isValidInputs(String cedula, String password) {
         boolean flag = true;
-        if (cedula.isEmpty() || !isAllNumbers(cedula)) {
+        if (cedula.isEmpty() || !ModelUtils.esEnteroValido(cedula)) {
             loginView.InvalidateInputs("cedula");
             flag = false;
         }
@@ -69,10 +70,6 @@ public class LoginController {
 
     private void goToMenuView(String cedula) {
         delegate.onLoginSuccess(cedula);
-    }
-
-    public static boolean isAllNumbers(String str) {
-        return str != null && str.matches("\\d+");
     }
 
 }

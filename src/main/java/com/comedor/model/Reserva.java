@@ -6,6 +6,17 @@ public class Reserva {
         CANCELADO,
         EN_ESPERA
     }
+
+    public static enum EstadoIntento {
+        YA_TIENE_RESERVA,
+        SALDO_INSUFICIENTE,
+        RESERVA_EXITOSA,
+        RESERVA_CANCELADA,
+        NO_HAY_CUPO,
+        NO_HAY_MENU,
+        ERROR_DESCONOCIDO
+    }
+
     private String userCedula;
     private EstadoReserva estadoReserva;
 
@@ -35,14 +46,12 @@ public class Reserva {
             String value = kv[1].trim();
 
             switch (key) {
-                case "userCedula":
-                    this.userCedula = value;
-                    break;
-                case "estadoReserva":
+                case "userCedula" -> this.userCedula = value;
+                case "estadoReserva" -> {
                     if (!value.isEmpty()) {
-                    this.estadoReserva = EstadoReserva.valueOf(value);
+                        this.estadoReserva = EstadoReserva.valueOf(value);
                     }
-                    break;
+                }
             }
         }
     }
