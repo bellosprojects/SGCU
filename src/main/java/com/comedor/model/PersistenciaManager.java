@@ -266,23 +266,25 @@ public class PersistenciaManager {
         return getUserFromCedula(cedula).getSaldo();
     }
 
-    public void recargarSaldo(String cedula, double nuevoSaldo) {
+    public double sumarSaldo(String cedula, double montoARecargar) {
+        double saldoFinal = -1;
         try {
             List<String> lineas = Files.readAllLines(usersFile, java.nio.charset.StandardCharsets.UTF_8);
             for (int i = 0; i < lineas.size(); i++) {
                 User user = new User();
                 user.fromJSON(lineas.get(i));
-
                 if (user.getCedula().equals(cedula)) {
-                    user.setSaldo(nuevoSaldo);
+                    saldoFinal = user.getSaldo() + montoARecargar;
+                    user.setSaldo(saldoFinal);
                     lineas.set(i, user.toJson());
                     break;
                 }
             }
             Files.write(usersFile, lineas, java.nio.charset.StandardCharsets.UTF_8);
         } catch (IOException e) {
-            EstiloGral.ShowMessage("Hubo un error al recargar el saldo", EstiloGral.INFO_MESSAGE);
+            EstiloGral.ShowMessage("Error al procesar la recarga", EstiloGral.ERROR_MESSAGE);
         }
+        return saldoFinal;
     }
 
     public boolean isCedulaRegistered(String cedula){       
@@ -378,20 +380,22 @@ public class PersistenciaManager {
         }
     }         
 
-    private void modificarEstado(Reserva usuario, TipoMenu tipo){
+    private void modificarEstado(Reserva reservaPendiente, TipoMenu tipo){
         try{
             Path ruta = (tipo == TipoMenu.DESAYUNO) ? reservaDesayuno : reservaAlmuerzo;
             if(Files.exists(ruta)){                                    
                 List<String> lineas = Files.readAllLines(ruta);    
-                Reserva reserva= new Reserva();  
+                Reserva reserva = new Reserva();  
                 for(int i = 0; i < lineas.size(); i++){
-                    reserva.fromJSON(lineas.get(i)); 
-                    if(usuario.getCedula().equals(reserva.getCedula())&&reserva.getEstadoReserva()!=EstadoReserva.CANCELADO){
-                        if(usuario.getEstadoReserva()==EstadoReserva.CANCELADO){
-                            reserva.setEstadoReserva(usuario.getEstadoReserva());
+                    reserva.fromJSON(lineas.get(i));
+
+                    if(reservaPendiente.getCedula().equals(reserva.getCedula()) && reserva.getEstadoReserva()!=EstadoReserva.CANCELADO){
+
+                        if(reservaPendiente.getEstadoReserva()==EstadoReserva.CANCELADO){
+                            reserva.setEstadoReserva(EstadoReserva.CANCELADO);
                         }
-                        else if(reserva.getEstadoReserva()==EstadoReserva.EN_ESPERA&&usuario.getEstadoReserva()==EstadoReserva.RESERVADO){
-                            reserva.setEstadoReserva(usuario.getEstadoReserva());
+                        else if(reserva.getEstadoReserva()==EstadoReserva.EN_ESPERA && reservaPendiente.getEstadoReserva()==EstadoReserva.RESERVADO){
+                            reserva.setEstadoReserva(EstadoReserva.RESERVADO);
                         }
                         lineas.set(i, reserva.toJSON());
                     }
@@ -404,8 +408,7 @@ public class PersistenciaManager {
     }  
 
     public void cancelarReserva(String cedula, TipoMenu tipo){
-
-        recargarSaldo(cedula, getSaldoFromCedula(cedula) + getPrecioFromCedula(cedula));
+        sumarSaldo(cedula, getPrecioForUser(getRoleFromCedula(cedula)));
         aumentarCupo(tipo);
         modificarEstado(new Reserva(cedula, EstadoReserva.CANCELADO), tipo);
     }
@@ -425,11 +428,43 @@ public class PersistenciaManager {
         if(getCupos(tipo) <= 0){
             return Reserva.EstadoIntento.NO_HAY_CUPO;
         }
-        return (getSaldoFromCedula(cedula) >= getPrecioFromCedula(cedula))? Reserva.EstadoIntento.RESERVA_EXITOSA : Reserva.EstadoIntento.SALDO_INSUFICIENTE;
+        return (getSaldoFromCedula(cedula) >= getPrecioForUser(getRoleFromCedula(cedula)))? Reserva.EstadoIntento.RESERVA_EXITOSA : Reserva.EstadoIntento.SALDO_INSUFICIENTE;
     }
 
-    public double getPrecioFromCedula(String cedula){
-        return getPorcentajeFromRole(getRoleFromCedula(cedula)) * getCCB() / 100.0;
+    public User getUserByCedula(String cedula) {
+        try {
+            List<String> lineas = Files.readAllLines(usersFile, java.nio.charset.StandardCharsets.UTF_8);
+            for (String line : lineas) {
+                User user = new User();
+                user.fromJSON(line);
+                if (user.getCedula().equals(cedula)) {
+                    return user;
+                }
+            }
+        } catch (IOException e) {
+            EstiloGral.ShowMessage("Error al acceder a los datos de usuario", EstiloGral.ERROR_MESSAGE);
+        }
+        return null;
+    }
+
+    public double getPrecioForUser(String role) {
+    if (role == null) return 0.0;
+        try {
+            List<String> lineas = Files.readAllLines(pricesFile, java.nio.charset.StandardCharsets.UTF_8);
+            Prices prices = new Prices();
+            prices.fromJSON(lineas.get(0)); // Lee el archivo una sola vez
+            
+            double porcentaje = switch(role){
+                case "Estudiante" -> prices.getEstudiante();
+                case "Profesor" -> prices.getProfesor();
+                case "Trabajador" -> prices.getTrabajador();
+                default -> 0.0;
+            };
+            
+            return (porcentaje * prices.getCCB()) / 100.0;
+        } catch (IOException e) {
+            return 0.0;
+        }
     }
 
     public void reservarMenu(String cedula, TipoMenu tipo){
