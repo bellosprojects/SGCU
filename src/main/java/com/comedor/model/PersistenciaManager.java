@@ -213,7 +213,7 @@ public class PersistenciaManager {
         }
     }
           
-    private User getUserFromCedula(String cedula){ 
+    public User getUserFromCedula(String cedula){ 
         
         try {
             
@@ -429,22 +429,6 @@ public class PersistenciaManager {
             return Reserva.EstadoIntento.NO_HAY_CUPO;
         }
         return (getSaldoFromCedula(cedula) >= getPrecioForUser(getRoleFromCedula(cedula)))? Reserva.EstadoIntento.RESERVA_EXITOSA : Reserva.EstadoIntento.SALDO_INSUFICIENTE;
-    }
-
-    public User getUserByCedula(String cedula) {
-        try {
-            List<String> lineas = Files.readAllLines(usersFile, java.nio.charset.StandardCharsets.UTF_8);
-            for (String line : lineas) {
-                User user = new User();
-                user.fromJSON(line);
-                if (user.getCedula().equals(cedula)) {
-                    return user;
-                }
-            }
-        } catch (IOException e) {
-            EstiloGral.ShowMessage("Error al acceder a los datos de usuario", EstiloGral.ERROR_MESSAGE);
-        }
-        return null;
     }
 
     public double getPrecioForUser(String role) {

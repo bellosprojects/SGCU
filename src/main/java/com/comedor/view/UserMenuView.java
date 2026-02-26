@@ -491,17 +491,17 @@ public class UserMenuView extends AuraWindow {
         ((AuraColumn) find("MenuPanel")).setVisible(true);
     }
 
-    public void addReserva(Reserva reserva, Menu.TipoMenu tipo){
+    public void addReserva(AuraRow reserva, Menu.TipoMenu tipo){
 
         if(reserva == null) return;
 
         ((AuraText) find("haveNotR")).setVisible(false);
 
-        ((AuraColumn) find("reservationsPanel")).insert(createReservaCard(reserva, tipo));
+        ((AuraColumn) find("reservationsPanel")).insert(reserva);
 
     }
 
-    private AuraRow createReservaCard(Reserva reserva, Menu.TipoMenu tipo){
+    public AuraRow createReservaCard(Reserva reserva, Menu.TipoMenu tipo){
 
         Color stateColor = switch(reserva.getEstadoReserva()) {
             case RESERVADO -> EstiloGral.GREEN_COLOR;

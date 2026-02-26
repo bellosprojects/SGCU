@@ -16,7 +16,7 @@ import com.comedor.utils.ModelUtils;
 import com.comedor.view.EstiloGral;
 import com.comedor.view.UserMenuView;
 
-import aura.core.AuraBox;
+import aura.layouts.AuraRow;
 
 public class UserMenuController {
     private final NavigationDelegate delegate;
@@ -45,9 +45,9 @@ public class UserMenuController {
         Double precioFinal = (persistenciaManager.getCCB() * persistenciaManager.getPorcentajeFromRole(tipoUsuario)) / 100;
         menuView.setPrecio(precioFinal);
     }
-//MODIFICADAAA
+
     private void sendUser() {
-        User user = persistenciaManager.getUserByCedula(cedula); 
+        User user = persistenciaManager.getUserFromCedula(cedula); 
         if (user != null) {
             this.tipoUsuario = user.getRole();
             menuView.setUser(user);
@@ -92,31 +92,30 @@ public class UserMenuController {
 
         sendUser();
         sendMenu();
-        sendReservas();
+
+        Reserva desayunoRev = persistenciaManager.getReservaFromCedula(cedula, TipoMenu.DESAYUNO);
+        sendReserva(desayunoRev, TipoMenu.DESAYUNO);
+        Reserva almuerzoRev = persistenciaManager.getReservaFromCedula(cedula, TipoMenu.ALMUERZO);
+        sendReserva(almuerzoRev, TipoMenu.ALMUERZO);
     }
 
-    private void sendReservas() {
-        Reserva reservaDes = persistenciaManager.getReservaFromCedula(cedula, TipoMenu.DESAYUNO);
-        if(reservaDes != null) {
-            menuView.addReserva(reservaDes, TipoMenu.DESAYUNO);
-        }
+    private void sendReserva(Reserva rev, TipoMenu tipoRev){ 
 
-        Reserva reservaAlm = persistenciaManager.getReservaFromCedula(cedula, TipoMenu.ALMUERZO);
-        if(reservaAlm != null) {
-            menuView.addReserva(reservaAlm, TipoMenu.ALMUERZO);
-        }
+        if(rev == null) return;
 
-        for(AuraBox<?> btn : menuView.findAll("cancelarReserva")){
-            btn.onClick(b -> {
-                AuraBox<?> parent = (AuraBox<?>) btn.getParent();
-                String tipoStr = parent.getId();
-                TipoMenu tipo = TipoMenu.valueOf(tipoStr);
-                persistenciaManager.cancelarReserva(cedula, tipo);
-                parent.setVisible(false);
+        AuraRow reservaCard = menuView.createReservaCard(rev, tipoRev);
+
+        if(rev.getEstadoReserva() != Reserva.EstadoReserva.CANCELADO){
+            reservaCard.find("cancelarReserva").onClick(b -> {
+                reservaCard.setVisible(false);
+                sendReserva(new Reserva(cedula, Reserva.EstadoReserva.CANCELADO), tipoRev);
+                persistenciaManager.cancelarReserva(cedula, tipoRev);
                 EstiloGral.ShowMessage("Reserva cancelada", EstiloGral.SUCCESS_MESSAGE);
                 menuView.updateSaldo(persistenciaManager.getSaldoFromCedula(cedula));
             });
         }
+
+        menuView.addReserva(reservaCard, tipoRev);
         
     }
 
@@ -205,6 +204,7 @@ public class UserMenuController {
 
                         if(ModelUtils.compararRostros(img1, img2)){
                             EstiloGral.ShowMessage("Reserva exitosa", EstiloGral.SUCCESS_MESSAGE);
+                            sendReserva(new Reserva(cedula, Reserva.EstadoReserva.EN_ESPERA), tipo);
                             if(tipo == TipoMenu.DESAYUNO){
                                 reservarDesayuno();
                             } else {
@@ -212,7 +212,6 @@ public class UserMenuController {
                             }
                             double monto = persistenciaManager.getPrecioForUser(persistenciaManager.getRoleFromCedula(cedula));
                             menuView.updateSaldo(persistenciaManager.sumarSaldo(cedula, -monto));
-                            sendReservas();
                         } else {
                             EstiloGral.ShowMessage("La verificación facial ha fallado. Reserva cancelada.", EstiloGral.ERROR_MESSAGE);
                         }
