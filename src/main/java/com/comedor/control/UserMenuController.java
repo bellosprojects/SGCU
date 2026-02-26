@@ -119,7 +119,7 @@ public class UserMenuController {
         
     }
 
-    private boolean isValidInputs(String montoStr, String numeroReferencia) {
+    public boolean isValidInputs(String montoStr, String numeroReferencia) {
         boolean flag = true;
         if(montoStr.isEmpty() ){
             menuView.InvalidateInputs("rechargeMonto");
@@ -145,21 +145,22 @@ public class UserMenuController {
         return flag;
     }
 
-    private void recargarSaldo() {
+    public double recargarSaldo() {
         String montoStr = menuView.getMonto();
         String numeroReferencia = menuView.getNumeroReferencia();
         if (!isValidInputs(montoStr, numeroReferencia)) {
-            return;
+            return -1;
         }
         double monto = Double.parseDouble(montoStr);
         if (monto <= 0) {
             EstiloGral.ShowMessage("Ingrese un monto mayor a 0", EstiloGral.ERROR_MESSAGE);
-            return;
+            return -1;
         }
         persistenciaManager.sumarSaldo(cedula, monto);
         EstiloGral.ShowMessage("Recarga exitosa. Nuevo saldo: " + monto, EstiloGral.SUCCESS_MESSAGE);
         menuView.hideRecharge();
-        menuView.updateSaldo(persistenciaManager.getSaldoFromCedula(cedula));            
+        menuView.updateSaldo(persistenciaManager.getSaldoFromCedula(cedula));  
+        return monto;          
     }
 
     private void reservarDesayuno(){
