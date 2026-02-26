@@ -3,10 +3,9 @@ package com.comedor.control;
 import com.comedor.model.Menu;
 import com.comedor.model.Menu.TipoMenu;
 import com.comedor.model.PersistenciaManager;
+import com.comedor.utils.ModelUtils;
 import com.comedor.view.EstiloGral;
 import com.comedor.view.GestionarMenuView;
-
-import com.comedor.utils.ModelUtils;
 
 public class GestionarMenuController {
     private final NavigationDelegate delegate;
@@ -48,7 +47,7 @@ public class GestionarMenuController {
             return;
         }
 
-        persistenciaManager.guardarMenu(new Menu(plato, ingredientes, tipoMenu, fecha, cupos));
+        persistenciaManager.guardarMenu(new Menu(plato, ingredientes, tipoMenu, fecha, cupos), false);
         EstiloGral.ShowMessage("Menú guardado exitosamenmte", EstiloGral.SUCCESS_MESSAGE);  
         salirDeVentana();
     }

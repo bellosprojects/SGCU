@@ -31,7 +31,7 @@ public class Reserva {
     public String toJSON(){
         return String.format("{\"userCedula\":\"%s\",\"estadoReserva\":\"%s\"}",
             userCedula,
-            estadoReserva
+            estadoReserva.toString()
         );
     }
     public void fromJSON(String jsonMenu) {

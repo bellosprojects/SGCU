@@ -219,9 +219,7 @@ public class UserMenuController {
                             }
                             persistenciaManager.recargarSaldo(cedula, persistenciaManager.getSaldoFromCedula(cedula) - persistenciaManager.getPrecioFromCedula(cedula));
                             menuView.updateSaldo(persistenciaManager.getSaldoFromCedula(cedula));
-                            sendReservas();
                         } else {
-                            persistenciaManager.cancelarReserva(cedula, tipo);
                             EstiloGral.ShowMessage("La verificación facial ha fallado. Reserva cancelada.", EstiloGral.ERROR_MESSAGE);
                         }
 
@@ -232,12 +230,10 @@ public class UserMenuController {
                 }).start();
 
             } catch (Exception e) {
-                persistenciaManager.cancelarReserva(cedula, tipo);
                 EstiloGral.ShowMessage("Error al procesar la imagen. Reserva cancelada.", EstiloGral.ERROR_MESSAGE);
             }
             
         } else {
-            persistenciaManager.cancelarReserva(cedula, tipo);
             EstiloGral.ShowMessage("No se seleccionó ninguna foto. Reserva cancelada.", EstiloGral.ERROR_MESSAGE);
         }
     }

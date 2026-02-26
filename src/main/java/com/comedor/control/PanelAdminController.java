@@ -61,8 +61,6 @@ public class PanelAdminController {
                 String cedula = parts[0];
                 String estadoReserva = parts[1];
                 persistenciaManager.cancelarReserva(cedula, Menu.TipoMenu.valueOf(estadoReserva));
-                reservasColumn.remove(parent);
-                reservasColumn.revalidate();
                 EstiloGral.ShowMessage("Reserva cancelada exitosamente.", EstiloGral.SUCCESS_MESSAGE);
             });
         }
@@ -75,8 +73,6 @@ public class PanelAdminController {
                 String cedula = parts[0];
                 String estadoReserva = parts[1];
                 persistenciaManager.aceptarReserva(cedula, Menu.TipoMenu.valueOf(estadoReserva));
-                reservasColumn.remove(parent);
-                reservasColumn.revalidate();
                 EstiloGral.ShowMessage("Reserva confirmada exitosamente.", EstiloGral.SUCCESS_MESSAGE);
             });
         }

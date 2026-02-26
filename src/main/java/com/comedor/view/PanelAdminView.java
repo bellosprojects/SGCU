@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import com.comedor.model.Menu;
-import com.comedor.model.Menu.TipoMenu;
 import com.comedor.model.Prices;
 import com.comedor.model.Reserva;
 

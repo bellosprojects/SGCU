@@ -303,15 +303,17 @@ public class PersistenciaManager {
         return false;
     }
 
-    public void guardarMenu(Menu menu){
+    public void guardarMenu(Menu menu, boolean esEdicion) {
         Path rutaDestino = (menu.getTipo() == TipoMenu.DESAYUNO) ? desayunoFile : almuerzoFile;
             
         String menuStr = menu.toJson();
 
-        if(menu.getTipo() == TipoMenu.DESAYUNO){
-            vaciarListaDesayuno();
-        } else {
-            vaciarListaAlmuerzo();
+        if(!esEdicion){
+            if(menu.getTipo() == TipoMenu.DESAYUNO){
+                vaciarListaDesayuno();
+            } else {
+                vaciarListaAlmuerzo();
+            }
         }
 
         try {
@@ -451,14 +453,14 @@ public class PersistenciaManager {
 
         menu.agregarCupos();
 
-        guardarMenu(menu);
+        guardarMenu(menu, true);
     }
 
     private void disminuirCupo(TipoMenu tipo){
         Menu menu = getMenu(tipo);
 
         menu.sustraerCupos();
-        guardarMenu(menu);
+        guardarMenu(menu, true);
     }
 
     private int getCupos(TipoMenu tipo){
