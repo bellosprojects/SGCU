@@ -54,19 +54,19 @@ public class GestionarMenuController {
 
     public boolean isValidInputs(String fecha, String plato, String ingredientes, String cupos) {
         boolean flag = true;
-        if (fecha.isEmpty() || fecha==null ) {
+        if (fecha==null || fecha.isEmpty()) {
             gestionarMenuView.InvalidateInputs("fecha");
             flag = false;
         }
-        if (plato.isEmpty() || plato==null) {
+        if (plato==null || plato.isEmpty()) {
             gestionarMenuView.InvalidateInputs("plato");
             flag = false;
         }
-        if (ingredientes.isEmpty() || ingredientes==null) {
+        if (ingredientes==null || ingredientes.isEmpty()) {
             gestionarMenuView.InvalidateInputs("ingredientes");
             flag = false;
         }
-        if (cupos.isEmpty() || !ModelUtils.esEnteroValido(cupos) || cupos==null) {
+        if (cupos==null || cupos.isEmpty() || !ModelUtils.esEnteroValido(cupos)) {
             gestionarMenuView.InvalidateInputs("cupos");
             flag = false;
         }
