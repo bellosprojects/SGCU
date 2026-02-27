@@ -54,14 +54,39 @@ public class PersistenciaManagerTest {
     }
 
     @Test
-    void autenticar_conPasswordIncorrecta_devuelveFalse() throws Exception {
+    void autenticar_conPasswordVacia_devuelveFalse() throws Exception {
         agregarUser("30714998", "contrasena");
 
-        assertFalse(manager.autenticar("30714998", "equivocada"));
+        assertFalse(manager.autenticar("30714998", ""));
     }
 
     @Test
     void autenticar_usuarioNoRegistrado_devuelveFalse() {
         assertFalse(manager.autenticar("123456", "agucate"));
     }
+
+    @Test
+    void autenticar_CedulaVacia_devuelveFalse() throws Exception {
+        agregarUser("30714998", "contrasena");
+        assertFalse(manager.autenticar("","contrasena"));
+    }
+
+    @Test
+    void autenticar_CedulaConCaracteres_devuelveFalse() throws Exception {
+        agregarUser("32100249", "contrasena");
+        assertFalse(manager.autenticar("321aa249","contrasena"));
+    }
+
+    @Test
+    void autenticar_PasswordMenor8_devuelveFalse() throws Exception {
+        agregarUser("32100249", "12345678");
+        assertFalse(manager.autenticar("32100249","123456"));
+    }
+
+    @Test
+    void autenticar_PasswordMayorIgual8_devuelveTrue() throws Exception {
+        agregarUser("32100249", "123456789");
+        assertTrue(manager.autenticar("32100249","123456789"));
+    }
+
 }

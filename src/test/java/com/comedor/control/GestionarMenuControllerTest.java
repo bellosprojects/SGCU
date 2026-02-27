@@ -27,39 +27,43 @@ public class GestionarMenuControllerTest {
     }
 
     @Test
-    void allFieldsValid_returnsTrue() {
-        assertTrue(controller.isValidInputs("2026-01-01", "Plato", "Ingred", "10"));
+    void isValidInputs_TodosCamposValidos_DevuelveTrue(){
+        assertTrue(controller.isValidInputs("4 enero 2024", "Pasticho", "Queso y carne", "39"));
     }
 
     @Test
-    void fechaEmpty_invalidatesFecha() {
-        assertFalse(controller.isValidInputs("", "P", "I", "5"));
+    void isValidInputs_MultiplesCamposInvalidos_DevuelveFalse() {
+        assertFalse(controller.isValidInputs("3 enero 2026", null , "aguacate", "2b0"));
     }
 
     @Test
-    void platoEmpty_invalidatesPlato() {
-        assertFalse(controller.isValidInputs("2026-01-01", "", "I", "5"));
+    void isValidInputs_CamposVacios_DevuelveFalse() {
+        assertFalse(controller.isValidInputs("","Pan","harina", "15"));
     }
 
     @Test
-    void ingredientesEmpty_invalidatesIngredientes() {
-        assertFalse(controller.isValidInputs("2026-01-01", "P", "", "5"));
+    void isValidInputs_CamposNull_DevuelveFalse() {
+        assertFalse(controller.isValidInputs("11 octubre 2026",null,"harina", "15"));
     }
 
     @Test
-    void cuposEmpty_invalidatesCupos() {
-        assertFalse(controller.isValidInputs("2026-01-01", "P", "I", ""));
+    void isValidInputs_CuposSoloNumeros_DevuelveTrue() {
+        assertTrue(controller.isValidInputs("10 febrero 2026","Compota","frutas", "20"));
     }
 
     @Test
-    void cuposNotInteger_invalidatesCupos() {
-        assertFalse(controller.isValidInputs("2026-01-01", "P", "I", "abc"));
+    void isValidInputs_CuposVacio_DevuelveFalse() {
+        assertFalse(controller.isValidInputs("10 febrero 2026","Compota","frutas", ""));
     }
 
     @Test
-    void multipleFieldsInvalid_invalidatesAll() {
-        boolean result = controller.isValidInputs("", "", "", "x");
-        assertFalse(result);
+    void isValidInputs_CuposNull_DevuelveFalse() {
+        assertFalse(controller.isValidInputs("10 febrero 2026","Compota","frutas", null));
+    }
+
+    @Test
+    void isValidInputs_CuposCaracter_DevuelveFalse(){
+        assertFalse(controller.isValidInputs("10 febrero 2026","Compota","frutas", "10a"));
     }
 }
 
