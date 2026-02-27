@@ -13,6 +13,10 @@ public class CCBCalculoController implements ActionListener {
     private PersistenciaManager persistenciaManager;
     private double precioCCB;
 
+    protected CCBCalculoController() {
+       
+    }
+
     public CCBCalculoController(GestionarCCBView calcularCCBView, PersistenciaManager persistenciaManager,
             NavigationDelegate delegate) {
         this.calcularCCBView = calcularCCBView;
