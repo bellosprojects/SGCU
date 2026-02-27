@@ -157,7 +157,7 @@ public class UserMenuController {
             return -1;
         }
         persistenciaManager.sumarSaldo(cedula, monto);
-        EstiloGral.ShowMessage("Recarga exitosa. Nuevo saldo: " + monto, EstiloGral.SUCCESS_MESSAGE);
+        EstiloGral.ShowMessage("Recarga exitosa. Saldo recargado: " + monto, EstiloGral.SUCCESS_MESSAGE);
         menuView.hideRecharge();
         menuView.updateSaldo(persistenciaManager.getSaldoFromCedula(cedula));  
         return monto;          

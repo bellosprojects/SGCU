@@ -321,14 +321,6 @@ public class PanelAdminView extends AuraWindow {
                                         .font(EstiloGral.MIDDLE_FONT)
                                         .textColor(EstiloGral.BG_COLOR)
                                 );
-
-                                reservasCol.insert(
-                                    new AuraText("No hay reservaciones pendientes")
-                                        .font(EstiloGral.LABEL_FONT)
-                                        .textColor(EstiloGral.LIGHT_COLOR)
-                                        .margin(20)
-                                        .id("isNotR")
-                                );
                             })
                     );
                 })
@@ -347,10 +339,7 @@ public class PanelAdminView extends AuraWindow {
             }
         }
 
-        if(listaLimpia.isEmpty()){
-            ((AuraText) find("isNotR")).setVisible(true);       
-        }else{
-            ((AuraText) find("isNotR")).setVisible(false);
+        if(!listaLimpia.isEmpty()){
             for(Reserva r : listaLimpia){
 
                 if(reservasColumn.find(r.getCedula()) == null){
@@ -376,10 +365,7 @@ public class PanelAdminView extends AuraWindow {
             }
         }
 
-        if(listaLimpia.isEmpty()){
-            ((AuraText) find("isNotR")).setVisible(true);       
-        }else{
-            ((AuraText) find("isNotR")).setVisible(false);
+        if(!listaLimpia.isEmpty()){
             for(Reserva r : listaLimpia){
 
                 if(reservasColumn.find(r.getCedula()) == null){
@@ -404,7 +390,7 @@ public class PanelAdminView extends AuraWindow {
                     .background(EstiloGral.WHITE_TRANSP_COLOR)
                     .content(r -> {
                         r.insert(
-                            new AuraText(res.getCedula() + " - " + res.getEstadoReserva().toString())
+                            new AuraText(res.getCedula() + " - " + tipo.toString())
                                 .font(EstiloGral.LABEL_BOLD_FONT)
                                 .textColor(EstiloGral.BG_COLOR)
                         );
@@ -443,9 +429,6 @@ public class PanelAdminView extends AuraWindow {
         })
         .then(() -> {
             reservasColumn.remove(reservaCol);
-            if(reservasColumn.findAll("cancelarBtn").isEmpty()){
-                ((AuraText) find("isNotR")).setVisible(true);
-            }
             reservasColumn.revalidate();
         })
         .start();
