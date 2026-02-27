@@ -66,7 +66,7 @@ public class CCBCalculoController {
         delegate.onAdminPanelRequested();
     }
 
-    private double procesarCalculo(double CF, double CV, int NB, double porcMerma) {
+    public double procesarCalculo(double CF, double CV, int NB, double porcMerma) {
         porcMerma = porcMerma / 100.0;
 
         if (NB <= 0) {

@@ -30,7 +30,7 @@ public class UserMenuControllerTest {
     }
 
     @Test
-    void testMontoVacioRetornaFalse() {
+    void testMont_Vacio_RetornaFalse() {
         String montoVacio = "";
         String refValida = "123456789012";
 
@@ -38,7 +38,7 @@ public class UserMenuControllerTest {
     }
 
     @Test
-    void testMontoNoNumericoRetornaFalse() {
+    void testMonto_NoNumerico_RetornaFalse() {
         // GIVEN
         String montoInvalido = "100.00abc";
         String refValida = "123456789012";
@@ -51,7 +51,7 @@ public class UserMenuControllerTest {
     }
 
     @Test
-    void testNumeroReferenciaVacioRetornaFalse() {
+    void testNumeroReferencia_Vacio_RetornaFalse() {
         String montoValido = "250.4";
         String refVacio = "";
 
@@ -59,7 +59,7 @@ public class UserMenuControllerTest {
     }
 
     @Test
-    void testNumeroReferenciaLongitudMenor12RetornaFalse() {
+    void testNumeroReferencia_LongitudMenor12_RetornaFalse() {
         String montoValido = "100.39";
         String refCorta = "12";
 
@@ -67,7 +67,7 @@ public class UserMenuControllerTest {
     }
 
     @Test
-    void testNumeroReferenciaLongitudMayor12RetornaFalse() {
+    void testNumeroReferencia_LongitudMayor12_RetornaFalse() {
         String montoValido = "100.39";
         String refCorta = "121212121212121212";
 
@@ -75,7 +75,7 @@ public class UserMenuControllerTest {
     }
 
     @Test
-    void testInputsValidosRetornaTrue() {
+    void test_InputsValidos_RetornaTrue() {
         String montoValido = "123.45";
         String refValida = "000111222333";
 
@@ -85,7 +85,7 @@ public class UserMenuControllerTest {
     // --- pruebas unitarias de void recargarSaldo() ----------------------
 
     @Test
-    void testRecargarSaldo_InvalidInputs_ReturnsMinusOne() {
+    void testRecargarSaldo_InvalidInputs_ReturnaMenos1() {
         when(menuViewMock.getMonto()).thenReturn("");
         when(menuViewMock.getNumeroReferencia()).thenReturn("123");
 
@@ -95,7 +95,7 @@ public class UserMenuControllerTest {
     }
 
     @Test
-    void testRecargarSaldo_MontoCeroOrNegative_ReturnsMinusOne() {
+    void testRecargarSaldo_MontoMenorIgualCero_ReturnaMenus1() {
         when(menuViewMock.getMonto()).thenReturn("0");
         when(menuViewMock.getNumeroReferencia()).thenReturn("123456789012");
 
@@ -105,7 +105,7 @@ public class UserMenuControllerTest {
     }
 
     @Test
-    void testRecargarSaldo_ValidInput_PersistsAndUpdatesSaldo() {
+    void testRecargarSaldo_ValidInput_GuardaYActualizaSaldo(){
         when(menuViewMock.getMonto()).thenReturn("150");
         when(menuViewMock.getNumeroReferencia()).thenReturn("123456789012");
         when(persistenciaMock.getSaldoFromCedula("123456")).thenReturn(650.0);
