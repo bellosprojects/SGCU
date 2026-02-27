@@ -28,38 +28,48 @@ public class RegisterControllerTest {
     }
 
     @Test
-    void passwordNull_invalidatesPassword() {
-        boolean result = controller.isValidRegister(null, "abc", "user@gmail.com");
-        assertFalse(result);
+    void isValidRegister_EmailVacio_DevuelveFalse() {
+        assertFalse(controller.isValidRegister("12345678","12345678", ""));
     }
 
     @Test
-    void confirmPasswordNull_invalidatesConfirm() {
-        boolean result = controller.isValidRegister("password123", null, "user@gmail.com");
-        assertFalse(result);
+    void isValidRegister_EmailDominioValido_DevuelveTrue() {
+        assertTrue(controller.isValidRegister("12345678","12345678", "a@gmail.com"));
     }
 
     @Test
-    void passwordTooShort_invalidatesBothPasswords() {
-        boolean result = controller.isValidRegister("short", "short", "user@gmail.com");
-        assertFalse(result);
+    void isValidRegister_EmailDominioInvalido_DevuelveFalse() {
+        assertFalse(controller.isValidRegister("12345678","12345678", "agmail.com"));
     }
 
     @Test
-    void passwordsDoNotMatch_invalidatesConfirm() {
-        boolean result = controller.isValidRegister("password123", "password321", "user@gmail.com");
-        assertFalse(result);
+    void isValidRegister_EmailNull_DevuelveFalse() {
+        assertFalse(controller.isValidRegister("12345678","12345678", null));
     }
 
     @Test
-    void invalidEmail_invalidatesEmail() {
-        boolean result = controller.isValidRegister("password123", "password123", "bad_email");
-        assertFalse(result);
+    void isValidRegister_CamposValidos_DevuelveTrue() {
+        assertTrue(controller.isValidRegister("contraseña","contraseña", "correo@gmail.com"));
     }
 
     @Test
-    void allValid_returnsTrue_andDoesNotInvalidate() {
-        boolean result = controller.isValidRegister("strongPass1", "strongPass1", "usuario@gmail.com");
-        assertTrue(result);
+    void isValidRegister_CamposInvalidos_DevuelveFalse() {
+        assertFalse(controller.isValidRegister("123","12345678", ""));
     }
+
+    @Test
+    void isValidRegister_PasswordsDiferentes_DevuelveFalse() {
+        assertFalse(controller.isValidRegister("contraseña2","contraseña", "correo@gmail.com"));
+    }
+
+    @Test
+    void isValidRegister_PasswordsIguales_DevuelveTrue() {
+        assertTrue(controller.isValidRegister("contraseña","contraseña","jacinto@gmail.com" ));
+    }
+
+    @Test
+    void isValidRegister_PasswordsMenor8_DevuelveFalse() {
+        assertFalse(controller.isValidRegister("contra","contra","jacinto@gmal.com"));
+    }
+
 }
