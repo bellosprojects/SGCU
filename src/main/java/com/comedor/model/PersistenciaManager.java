@@ -23,7 +23,8 @@ public class PersistenciaManager {
     private final Path pricesFile = localDir.resolve("Tarifas.json");
     private final Path reservaDesayuno = localDir.resolve("ReservaDesayuno.json");
     private final Path reservaAlmuerzo = localDir.resolve("ReservaAlmuerzo.json");
-
+    private final Path listaComensalesDesayuno = localDir.resolve("ListaComensalesDesayuno.json");
+    private final Path listaComensalesAlmuerzo = localDir.resolve("ListaComensalesAlmuerzo.json");
     private final Path UCVDataBase = Paths.get("src/main/java/com/comedor/database","Users.json");
     public PersistenciaManager(){
         createLocalData();
@@ -60,7 +61,28 @@ public class PersistenciaManager {
         if(!Files.exists(reservaAlmuerzo)){
             crearReservaAlmuerzo();
         }
+        if(!Files.exists(listaComensalesDesayuno)){
+            crearlistaComensalesDesayuno();
+        }
+        if(!Files.exists(listaComensalesAlmuerzo)){
+            crearlistaComensalesAlmuerzo();
+        }
+    }
 
+    private void crearlistaComensalesDesayuno(){
+        try {
+            Files.createFile(listaComensalesDesayuno);
+        } catch (IOException e) {
+            EstiloGral.ShowMessage("Hubo un error al crear el archivo del menú de desayuno", EstiloGral.INFO_MESSAGE);
+        }
+    }
+
+    private void crearlistaComensalesAlmuerzo(){
+        try {
+            Files.createFile(listaComensalesAlmuerzo);
+        } catch (IOException e) {
+            EstiloGral.ShowMessage("Hubo un error al crear el archivo del menú de almuerzo", EstiloGral.INFO_MESSAGE);
+        }
     }
 
     private void crearReservaDesayuno(){
@@ -78,7 +100,6 @@ public class PersistenciaManager {
             EstiloGral.ShowMessage("Hubo un error al crear el archivo de reserva de usuarios", EstiloGral.INFO_MESSAGE);
         }
     }
-    
 
     private void crearTarifa(){
 
@@ -113,7 +134,7 @@ public class PersistenciaManager {
                         return;
                     }
                 }
-
+                prices.setFecha();
                 lineas.clear();
                 lineas.add(prices.toJson());
 
@@ -578,6 +599,65 @@ public class PersistenciaManager {
             }
         } catch (IOException e){ 
             EstiloGral.ShowMessage("Hubo un error al intentar obtener la reserva", EstiloGral.INFO_MESSAGE);
+        }
+        return null;
+    }
+
+    void agregarComensalesPorServicio(TipoMenu tipo, Role role){
+        try{
+            Path ruta = (tipo == TipoMenu.DESAYUNO) ? listaComensalesDesayuno : listaComensalesAlmuerzo;
+            if(Files.exists(ruta)){                                    
+                List<String> lineas = Files.readAllLines(ruta);    
+                ComensalesPorServicio comensales = new ComensalesPorServicio();
+                if(!lineas.isEmpty()){
+                    comensales.fromJSON(lineas.get(0));
+                }
+                comensales.sumarComensal(role);
+                lineas.clear();
+                lineas.add(comensales.toJson());
+                Files.write(ruta, lineas, java.nio.charset.StandardCharsets.UTF_8);
+            }
+        
+        } catch (IOException e){ 
+            EstiloGral.ShowMessage("Hubo un error al guardar en el archivo de comensales por servicio", EstiloGral.INFO_MESSAGE);
+        }
+    }
+
+    ComensalesPorServicio getComensalesPorServicio(TipoMenu tipo){
+        try{
+            Path ruta = (tipo == TipoMenu.DESAYUNO) ? listaComensalesDesayuno : listaComensalesAlmuerzo;
+            if(Files.exists(ruta)){                                    
+                List<String> lineas = Files.readAllLines(ruta);    
+                ComensalesPorServicio comensales = new ComensalesPorServicio();
+                if(!lineas.isEmpty()){
+                    comensales.fromJSON(lineas.get(0));
+                    return comensales;
+                }
+            }
+        } catch (IOException e){ 
+            EstiloGral.ShowMessage("Hubo un error al leer el archivo de comensales por servicio", EstiloGral.INFO_MESSAGE);
+        }
+        return null;
+    }
+
+    void resetearListaComensales(){
+        try {
+            Files.write(listaComensalesDesayuno, new byte[0], StandardOpenOption.TRUNCATE_EXISTING);
+            Files.write(listaComensalesAlmuerzo, new byte[0], StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    String getFechaCCB(){
+        try{
+            List<String> lineas = Files.readAllLines(pricesFile, java.nio.charset.StandardCharsets.UTF_8);        //crea una lista con todas las lineas del archivo
+            Prices prices = new Prices();
+            prices.fromJSON(lineas.get(0));
+            return prices.getFecha();
+        }
+        catch (IOException e){ 
+            EstiloGral.ShowMessage("Hubo un error al leer en el archivo del CCB", EstiloGral.INFO_MESSAGE);
         }
         return null;
     }

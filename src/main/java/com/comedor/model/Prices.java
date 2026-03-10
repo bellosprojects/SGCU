@@ -1,4 +1,6 @@
 package com.comedor.model;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class Prices {
 
@@ -6,12 +8,14 @@ public class Prices {
     private double trabajadorTarifa;
     private double profesorTarifa;
     private double CCB;
+    private String fecha;
 
     public Prices(){
         estudianteTarifa = 0.0;
         profesorTarifa = 0.0;
         trabajadorTarifa = 0.0;
         CCB = 0.0;
+        fecha = "";
     }
 
     public Prices(double estudiante, double profesor, double trabajador, double ccb){
@@ -22,11 +26,12 @@ public class Prices {
     }
 
     public String toJson(){
-        return String.format("{\"Estudiante\":\"%.2f\"<>\"Profesor\":\"%.2f\"<>\"Trabajador\":\"%.2f\"<>\"CCB\":\"%.2f\"}",
+        return String.format("{\"Estudiante\":\"%.2f\"<>\"Profesor\":\"%.2f\"<>\"Trabajador\":\"%.2f\"<>\"CCB\":\"%.2f\"<>\"Fecha\":\"%s\"}",
             estudianteTarifa,
             profesorTarifa,
             trabajadorTarifa,
-            CCB
+            CCB,
+            fecha
         );
     }
 
@@ -71,6 +76,9 @@ public class Prices {
                 case "CCB":
                     CCB = Double.parseDouble(value);
                     break;
+                case "Fecha":
+                    fecha = value;
+                    break;
                 default:
                     break;
             }
@@ -92,5 +100,11 @@ public class Prices {
     public Double getProfesor(){
         return profesorTarifa;
     }
-    
+
+    public String getFecha(){
+        return fecha;
+    }
+    public void setFecha(){
+       fecha= LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
 }
