@@ -1,5 +1,7 @@
 package com.comedor.control;
 
+import javax.swing.SwingUtilities;
+
 import com.comedor.model.PersistenciaManager;
 import com.comedor.model.User;
 import com.comedor.model.User.Role;
@@ -36,6 +38,16 @@ public class GestionarBecariosController {
             }
         });
 
+        SwingUtilities.invokeLater(() -> 
+
+            gestionarBecariosView.getModal().find("confirmarBtn").onClick(b -> {
+                String cedula = gestionarBecariosView.getCedula();
+                Double descuento = gestionarBecariosView.getDescuento().doubleValue();
+                guardarDatosDelUser(cedula, descuento, Role.BECARIO);
+            })
+            
+        );
+
         gestionarBecariosView.find("exonerarBtn").onClick(b -> {
             // get cedula y todo eso
             String cedula = gestionarBecariosView.getCedula();
@@ -44,16 +56,11 @@ public class GestionarBecariosController {
             }
         });
 
-        gestionarBecariosView.find("confirmarBtn").onClick(b -> {
-            String cedula = gestionarBecariosView.getCedula();
-            Double descuento = gestionarBecariosView.getDescuento().doubleValue();
-            guardarDatosDelUser(cedula, descuento, Role.BECARIO);
-        });
     }
     
     private void guardarDatosDelUser(String cedula, Double descuento, Role nuevoRole) {
         
-        if (!isValidInputs(descuento)) {
+        if (!isValidDescuento(descuento)) {
             return;
         }
         persistenciaManager.ActualizarDatosUser(cedula, descuento, nuevoRole);
@@ -76,7 +83,7 @@ public class GestionarBecariosController {
         return flag;
     }
 
-    public boolean isValidInputs(Double descuento) {
+    public boolean isValidDescuento(Double descuento) {
         boolean flag = true;
         if(descuento == null || descuento < 0){
             gestionarBecariosView.InvalidateInputs("descuento");
