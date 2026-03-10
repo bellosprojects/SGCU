@@ -84,7 +84,7 @@ public class CajeroController {
                             double monto = persistenciaManager.getPrecioForUser(cedula);
                             persistenciaManager.sumarSaldo(cedula, -monto);
                             EstiloGral.ShowMessage("Reserva exitosa", EstiloGral.SUCCESS_MESSAGE);
-                            view.removeReserva(view.find(cedula).getParent());
+                            view.removeReserva((AuraColumn) view.find(cedula).getParent());
                         } else {
                             
                             EstiloGral.ShowMessage("La verificación facial ha fallado.", EstiloGral.ERROR_MESSAGE);

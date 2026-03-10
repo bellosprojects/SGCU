@@ -88,6 +88,7 @@ public class AppCoordinator implements NavigationDelegate {
         userMenuView.createModalRecharge(mainFrame);
         userMenuView.createModalSaldoPana(mainFrame);
         gestionarBecariosView.createModal(mainFrame);
+        cajeroView.createModal(mainFrame);
 
         mainFrame.insert(screen.fillParent());
 
