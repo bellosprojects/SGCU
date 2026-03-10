@@ -22,6 +22,7 @@ import aura.core.AuraBox;
 import aura.core.Transition;
 import aura.layouts.AuraColumn;
 import aura.layouts.AuraRow;
+import aura.layouts.AuraColumn.Alignment;
 
 public class PanelAdminView extends AuraContainer {
     
@@ -73,7 +74,7 @@ public class PanelAdminView extends AuraContainer {
 
                                 mainCol.insert(
                                     new AuraRow()
-                                        .alignSelf(AuraColumn.Alignment.LEFT)
+                                        .alignSelf(Alignment.LEFT)
                                         .margin(60,0)
                                         .gap(40)
                                         .content(pricesRow -> {
@@ -149,6 +150,15 @@ public class PanelAdminView extends AuraContainer {
                                                         );
 
                                                     })
+                                            );
+
+                                            pricesRow.insert(
+                                                new AuraButton("Gestionar Becarios y exonerados")
+                                                        .background(EstiloGral.BUTTON_COLOR)
+                                                        .textColor(EstiloGral.BG_COLOR)
+                                                        .font(EstiloGral.LABEL_FONT)
+                                                        .alignSelf(aura.layouts.AuraRow.Alignment.BOTTOM)
+                                                        .id("becariosBtn")
                                             );
                                         })
                                 );
@@ -305,15 +315,32 @@ public class PanelAdminView extends AuraContainer {
                             .background(EstiloGral.DARK_BG__COLOR)
                             .addBg(EstiloGral.DARK_BG__COLOR.darker(), 1f)
                             .backgroundAngle(90)
-                            .fillHeight()
-                            .id("reservas")
+                            .fillParent()
                             .padding(40,60)
-                            .content(reservasCol -> {
-                                reservasCol.insert(
-                                    new AuraText("Reservaciones Pendientes")
-                                        .font(EstiloGral.MIDDLE_FONT)
-                                        .textColor(EstiloGral.BG_COLOR)
+                            .content(rightCol -> {
+
+                                rightCol.insert(
+                                    new AuraColumn()
+                                        .id("reservas")
+                                        .fillWidth()
+                                        .weight(1f)
+                                        .background(EstiloGral.TRANSPARENT_COLOR)
+                                        .content(reservasCol -> {
+                                            reservasCol.insert(
+                                                new AuraText("Reservaciones Pendientes")
+                                                    .font(EstiloGral.MIDDLE_FONT)
+                                                    .textColor(EstiloGral.BG_COLOR)
+                                            );
+                                        })
                                 );
+
+                                rightCol.insert(
+                                    new AuraButton("Ver listado completo")
+                                        .background(EstiloGral.BUTTON_COLOR)
+                                        .textColor(EstiloGral.BG_COLOR)
+                                        .font(EstiloGral.LABEL_FONT)
+                                );
+                                
                             })
                     );
                 })

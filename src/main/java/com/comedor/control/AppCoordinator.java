@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.comedor.model.PersistenciaManager;
 import com.comedor.view.EstiloGral;
+import com.comedor.view.GestionarBecariosView;
 import com.comedor.view.GestionarCCBView;
 import com.comedor.view.GestionarMenuView;
 import com.comedor.view.LoginView;
@@ -32,6 +33,7 @@ public class AppCoordinator implements NavigationDelegate {
     private PanelAdminController panelAdminController;
     private GestionarMenuController gestionarMenuController;
     private CCBCalculoController ccbCalculoController;
+    private GestionarBecariosController gestionarBecariosController;
 
     public AppCoordinator() {
         this.model = new PersistenciaManager();
@@ -58,6 +60,7 @@ public class AppCoordinator implements NavigationDelegate {
         PanelAdminView panelAdminView = new PanelAdminView();
         GestionarMenuView gestionarMenuView = new GestionarMenuView();
         GestionarCCBView gestionarCCBView = new GestionarCCBView();
+        GestionarBecariosView gestionarBecariosView = new GestionarBecariosView();
 
         views.put("Login", loginView);
         views.put("Register", registerView);
@@ -65,6 +68,7 @@ public class AppCoordinator implements NavigationDelegate {
         views.put("AdminDashboard", panelAdminView);
         views.put("GestionarMenu", gestionarMenuView);
         views.put("CalcularCCB", gestionarCCBView);
+        views.put("GestionarBecarios", gestionarBecariosView);
 
         AuraWhen<String> screen = new AuraWhen<>(viewStateController)
             .animationDuration(250)
@@ -73,9 +77,12 @@ public class AppCoordinator implements NavigationDelegate {
             .addCase("UserMenu", userMenuView)
             .addCase("AdminDashboard", panelAdminView)
             .addCase("GestionarMenu", gestionarMenuView)
-            .addCase("CalcularCCB", gestionarCCBView);
+            .addCase("CalcularCCB", gestionarCCBView)
+            .addCase("GestionarBecarios", gestionarBecariosView);
 
         userMenuView.createModal(mainFrame);
+        gestionarBecariosView.createModal(mainFrame);
+
         mainFrame.insert(screen.fillParent());
 
     }
@@ -128,6 +135,13 @@ public class AppCoordinator implements NavigationDelegate {
         }
     }
 
+    public void showGestionarBecarios() {
+        viewStateController.set("GestionarBecarios");
+        if(gestionarBecariosController == null){
+            gestionarBecariosController = new GestionarBecariosController((GestionarBecariosView) views.get("GestionarBecarios"), model, this);
+        }
+    }
+
     @Override
     public void onRegisterSuccess() {
         showLogin();
@@ -167,4 +181,8 @@ public class AppCoordinator implements NavigationDelegate {
         showCalcularCCBView();
     }
 
+    @Override
+    public void onGestionarBecariosRequested() {
+        showGestionarBecarios();
+    }
 }

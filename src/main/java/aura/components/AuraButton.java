@@ -31,6 +31,7 @@ public class AuraButton extends AuraBox<AuraButton> {
         onClick(self -> {
 
             cancelAnimations(Transition.AnimationType.BACKGROUND);
+            cancelAnimations(Transition.AnimationType.SCALE);
 
             new AnimateRipple(self, 0.95f, 200)
                 .parallel(

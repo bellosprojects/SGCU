@@ -8,14 +8,14 @@ import com.comedor.model.User.Role;
 import com.comedor.view.GestionarMenuView;
 import com.comedor.utils.ModelUtils;
 import com.comedor.view.EstiloGral;
-import com.comedor.view.gestionarBecariosView;
+import com.comedor.view.GestionarBecariosView;
 
 public class GestionarBecariosController {
     private final NavigationDelegate delegate;
-    private final gestionarBecariosView gestionarBecariosView;
+    private final GestionarBecariosView gestionarBecariosView;
     private final PersistenciaManager persistenciaManager;
 
-    public GestionarBecariosController(gestionarBecariosView gestionarBecariosView, PersistenciaManager persistenciaManager, NavigationDelegate delegate) {
+    public GestionarBecariosController(GestionarBecariosView gestionarBecariosView, PersistenciaManager persistenciaManager, NavigationDelegate delegate) {
         this.gestionarBecariosView = gestionarBecariosView;
         this.persistenciaManager = persistenciaManager;
         this.delegate = delegate;
@@ -25,10 +25,6 @@ public class GestionarBecariosController {
     private void setupListeners(){
         gestionarBecariosView.find("backBtn").onClick(b -> {
             salirDeVentana();
-        });
-
-        gestionarBecariosView.find("findUser").onClick(b -> {
-            
         });
 
         gestionarBecariosView.find("becarBtn").onClick(b -> {
@@ -41,9 +37,7 @@ public class GestionarBecariosController {
         SwingUtilities.invokeLater(() -> 
 
             gestionarBecariosView.getModal().find("confirmarBtn").onClick(b -> {
-                String cedula = gestionarBecariosView.getCedula();
-                Double descuento = gestionarBecariosView.getDescuento().doubleValue();
-                guardarDatosDelUser(cedula, descuento, Role.BECARIO);
+                procesarBeca();
             })
             
         );
@@ -57,8 +51,13 @@ public class GestionarBecariosController {
         });
 
     }
+
+    private void procesarBeca(){
+
+    }
     
     private void guardarDatosDelUser(String cedula, Double descuento, Role nuevoRole) {
+        
         
         if (!isValidDescuento(descuento)) {
             return;
@@ -105,5 +104,6 @@ public class GestionarBecariosController {
     }
 
     private void salirDeVentana() {
-        delegate.onBackToPanelAdminRequested();
+        delegate.onAdminPanelRequested();
+    }
 }

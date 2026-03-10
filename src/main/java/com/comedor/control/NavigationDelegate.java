@@ -8,4 +8,5 @@ public interface NavigationDelegate {
     void onAdminPanelRequested();
     void onGestionarMenuRequested();
     void onCalcularCCBRequested();
+    void onGestionarBecariosRequested();
 }

@@ -121,6 +121,10 @@ public class PanelAdminController {
             actualizarTarifa()
         );
 
+        panelAdminView.find("becariosBtn").onClick(b -> 
+            goToGestionarBecarios()
+        );
+
     }
 
     private void gotoLoginView() {
@@ -133,6 +137,10 @@ public class PanelAdminController {
 
     private void goToMenuGestion() {
         delegate.onGestionarMenuRequested();
+    }
+
+    private void goToGestionarBecarios(){
+        delegate.onGestionarBecariosRequested();
     }
 
 }
