@@ -10,7 +10,6 @@ import com.comedor.model.User;
 
 import aura.animations.AnimateBackground;
 import aura.animations.AnimateFloat;
-import aura.animations.AnimateInteger;
 import aura.animations.AnimateOpacity;
 import aura.animations.AnimateShake;
 import aura.animations.AnimateString;
