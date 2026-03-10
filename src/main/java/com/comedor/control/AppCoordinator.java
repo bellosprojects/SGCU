@@ -1,6 +1,10 @@
 package com.comedor.control;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.comedor.model.PersistenciaManager;
+import com.comedor.view.EstiloGral;
 import com.comedor.view.GestionarCCBView;
 import com.comedor.view.GestionarMenuView;
 import com.comedor.view.LoginView;
@@ -8,16 +12,72 @@ import com.comedor.view.PanelAdminView;
 import com.comedor.view.RegisterView;
 import com.comedor.view.UserMenuView;
 
+import aura.components.AuraImage;
+import aura.components.AuraWhen;
 import aura.components.AuraWindow;
+import aura.core.AuraBox;
+import aura.core.AuraState;
 
 public class AppCoordinator implements NavigationDelegate {
     
     private final PersistenciaManager model;
     private AuraWindow mainFrame;
+    private AuraState<String> viewStateController;
+    private final Map<String, AuraBox<?>> views = new HashMap<>();
+
+    // Controllers are created once and reused to avoid re-attaching listeners.
+    private LoginController loginController;
+    private RegisterController registerController;
+    private UserMenuController userMenuController;
+    private PanelAdminController panelAdminController;
+    private GestionarMenuController gestionarMenuController;
+    private CCBCalculoController ccbCalculoController;
 
     public AppCoordinator() {
         this.model = new PersistenciaManager();
-        this.mainFrame = null;
+        initView();
+    }
+
+    private String getResourcePath(String relativePath) {
+        return getClass().getResource(relativePath).toString();
+    }
+
+    private void initView(){
+        mainFrame = new AuraWindow("SGCU")
+            .fullScreen()
+            .background(EstiloGral.DARK_COLOR)
+            .noResizable()
+            .icon(new AuraImage(getResourcePath("/images/logoColor.png")))
+            .display();
+
+        viewStateController = new AuraState<>("Loading");
+
+        LoginView loginView = new LoginView();
+        RegisterView registerView = new RegisterView();
+        UserMenuView userMenuView = new UserMenuView();
+        PanelAdminView panelAdminView = new PanelAdminView();
+        GestionarMenuView gestionarMenuView = new GestionarMenuView();
+        GestionarCCBView gestionarCCBView = new GestionarCCBView();
+
+        views.put("Login", loginView);
+        views.put("Register", registerView);
+        views.put("UserMenu", userMenuView);
+        views.put("AdminDashboard", panelAdminView);
+        views.put("GestionarMenu", gestionarMenuView);
+        views.put("CalcularCCB", gestionarCCBView);
+
+        AuraWhen<String> screen = new AuraWhen<>(viewStateController)
+            .animationDuration(250)
+            .addCase("Login", loginView)
+            .addCase("Register", registerView)
+            .addCase("UserMenu", userMenuView)
+            .addCase("AdminDashboard", panelAdminView)
+            .addCase("GestionarMenu", gestionarMenuView)
+            .addCase("CalcularCCB", gestionarCCBView);
+
+        userMenuView.createModal(mainFrame);
+        mainFrame.insert(screen.fillParent());
+
     }
 
     public void start() {
@@ -25,69 +85,47 @@ public class AppCoordinator implements NavigationDelegate {
     }
 
     private void showLogin() {
-        if (mainFrame != null) {
-            mainFrame.setVisible(false);
-            mainFrame.dispose();
+        viewStateController.set("Login");
+        if (loginController == null) {
+            loginController = new LoginController((LoginView) views.get("Login"), model, this);
         }
-        LoginView view = new LoginView();
-        mainFrame = view;
-        new LoginController(view, model, this);
-        view.display();
     }
 
     private void showRegister() {
-        if (mainFrame != null) {
-            mainFrame.setVisible(false);
-            mainFrame.dispose();
+        viewStateController.set("Register");
+        if (registerController == null) {
+            registerController = new RegisterController((RegisterView) views.get("Register"), model, this);
         }
-        RegisterView registerView = new RegisterView();
-        mainFrame = registerView;
-        new RegisterController(registerView, model, this);
-        registerView.display();
     }
 
     private void showUserMenu(String cedula) {
-        if (mainFrame != null) {
-            mainFrame.setVisible(false);
-            mainFrame.dispose();
+        viewStateController.set("UserMenu");
+        if (userMenuController == null) {
+            userMenuController = new UserMenuController(model, cedula, (UserMenuView) views.get("UserMenu"), this);
+        } else {
+            userMenuController.setCedula(cedula);
         }
-        UserMenuView UserDashboardView = new UserMenuView();
-        mainFrame = UserDashboardView;
-        new UserMenuController(model, cedula, UserDashboardView, this);
-        UserDashboardView.display();
     }
 
     private void showAdminDashboard() {
-        if (mainFrame != null) {
-            mainFrame.setVisible(false);
-            mainFrame.dispose();
+        viewStateController.set("AdminDashboard");
+        if (panelAdminController == null) {
+            panelAdminController = new PanelAdminController((PanelAdminView) views.get("AdminDashboard"), model, this);
         }
-        PanelAdminView AdminDashboardView = new PanelAdminView();
-        mainFrame = AdminDashboardView;
-        new PanelAdminController(AdminDashboardView, model, this);
-        AdminDashboardView.display();
     }
 
     private void showGestionarMenuView() {
-        if (mainFrame != null) {
-            mainFrame.setVisible(false);
-            mainFrame.dispose();
+        viewStateController.set("GestionarMenu");
+        if (gestionarMenuController == null) {
+            gestionarMenuController = new GestionarMenuController((GestionarMenuView) views.get("GestionarMenu"), model, this);
         }
-        GestionarMenuView gestionarMenuView = new GestionarMenuView();
-        mainFrame = gestionarMenuView;
-        new GestionarMenuController(gestionarMenuView, model, this);
-        gestionarMenuView.display();
     }
 
     private void showCalcularCCBView() {
-        if (mainFrame != null) {
-            mainFrame.setVisible(false);
-            mainFrame.dispose();
+        viewStateController.set("CalcularCCB");
+        if (ccbCalculoController == null) {
+            ccbCalculoController = new CCBCalculoController((GestionarCCBView) views.get("CalcularCCB"), model, this);
         }
-        GestionarCCBView calcularCCBView = new GestionarCCBView();
-        mainFrame = calcularCCBView;
-        new CCBCalculoController(calcularCCBView, model, this);
-        calcularCCBView.display();
     }
 
     @Override

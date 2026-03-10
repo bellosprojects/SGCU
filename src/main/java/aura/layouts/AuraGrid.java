@@ -1,6 +1,10 @@
 package aura.layouts;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Insets;
+
 import aura.core.AuraBox;
 import aura.core.Layout;
 

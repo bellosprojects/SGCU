@@ -13,26 +13,19 @@ import aura.animations.AnimateInteger;
 import aura.animations.AnimateShake;
 import aura.animations.AnimateString;
 import aura.components.AuraButton;
-import aura.components.AuraImage;
+import aura.components.AuraContainer;
 import aura.components.AuraInput;
 import aura.components.AuraSelect;
 import aura.components.AuraSpacer;
 import aura.components.AuraText;
-import aura.components.AuraWindow;
 import aura.core.AuraBox;
 import aura.core.Transition;
 import aura.layouts.AuraColumn;
 import aura.layouts.AuraRow;
 
-public class PanelAdminView extends AuraWindow {
+public class PanelAdminView extends AuraContainer {
     
     public PanelAdminView(){
-
-        super("Panel de Admin - SGCU");
-        
-        fullScreen()
-        .noResizable()
-        .icon(new AuraImage(getResourcePath("/images/logoColor.png")));
 
         insert(
             new AuraRow()
@@ -501,10 +494,6 @@ public class PanelAdminView extends AuraWindow {
 
     public String getRole(){
         return ((AuraSelect) find("role")).getText();
-    }
-    
-    private String getResourcePath(String ruta) {
-        return getClass().getResource(ruta).toString();
     }
 
     public void InvalidateInputs(String... ids){

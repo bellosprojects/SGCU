@@ -4,8 +4,6 @@ import java.awt.Color;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-import javax.swing.SwingUtilities;
-
 import com.comedor.model.Menu;
 import com.comedor.model.Reserva;
 import com.comedor.model.User;
@@ -29,21 +27,11 @@ import aura.core.Transition;
 import aura.layouts.AuraColumn;
 import aura.layouts.AuraRow;
 
-public class UserMenuView extends AuraWindow {
+public class UserMenuView extends AuraContainer {
 
     private AuraModal modal;
 
     public UserMenuView(){
-        super("SGCU - Menu de usuario");
-
-        fullScreen()
-        .noResizable()
-        .background(EstiloGral.BG_COLOR)
-        .icon(new AuraImage(getResourcePath("/images/logoColor.png")));
-
-        SwingUtilities.invokeLater(() -> 
-            createModal()
-        );
 
         insert(
             new AuraRow()
@@ -501,6 +489,27 @@ public class UserMenuView extends AuraWindow {
 
     }
 
+    public void clearReservas() {
+        AuraColumn reservasPanel = (AuraColumn) find("reservationsPanel");
+        reservasPanel.removeAll();
+
+        reservasPanel.insert(
+            new AuraText("Mis reservaciones")
+                .font(EstiloGral.TITLE_FONT)
+                .textColor(EstiloGral.BG_COLOR)
+        );
+
+        reservasPanel.insert(
+            new AuraText("No tienes reservaciones activas.")
+                .font(EstiloGral.LABEL_FONT)
+                .textColor(EstiloGral.LIGHT_COLOR)
+                .margin(20)
+                .id("haveNotR")
+        );
+
+        reservasPanel.setVisible(false);
+    }
+
     public AuraRow createReservaCard(Reserva reserva, Menu.TipoMenu tipo){
 
         Color stateColor = switch(reserva.getEstadoReserva()) {
@@ -627,9 +636,9 @@ public class UserMenuView extends AuraWindow {
 
     }
 
-    private void createModal(){
+    public void createModal(AuraWindow parent){
 
-        modal = new AuraModal(this);
+        modal = new AuraModal(parent);
 
         AuraColumn columnModal = new AuraColumn()
                         .background(EstiloGral.BG_COLOR)
@@ -746,7 +755,7 @@ public class UserMenuView extends AuraWindow {
     }
 
     public void verificarFaceId(String path){
-        AuraModal faceIdModal = new AuraModal(this);
+        AuraModal faceIdModal = new AuraModal((AuraWindow) getParent());
 
         AuraContainer barra = new AuraContainer()
                                 .background(EstiloGral.GREEN_COLOR)

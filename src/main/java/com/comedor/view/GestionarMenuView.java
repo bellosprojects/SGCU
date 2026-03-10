@@ -3,26 +3,21 @@ package com.comedor.view;
 import aura.animations.AnimateBackground;
 import aura.animations.AnimateShake;
 import aura.components.AuraButton;
+import aura.components.AuraContainer;
 import aura.components.AuraImage;
 import aura.components.AuraInput;
 import aura.components.AuraMultiText;
 import aura.components.AuraSelect;
 import aura.components.AuraSpacer;
 import aura.components.AuraText;
-import aura.components.AuraWindow;
 import aura.core.AuraBox;
 import aura.core.Transition;
 import aura.layouts.AuraColumn;
 import aura.layouts.AuraRow;
 
-public class GestionarMenuView extends AuraWindow {
+public class GestionarMenuView extends AuraContainer {
 
     public GestionarMenuView(){
-        super("Gestionar Menu - SGCU");
-
-        fullScreen()
-        .noResizable()
-        .icon(new AuraImage(getResourcePath("/images/logoColor.png")));
 
         insert(
             new AuraColumn()

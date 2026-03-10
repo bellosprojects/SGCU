@@ -476,6 +476,10 @@ public abstract class AuraBox<T extends AuraBox<T>> extends JPanel {
     public T opacity(float alpha){
         if(alpha > 1f || alpha < 0f) return (T) this;
         this.opacity = alpha;
+        for(Component c : getComponents()){
+            if(c instanceof AuraBox)
+            ((AuraBox<?>) c).opacity(alpha);
+        }
         repaint();
         return (T) this;
     }

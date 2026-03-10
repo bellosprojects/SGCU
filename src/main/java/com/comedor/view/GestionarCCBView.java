@@ -1,31 +1,23 @@
 package com.comedor.view;
 
+import aura.animations.AnimateBackground;
+import aura.animations.AnimateFloat;
+import aura.animations.AnimateShake;
+import aura.components.AuraButton;
+import aura.components.AuraContainer;
+import aura.components.AuraImage;
+import aura.components.AuraInput;
+import aura.components.AuraSpacer;
+import aura.components.AuraText;
+import aura.core.AuraBox;
+import aura.core.Transition;
 import aura.layouts.AuraColumn;
 import aura.layouts.AuraGrid;
 import aura.layouts.AuraRow;
 
-import aura.components.AuraButton;
-import aura.components.AuraImage;
-import aura.components.AuraWindow;
-
-import aura.animations.AnimateBackground;
-import aura.animations.AnimateFloat;
-import aura.animations.AnimateShake;
-import aura.components.AuraInput;
-import aura.components.AuraSpacer;
-import aura.components.AuraText;
-
-import aura.core.AuraBox;
-import aura.core.Transition;
-
-public class GestionarCCBView extends AuraWindow {
+public class GestionarCCBView extends AuraContainer {
     
     public GestionarCCBView(){
-        super("Gestionar CCB - SGCU");
-
-        fullScreen()
-        .noResizable()
-        .icon(new AuraImage(getResourcePath("/images/logoColor.png")));
 
         insert(
             new AuraColumn()
