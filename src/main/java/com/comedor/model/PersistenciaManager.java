@@ -288,6 +288,24 @@ public class PersistenciaManager {
         return saldoFinal;
     }
 
+    public void ActualizarDatosUser(String cedula, double descuento, Role nuevoRole) {
+        try {
+            List<String> lineas = Files.readAllLines(usersFile, java.nio.charset.StandardCharsets.UTF_8);
+            for (int i = 0; i < lineas.size(); i++) {
+                User user = new User();
+                user.fromJSON(lineas.get(i));
+                if (user.getCedula().equals(cedula)) {
+                    user.setDescuento(descuento);
+                    user.setRole(nuevoRole);
+                    break;
+                }
+            }
+            Files.write(usersFile, lineas, java.nio.charset.StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            EstiloGral.ShowMessage("Error al actualizar descuento de Usuario", EstiloGral.ERROR_MESSAGE);
+        }
+    }
+
     public boolean isCedulaRegistered(String cedula){       
         User user = getUserFromCedula(cedula);
         return user != null;
