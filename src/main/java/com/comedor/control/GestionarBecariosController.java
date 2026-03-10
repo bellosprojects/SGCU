@@ -78,6 +78,11 @@ public class GestionarBecariosController {
             EstiloGral.ShowMessage("Ingrese una cedula para continuar", EstiloGral.ERROR_MESSAGE);
             flag = false;
         }
+        if(!ModelUtils.esEnteroValido(cedula)){
+            view.InvalidateInputs("cedulaForSaldoPana");
+            EstiloGral.ShowMessage("La cedula solo debe contener numeros", EstiloGral.ERROR_MESSAGE);
+            flag = false;
+        }
         if (!persistenciaManager.isCedulaRegistered(cedula)) {
             view.InvalidateInputs("cedula");
             EstiloGral.ShowMessage("Esta cedula no esta registrada en la base de datos", EstiloGral.ERROR_MESSAGE);
