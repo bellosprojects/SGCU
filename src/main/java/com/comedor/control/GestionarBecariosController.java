@@ -3,10 +3,7 @@ package com.comedor.control;
 import javax.swing.SwingUtilities;
 
 import com.comedor.model.PersistenciaManager;
-import com.comedor.model.User;
 import com.comedor.model.User.Role;
-import com.comedor.view.GestionarMenuView;
-import com.comedor.utils.ModelUtils;
 import com.comedor.view.EstiloGral;
 import com.comedor.view.GestionarBecariosView;
 
@@ -58,7 +55,7 @@ public class GestionarBecariosController {
     
     private void guardarDatosDelUser(String cedula, Double descuento, Role nuevoRole) {
         
-        
+
         if (!isValidDescuento(descuento)) {
             return;
         }

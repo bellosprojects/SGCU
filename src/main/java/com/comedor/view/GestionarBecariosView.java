@@ -233,6 +233,7 @@ public class GestionarBecariosView extends AuraContainer {
 
     public void hideModal(){
         new AnimateOpacity(this, 1f, 200).start();
+        ((AuraInput) modal.find("descuento")).text("");
         modal.close();
     }
 
