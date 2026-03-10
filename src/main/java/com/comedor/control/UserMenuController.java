@@ -13,6 +13,7 @@ import com.comedor.model.Menu.TipoMenu;
 import com.comedor.model.PersistenciaManager;
 import com.comedor.model.Reserva;
 import com.comedor.model.User;
+import com.comedor.model.User.Role;
 import com.comedor.utils.ModelUtils;
 import com.comedor.view.EstiloGral;
 import com.comedor.view.UserMenuView;
@@ -77,7 +78,14 @@ public class UserMenuController {
         );
 
         menuView.find("rechargeBtn").onClick(b -> {
-            menuView.showRecharge();
+            Role rolUser = persistenciaManager.getRoleFromCedula(cedula);
+                if(rolUser == Role.EXONERADO){
+
+                    EstiloGral.ShowMessage("Eres exonerado, no tienes habilitado la opcion de recargar saldo", EstiloGral.ERROR_MESSAGE);
+                } else {
+                    menuView.showRecharge();  
+                }
+            
         });
 
         SwingUtilities.invokeLater(() -> {
@@ -171,6 +179,35 @@ public class UserMenuController {
         return flag;
     }
 
+    public boolean isValidMontoForSaldoPana(String montoStr) {
+        boolean flag = true;
+        if(montoStr == null ||  montoStr.trim().isEmpty()){
+            menuView.InvalidateInputs("monto");
+            EstiloGral.ShowMessage("Ingrese un monto para recargar", EstiloGral.ERROR_MESSAGE);
+            flag = false;
+        }
+        else if(!ModelUtils.esDecimalValido(montoStr)){
+            menuView.InvalidateInputs("monto");
+            EstiloGral.ShowMessage("Ingrese solo numeros en el monto", EstiloGral.ERROR_MESSAGE);
+            flag = false;
+        }
+        double monto = Double.parseDouble(montoStr);
+        if (monto <= 0) {
+            menuView.InvalidateInputs("monto");
+            EstiloGral.ShowMessage("Ingrese un monto mayor a 0", EstiloGral.ERROR_MESSAGE);
+            flag = false;
+        }
+
+        Double montoActual = persistenciaManager.getSaldoFromCedula(cedula);
+        if(monto > montoActual){
+            menuView.InvalidateInputs("monto");
+            EstiloGral.ShowMessage("No tienes suficiente saldo para transferir ese monto, tu saldo actual es: " + montoActual, EstiloGral.ERROR_MESSAGE);
+            flag = false;
+        }
+        
+        return flag;
+    }
+
     public double recargarSaldo() { //Para el propio usuario
         String montoStr = menuView.getMonto();
         String numeroReferencia = menuView.getNumeroReferencia();
@@ -192,7 +229,6 @@ public class UserMenuController {
 
     public double recargarSaldoPana(String cedulaInput) { //para saldo pana, le sumo a saldo de ese usuario y me descuento a mi ese monto
         String montoStr = menuView.getMontoForSaldoPana();
-        String numeroReferencia ="000000000000";
         String confirmarcion = menuView.getConfirmacionSaldoPana();
         
         if(confirmarcion == null || !persistenciaManager.autenticar(cedula, confirmarcion)){
@@ -201,17 +237,9 @@ public class UserMenuController {
             return -1;
         }
 
-        if (!isValidInputs(montoStr, numeroReferencia)) {
-            return -1;
-        }
-        if (!isValidInputs(montoStr, numeroReferencia)) {
-            return -1;
-        }
-        double monto = Double.parseDouble(montoStr);
-        if (monto <= 0) {
-            EstiloGral.ShowMessage("Ingrese un monto mayor a 0", EstiloGral.ERROR_MESSAGE);
-            return -1;
-        }
+        if (!isValidMontoForSaldoPana(montoStr)) {
+            return -1; }
+        Double monto = Double.parseDouble(montoStr);
         persistenciaManager.sumarSaldo(cedulaInput, monto);
         EstiloGral.ShowMessage("Recarga exitosa para " + cedulaInput + ". Saldo recargado: " + monto, EstiloGral.SUCCESS_MESSAGE);
         
@@ -266,16 +294,32 @@ public class UserMenuController {
         }
     }
 
-    private boolean isValidCedula(String cedula){
+    private boolean isValidCedula(String cedulaInput){
         boolean flag = true;
-        if (cedula == null || cedula.isEmpty()) {
-            menuView.InvalidateInputs("cedula");
+        if (cedulaInput == null || cedulaInput.isEmpty()) {
+            menuView.InvalidateInputs("cedulaSaldoPana");
             EstiloGral.ShowMessage("Ingrese una cedula para continuar", EstiloGral.ERROR_MESSAGE);
             flag = false;
         }
-        else if (!persistenciaManager.isCedulaRegistered(cedula)) {
-            menuView.InvalidateInputs("cedula");
+        if(!ModelUtils.esEnteroValido(cedulaInput)){
+            menuView.InvalidateInputs("cedulaSaldoPana");
+            EstiloGral.ShowMessage("La cedula solo debe contener numeros", EstiloGral.ERROR_MESSAGE);
+            flag = false;
+        }
+        if (!persistenciaManager.isCedulaRegistered(cedulaInput)) {
+            menuView.InvalidateInputs("cedulaSaldoPana");
             EstiloGral.ShowMessage("Esta cedula no esta registrada en la base de datos", EstiloGral.ERROR_MESSAGE);
+            flag = false;
+        }
+        if(cedulaInput.equals(this.cedula)){
+            menuView.InvalidateInputs("cedulaSaldoPana");
+            EstiloGral.ShowMessage("No puedes recargar saldo pana a tu propia cedula, ingresa la cedula de otro usuario", EstiloGral.ERROR_MESSAGE);
+            flag = false;
+        }
+        Role rolUser = persistenciaManager.getRoleFromCedula(cedulaInput);
+        if(rolUser == Role.EXONERADO){
+            menuView.InvalidateInputs("cedulaSaldoPana");
+            EstiloGral.ShowMessage("Este usuario es exonerado, no es elegible para recargarle saldo", EstiloGral.ERROR_MESSAGE);
             flag = false;
         }
         
