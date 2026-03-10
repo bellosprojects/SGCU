@@ -80,13 +80,25 @@ public class UserMenuController {
             menuView.showRecharge();
         });
 
-        SwingUtilities.invokeLater(() -> 
+        SwingUtilities.invokeLater(() -> {
 
-            menuView.getModal().find("confirmRechargeBtn").onClick(b -> {
+            menuView.getModalRecargar().find("confirmRechargeBtn").onClick(b -> {
                 recargarSaldo();
-            })
+                // hacer 2 funciones
+            });
+
+            menuView.getModalSaldoPana().find("confirmRechargeSaldoPanaBtn").onClick(b -> {
+                String cedulaPana = menuView.getCedulaForSaldoPana();
+                if(isValidCedula(cedulaPana))
+                    recargarSaldo(cedulaPana);
+            });
             
-        );
+        });
+
+        menuView.find("rechargeSaldoPanaBtn").onClick(b -> {
+            menuView.showSaldoPana(); 
+        });
+
 
         menuView.find("bookBreakfastBtn").onClick(b -> {
             iniciarReserva(TipoMenu.DESAYUNO);
@@ -136,17 +148,17 @@ public class UserMenuController {
 
     public boolean isValidInputs(String montoStr, String numeroReferencia) {
         boolean flag = true;
-        if(montoStr.isEmpty() ){
+        if(montoStr == null ||  montoStr.trim().isEmpty()){
             menuView.InvalidateInputs("rechargeMonto");
             EstiloGral.ShowMessage("Ingrese un monto para recargar", EstiloGral.ERROR_MESSAGE);
             flag = false;
         }
         else if(!ModelUtils.esDecimalValido(montoStr)){
             menuView.InvalidateInputs("rechargeMonto");
-            EstiloGral.ShowMessage("Ingrese solo nÃºmeros en el monto", EstiloGral.ERROR_MESSAGE);
+            EstiloGral.ShowMessage("Ingrese solo numeros en el monto", EstiloGral.ERROR_MESSAGE);
             flag = false;
         }
-        else if(numeroReferencia.isEmpty()){
+        else if(numeroReferencia.trim().isEmpty()){
             menuView.InvalidateInputs("rechargeRef");
             EstiloGral.ShowMessage("Ingrese un numero de referencia para recargar", EstiloGral.ERROR_MESSAGE);
             flag = false;
@@ -160,7 +172,7 @@ public class UserMenuController {
         return flag;
     }
 
-    public double recargarSaldo() {
+    public double recargarSaldo() { //Para el propio usuario
         String montoStr = menuView.getMonto();
         String numeroReferencia = menuView.getNumeroReferencia();
         if (!isValidInputs(montoStr, numeroReferencia)) {
@@ -173,8 +185,40 @@ public class UserMenuController {
         }
         persistenciaManager.sumarSaldo(cedula, monto);
         EstiloGral.ShowMessage("Recarga exitosa. Saldo recargado: " + monto, EstiloGral.SUCCESS_MESSAGE);
+       
         menuView.hideRecharge();
         menuView.updateSaldo(persistenciaManager.getSaldoFromCedula(cedula));  
+        return monto;          
+    }
+
+    public double recargarSaldoPana(String cedulaInput) { //para saldo pana, le sumo a saldo de ese usuario y me descuento a mi ese monto
+        String montoStr = menuView.getMontoForSaldoPana();
+        String numeroReferencia ="000000000000";
+        String confirmarcion = menuView.getConfirmacionSaldoPana();
+        
+        if(confirmarcion == null || !persistenciaManager.autenticar(cedula, confirmarcion)){
+            menuView.InvalidateInputs("confirmacionSaldoPana");
+            EstiloGral.ShowMessage("Contraseña ingresada incorrecta, vuelva a intentarlo", EstiloGral.ERROR_MESSAGE);
+            return -1;
+        }
+
+         if (!isValidInputs(montoStr, numeroReferencia)) {
+            return -1;
+        }
+        if (!isValidInputs(montoStr, numeroReferencia)) {
+            return -1;
+        }
+        double monto = Double.parseDouble(montoStr);
+        if (monto <= 0) {
+            EstiloGral.ShowMessage("Ingrese un monto mayor a 0", EstiloGral.ERROR_MESSAGE);
+            return -1;
+        }
+        persistenciaManager.sumarSaldo(cedulaInput, monto);
+        EstiloGral.ShowMessage("Recarga exitosa para " + cedulaInput + ". Saldo recargado: " + monto, EstiloGral.SUCCESS_MESSAGE);
+        
+        menuView.hideSaldoPana();
+        persistenciaManager.getSaldoFromCedula(cedulaInput);
+        menuView.updateSaldo(persistenciaManager.sumarSaldo(cedula, -monto));  
         return monto;          
     }
 
@@ -262,4 +306,20 @@ public class UserMenuController {
         }
     }
 
+    private boolean isValidCedula(String cedula){
+        boolean flag = true;
+        if (cedula == null || cedula.isEmpty()) {
+            menuView.InvalidateInputs("cedulaForSaldoPana");
+            EstiloGral.ShowMessage("Ingrese una cedula para continuar", EstiloGral.ERROR_MESSAGE);
+            flag = false;
+        }
+        else if (!persistenciaManager.isCedulaRegistered(cedula)) {
+            menuView.InvalidateInputs("cedulaForSaldoPana");
+            EstiloGral.ShowMessage("Esta cedula no esta registrada en la base de datos", EstiloGral.ERROR_MESSAGE);
+            flag = false;
+        }
+        
+        return flag;
+
+    }
 }

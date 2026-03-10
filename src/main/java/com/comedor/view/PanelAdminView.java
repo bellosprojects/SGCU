@@ -218,7 +218,7 @@ public class PanelAdminView extends AuraContainer {
                                                         );
 
                                                         updateCol.insert(
-                                                            new AuraSelect("Estudiante", "Profesor", "Trabajador")
+                                                            new AuraSelect("ESTUDIANTE", "PROFESOR", "TRABAJADOR")
                                                                 .background(EstiloGral.DARK_COLOR)
                                                                 .font(EstiloGral.LABEL_FONT)
                                                                 .textColor(EstiloGral.BG_COLOR)

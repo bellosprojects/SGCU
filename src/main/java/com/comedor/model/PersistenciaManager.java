@@ -297,6 +297,7 @@ public class PersistenciaManager {
                 if (user.getCedula().equals(cedula)) {
                     user.setDescuento(descuento);
                     user.setRole(nuevoRole);
+                    lineas.set(i, user.toJson());
                     break;
                 }
             }

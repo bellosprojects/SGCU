@@ -3,100 +3,154 @@ package com.comedor.control;
 import javax.swing.SwingUtilities;
 
 import com.comedor.model.PersistenciaManager;
-import com.comedor.model.User;
 import com.comedor.model.User.Role;
-import com.comedor.view.GestionarMenuView;
 import com.comedor.utils.ModelUtils;
 import com.comedor.view.EstiloGral;
 import com.comedor.view.GestionarBecariosView;
 
 public class GestionarBecariosController {
     private final NavigationDelegate delegate;
-    private final GestionarBecariosView gestionarBecariosView;
+    private final GestionarBecariosView view;
     private final PersistenciaManager persistenciaManager;
 
-    public GestionarBecariosController(GestionarBecariosView gestionarBecariosView, PersistenciaManager persistenciaManager, NavigationDelegate delegate) {
-        this.gestionarBecariosView = gestionarBecariosView;
+    public GestionarBecariosController(GestionarBecariosView view, PersistenciaManager persistenciaManager, NavigationDelegate delegate) {
+        this.view = view;
         this.persistenciaManager = persistenciaManager;
         this.delegate = delegate;
         setupListeners();
     }
 
     private void setupListeners(){
-        gestionarBecariosView.find("backBtn").onClick(b -> {
+        view.find("backBtn").onClick(b -> {
             salirDeVentana();
         });
 
-        gestionarBecariosView.find("becarBtn").onClick(b -> {
-            String cedula = gestionarBecariosView.getCedula();
-            if(isValidCedula(cedula)){
-                gestionarBecariosView.showModal();
+        view.find("becarBtn").onClick(b -> {
+            String cedula = view.getCedula();
+            if(isValidCedulaForBeca(cedula)){
+                view.showModal();
             }
         });
 
         SwingUtilities.invokeLater(() -> 
 
-            gestionarBecariosView.getModal().find("confirmarBtn").onClick(b -> {
-                procesarBeca();
+            view.getModal().find("confirmarBtn").onClick(b -> {
+                handleBecar();
             })
             
         );
 
-        gestionarBecariosView.find("exonerarBtn").onClick(b -> {
-            // get cedula y todo eso
-            String cedula = gestionarBecariosView.getCedula();
-            if(isValidCedula(cedula)){
-                guardarDatosDelUser(cedula, 0.0, Role.EXONERADO); // o -1.0
-            }
+        view.find("exonerarBtn").onClick(b -> {
+            handleExonerar();
         });
-
     }
 
-    private void procesarBeca(){
 
+    void handleBecar(){
+        String cedula = view.getCedula();
+        String descuento = view.getDescuento();
+        if(isValidDescuento(descuento)){
+            guardarDatosDelUser(cedula, Double.parseDouble(descuento), Role.BECARIO); // o -1.0
+            view.hideModal();
+        }
+    }
+
+    private void handleExonerar(){
+        String cedula = view.getCedula();
+        if(isValidCedulaForExonerado(cedula)){
+            guardarDatosDelUser(cedula, 0.0, Role.EXONERADO); // o -1.0
+        }
     }
     
     private void guardarDatosDelUser(String cedula, Double descuento, Role nuevoRole) {
-        
-        
-        if (!isValidDescuento(descuento)) {
-            return;
-        }
         persistenciaManager.ActualizarDatosUser(cedula, descuento, nuevoRole);
-        salirDeVentana();
+        if(nuevoRole == Role.BECARIO){
+            EstiloGral.ShowMessage("Usuario becado exitosamente", EstiloGral.SUCCESS_MESSAGE);
+        } else if (nuevoRole == Role.EXONERADO){
+            EstiloGral.ShowMessage("Usuario exonerado exitosamente", EstiloGral.SUCCESS_MESSAGE);
+        }
     }
 
     public boolean isValidCedula(String cedula){
         boolean flag = true;
-        if (cedula.isEmpty()) {
-            gestionarBecariosView.InvalidateInputs("cedula");
-            com.comedor.view.EstiloGral.ShowMessage("Ingrese una cedula para continuar", EstiloGral.ERROR_MESSAGE);
+        if (cedula == null || cedula.trim().isEmpty()) {
+            view.InvalidateInputs("cedula");
+            EstiloGral.ShowMessage("Ingrese una cedula para continuar", EstiloGral.ERROR_MESSAGE);
             flag = false;
         }
         if (!persistenciaManager.isCedulaRegistered(cedula)) {
-            gestionarBecariosView.InvalidateInputs("cedula");
-            com.comedor.view.EstiloGral.ShowMessage("Esta cedula no esta registrada en la base de datos", EstiloGral.ERROR_MESSAGE);
+            view.InvalidateInputs("cedula");
+            EstiloGral.ShowMessage("Esta cedula no esta registrada en la base de datos", EstiloGral.ERROR_MESSAGE);
             flag = false;
+        }
+        return flag;
+    }
+
+    public boolean isValidCedulaForBeca(String cedula){
+        boolean flag = true;
+        if (!isValidCedula(cedula)){
+           return false;
+        }
+
+        Role rolUser = persistenciaManager.getRoleFromCedula(cedula);
+        if(rolUser == Role.EXONERADO){
+            view.InvalidateInputs("cedula");
+            EstiloGral.ShowMessage("Este usuario ya es exonerado, no se puede becar", EstiloGral.ERROR_MESSAGE);
+            flag = false;
+        } else if(rolUser == Role.BECARIO){
+            view.InvalidateInputs("cedula");
+            EstiloGral.ShowMessage("Este usuario ya esta becado", EstiloGral.ERROR_MESSAGE);
+            flag = false;
+        } else if(rolUser != Role.ESTUDIANTE){
+            view.InvalidateInputs("cedula");
+            EstiloGral.ShowMessage("Este usuario no es elegible para ser becado", EstiloGral.ERROR_MESSAGE);
+            return false;
         }
         
         return flag;
     }
 
-    public boolean isValidDescuento(Double descuento) {
+    public boolean isValidCedulaForExonerado(String cedula){
         boolean flag = true;
-        if(descuento == null || descuento < 0){
-            gestionarBecariosView.InvalidateInputs("descuento");
+        if (!isValidCedula(cedula)){
+            return false;
+        }
+
+        Role rolUser = persistenciaManager.getRoleFromCedula(cedula);
+        if(rolUser == Role.EXONERADO){
+            view.InvalidateInputs("cedula");
+            EstiloGral.ShowMessage("Este usuario ya esta exonerado", EstiloGral.ERROR_MESSAGE);
+            flag = false;
+        } else if(rolUser != Role.ESTUDIANTE && rolUser != Role.BECARIO){
+            view.InvalidateInputs("cedula");
+            EstiloGral.ShowMessage("Este usuario no es elegible para ser exonerado", EstiloGral.ERROR_MESSAGE);
+            return false;
+        }
+        
+        return flag;
+    }
+
+    public boolean isValidDescuento(String descuentoStr) {
+        boolean flag = true;
+        if(descuentoStr == null || descuentoStr.trim().isEmpty()){
+            view.InvalidateInputs("descuento");
             com.comedor.view.EstiloGral.ShowMessage("Ingrese un descuento valido", EstiloGral.ERROR_MESSAGE);
             flag = false;
         }
-        
+
+        if(!ModelUtils.esDecimalValido(descuentoStr)){
+            view.InvalidateInputs("descuento");
+            com.comedor.view.EstiloGral.ShowMessage("Ingrese numeros validos", EstiloGral.ERROR_MESSAGE);
+            flag = false;
+        }
+        Double descuento = Double.parseDouble(descuentoStr);
         Double DescuentoEstudiante = persistenciaManager.getPorcentajeFromRole("ESTUDIANTE");
         if(DescuentoEstudiante == null){
-            gestionarBecariosView.InvalidateInputs("descuento");
+            view.InvalidateInputs("descuento");
             com.comedor.view.EstiloGral.ShowMessage("Error al obtener el descuento de Usuario", EstiloGral.ERROR_MESSAGE);
             flag = false;
         } else if(descuento >= DescuentoEstudiante){
-            gestionarBecariosView.InvalidateInputs("descuento");
+            view.InvalidateInputs("descuento");
             com.comedor.view.EstiloGral.ShowMessage("Ingrese un descuento menor que el de Usuario", EstiloGral.ERROR_MESSAGE);
             flag = false;
         }
@@ -105,5 +159,5 @@ public class GestionarBecariosController {
 
     private void salirDeVentana() {
         delegate.onAdminPanelRequested();
-    }
+}
 }
