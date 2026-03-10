@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.comedor.model.PersistenciaManager;
-import com.comedor.model.User;
 import com.comedor.view.EstiloGral;
 import com.comedor.view.GestionarCCBView;
 import com.comedor.view.GestionarMenuView;
