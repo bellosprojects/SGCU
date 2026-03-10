@@ -21,7 +21,7 @@ public class LoginView extends AuraContainer {
 
         background(new AuraImage(getResourcePath("/images/comedor.png")));
 
-        AuraButton loginButton = new AuraButton("Iniciar Sesión")
+        AuraButton loginButton = new AuraButton("Iniciar SesiÃ³n")
                                         .margin(20, 40)
                                         .background(EstiloGral.DARK_COLOR)
                                         .textColor(EstiloGral.BG_COLOR)
@@ -34,7 +34,7 @@ public class LoginView extends AuraContainer {
                                             new AnimateScale(b, h? 1.05f : 1, 150).start();
                                         });
         
-        AuraText registerButton = new AuraText("¿No tienes cuenta? Registrate")
+        AuraText registerButton = new AuraText("Â¿No tienes cuenta? Registrate")
                                         .font(EstiloGral.SMALL_FONT)
                                         .textColor(EstiloGral.BG_COLOR)
                                         .cursor(EstiloGral.HOVER_CURSOR)
@@ -57,7 +57,7 @@ public class LoginView extends AuraContainer {
                                     .font(EstiloGral.INPUT_FONT)
                                     .background(EstiloGral.WHITE_TRANSP_COLOR)
                                     .margin(0, 40)
-                                    .info(createInfo("Contraseña sin espacios"), 1, 0, 1, 1)
+                                    .info(createInfo("ContraseÃ±a sin espacios"), 1, 0, 1, 1)
                                     .id("password");
 
         insert(
@@ -85,7 +85,7 @@ public class LoginView extends AuraContainer {
                                     );
 
                                 col.insert(
-                                    new AuraText("SGCU - Iniciar Sesión")
+                                    new AuraText("SGCU - Iniciar SesiÃ³n")
                                         .font(EstiloGral.TITLE_FONT)
                                         .textColor(EstiloGral.BG_COLOR)
                                     );
@@ -106,7 +106,7 @@ public class LoginView extends AuraContainer {
                                 col.insert(cedulaInput);
 
                                 col.insert(
-                                    new AuraText("CONTRASEÑA")
+                                    new AuraText("CONTRASEÃ‘A")
                                         .alignSelf(AuraColumn.Alignment.LEFT)
                                         .font(EstiloGral.LABEL_FONT)
                                         .textColor(EstiloGral.BG_COLOR)
@@ -148,7 +148,7 @@ public class LoginView extends AuraContainer {
                             .content(footer -> {
 
                                 footer.insert(
-                                    new AuraText("© 2026 SGCU. Todos los derechos reservados.")
+                                    new AuraText("Â© 2026 SGCU. Todos los derechos reservados.")
                                         .textColor(EstiloGral.BG_COLOR)
                                         .margin(20, 40)
                                         .font(EstiloGral.LABEL_FONT)
