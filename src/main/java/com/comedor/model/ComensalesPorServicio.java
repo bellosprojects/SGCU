@@ -1,7 +1,8 @@
 package com.comedor.model;
-import com.comedor.model.User.Role;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+
+import com.comedor.model.User.Role;
 
 public class ComensalesPorServicio {
     private String fecha= LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -19,7 +20,31 @@ public class ComensalesPorServicio {
         cantidadTrabajador= 0;
     }
 
-    public String toJson(){
+    public String getFecha() {
+		return fecha;
+	}
+
+	public int getCantidadTrabajador() {
+		return cantidadTrabajador;
+	}
+
+	public int getCantidadProfesor() {
+		return cantidadProfesor;
+	}
+
+	public int getCantidadEstudiante() {
+		return cantidadEstudiante;
+	}
+
+	public int getCantidadExonerado() {
+		return cantidadExonerado;
+	}
+
+	public int getCantidadBecario() {
+		return cantidadBecario;
+	}
+
+	public String toJson(){
         return String.format("{\"Fecha\":\"%s\"<>\"Trabajador\":\"%d\"<>\"Profesor\":\"%d\"<>\"Estudiante\":\"%d\"<>\"Exonerado\":\"%d\"<>\"Becario\":\"%d\"}",
             fecha,
             cantidadTrabajador,

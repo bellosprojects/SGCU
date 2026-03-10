@@ -3,9 +3,12 @@ package com.comedor.view;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import com.comedor.model.ComensalesPorServicio;
 import com.comedor.model.Menu;
 import com.comedor.model.Prices;
 import com.comedor.model.Reserva;
+import com.comedor.model.Menu.TipoMenu;
+import com.comedor.model.User.Role;
 
 import aura.animations.AnimateBackground;
 import aura.animations.AnimateFloat;
@@ -18,7 +21,10 @@ import aura.components.AuraInput;
 import aura.components.AuraSelect;
 import aura.components.AuraSpacer;
 import aura.components.AuraText;
+import aura.components.AuraWhen;
+
 import aura.core.AuraBox;
+import aura.core.AuraState;
 import aura.core.Transition;
 import aura.layouts.AuraColumn;
 import aura.layouts.AuraRow;
@@ -26,7 +32,34 @@ import aura.layouts.AuraColumn.Alignment;
 
 public class PanelAdminView extends AuraContainer {
     
+    AuraState<String> rightPanelStateController;
+
+    AuraColumn listadoDesayunoColumn;
+    AuraColumn listadoAlmuerzoColumn;
+
     public PanelAdminView(){
+
+        rightPanelStateController = new AuraState<String>("reservas");
+
+        listadoDesayunoColumn = new AuraColumn()
+                            .id("listadoDesayuno")
+                            .content(reservasCol -> {
+                                reservasCol.insert(
+                                    new AuraText("Desayuno - Comensales")
+                                        .font(EstiloGral.MIDDLE_FONT)
+                                        .textColor(EstiloGral.BG_COLOR)
+                                );
+                            });
+
+        listadoAlmuerzoColumn = new AuraColumn()
+                            .id("listadoAlmuerzo")
+                            .content(reservasCol -> {
+                                reservasCol.insert(
+                                    new AuraText("Almuerzo - Comensales")
+                                        .font(EstiloGral.MIDDLE_FONT)
+                                        .textColor(EstiloGral.BG_COLOR)
+                                );
+                            });
 
         insert(
             new AuraRow()
@@ -54,9 +87,10 @@ public class PanelAdminView extends AuraContainer {
                                         .align(AuraRow.Alignment.BOTTOM)
                                         .content(auxRow -> {
                                             auxRow.insert(
-                                                new AuraText("Gestiona los precios y menus desde aqui")
+                                                new AuraText("Fecha del CCB: 01/01/01")
                                                     .textColor(EstiloGral.LIGHT_COLOR)
                                                     .font(EstiloGral.LABEL_FONT)
+                                                    .id("ccbFecha")
                                             );
 
                                             auxRow.insert(
@@ -315,30 +349,43 @@ public class PanelAdminView extends AuraContainer {
                             .background(EstiloGral.DARK_BG__COLOR)
                             .addBg(EstiloGral.DARK_BG__COLOR.darker(), 1f)
                             .backgroundAngle(90)
-                            .fillParent()
+                            .fillHeight()
+                            .weight(0.4f)
                             .padding(40,60)
                             .content(rightCol -> {
 
                                 rightCol.insert(
-                                    new AuraColumn()
-                                        .id("reservas")
+
+                                    new AuraWhen<>(rightPanelStateController)
                                         .fillWidth()
                                         .weight(1f)
                                         .background(EstiloGral.TRANSPARENT_COLOR)
-                                        .content(reservasCol -> {
-                                            reservasCol.insert(
-                                                new AuraText("Reservaciones Pendientes")
-                                                    .font(EstiloGral.MIDDLE_FONT)
-                                                    .textColor(EstiloGral.BG_COLOR)
-                                            );
-                                        })
+                                        .animationDuration(250)
+                                        .addCase("listadoDesayuno", listadoDesayunoColumn)
+                                        .addCase("listadoAlmuerzo", listadoAlmuerzoColumn)
                                 );
 
                                 rightCol.insert(
-                                    new AuraButton("Ver listado completo")
-                                        .background(EstiloGral.BUTTON_COLOR)
-                                        .textColor(EstiloGral.BG_COLOR)
-                                        .font(EstiloGral.LABEL_FONT)
+                                    new AuraWhen<>(rightPanelStateController)
+                                        .animationDuration(250)
+                                        .addCase("listadoDesayuno", 
+                                            new AuraButton("Ver Reservas")
+                                                .background(EstiloGral.BUTTON_COLOR)
+                                                .textColor(EstiloGral.BG_COLOR)
+                                                .font(EstiloGral.LABEL_FONT)
+                                                .onClick(b -> {
+                                                    rightPanelStateController.set("reservas");
+                                                })
+                                        )
+                                        .addCase("listadoAlmuerzo", 
+                                            new AuraButton("Ver Reservas")
+                                                .background(EstiloGral.BUTTON_COLOR)
+                                                .textColor(EstiloGral.BG_COLOR)
+                                                .font(EstiloGral.LABEL_FONT)
+                                                .onClick(b -> {
+                                                    rightPanelStateController.set("reservas");
+                                                })
+                                        )
                                 );
                                 
                             })
@@ -348,110 +395,56 @@ public class PanelAdminView extends AuraContainer {
 
     }
 
-    public void setReservasDesayuno(Queue<Reserva> reservas){
-
-        AuraColumn reservasColumn = (AuraColumn) find("reservas");
-
-        Queue<Reserva> listaLimpia = new LinkedList<>();
-        for(Reserva r : reservas){
-            if(r.getEstadoReserva() == Reserva.EstadoReserva.EN_ESPERA){
-                listaLimpia.add(r);
-            }
-        }
-
-        if(!listaLimpia.isEmpty()){
-            for(Reserva r : listaLimpia){
-
-                if(reservasColumn.find(r.getCedula()) == null){
-
-                    AuraColumn reservaCol = createReserva(r, Menu.TipoMenu.DESAYUNO);
-
-                    reservasColumn.insert(
-                        reservaCol
-                    );
-                }
-            }
-        }
+    public void setFechaCCB(String fecha){
+        ((AuraText) find("ccbFecha")).text("Fecha del CCB: " + fecha);
     }
 
-    public void setReservasAlmuerzo(Queue<Reserva> reservas){
+    public void setListado(ComensalesPorServicio listado, TipoMenu tipo){
 
-        AuraColumn reservasColumn = (AuraColumn) find("reservas");
+        AuraColumn listadoColumn = (tipo == TipoMenu.ALMUERZO)? listadoAlmuerzoColumn : listadoDesayunoColumn;
 
-        Queue<Reserva> listaLimpia = new LinkedList<>();
-        for(Reserva r : reservas){
-            if(r.getEstadoReserva() == Reserva.EstadoReserva.EN_ESPERA){
-                listaLimpia.add(r);
-            }
-        }
+        listadoColumn.insert(
+            listadoItem(Role.ESTUDIANTE, listado.getCantidadEstudiante())
+        );
 
-        if(!listaLimpia.isEmpty()){
-            for(Reserva r : listaLimpia){
+        listadoColumn.insert(
+            listadoItem(Role.BECARIO, listado.getCantidadBecario())
+        );
 
-                if(reservasColumn.find(r.getCedula()) == null){
+        listadoColumn.insert(
+            listadoItem(Role.EXONERADO, listado.getCantidadExonerado())
+        );
 
-                    AuraColumn reservaCol = createReserva(r, Menu.TipoMenu.ALMUERZO);
+        listadoColumn.insert(
+            listadoItem(Role.PROFESOR, listado.getCantidadProfesor())
+        );
 
-                    reservasColumn.insert(
-                        reservaCol
-                    );
-                }
-            }
-        }
+        listadoColumn.insert(
+            listadoItem(Role.TRABAJADOR, listado.getCantidadTrabajador())
+        );
     }
 
-    private AuraColumn createReserva(Reserva res, Menu.TipoMenu tipo){
+    public AuraColumn listadoItem(Role rol, int cantidad){
         return new AuraColumn()
-                    .margin(40,40,0,40)
-                    .padding(20)
+                    .padding(12, 25)
                     .radius(15)
-                    .gap(20)
-                    .id(res.getCedula() + "-" + tipo.toString())
                     .background(EstiloGral.WHITE_TRANSP_COLOR)
-                    .content(r -> {
-                        r.insert(
-                            new AuraText(res.getCedula() + " - " + tipo.toString())
-                                .font(EstiloGral.LABEL_BOLD_FONT)
-                                .textColor(EstiloGral.BG_COLOR)
+                    .align(Alignment.LEFT)
+                    .fillWidth()
+                    .margin(20, 40)
+                    .content(item -> {
+                        item.insert(
+                            new AuraText(rol.toString())
+                                .textColor(EstiloGral.DARK_COLOR)
+                                .font(EstiloGral.INPUT_FONT)
                         );
- 
-                        r.insert(
-                            new AuraRow()
-                                .gap(20)
-                                .content(row -> {
-                                    row.insert(
-                                        new AuraButton("Cancelar")
-                                            .textColor(EstiloGral.BG_COLOR)
-                                            .background(EstiloGral.ERROR_COLOR)
-                                            .font(EstiloGral.LABEL_FONT)
-                                            .id("cancelarBtn")
-                                    );
 
-                                    row.insert(
-                                        new AuraButton("Aprobar")
-                                            .textColor(EstiloGral.BG_COLOR)
-                                            .background(EstiloGral.GREEN_COLOR)
-                                            .font(EstiloGral.LABEL_FONT)
-                                            .id("confirmarBtn")
-                                    );
-                                })
+                        item.insert(
+                            new AuraText(String.valueOf(cantidad))               
+                                .textColor(EstiloGral.DARK_COLOR)
+                                .font(EstiloGral.LABEL_FONT)
                         );
                     });
-    }
-
-    public void removeReserva(AuraColumn reservaCol){
-
-        AuraColumn reservasColumn = (AuraColumn) find("reservas");
-
-        new AnimateInteger(0, reservaCol.getPreferredSize().width, 300, value -> {
-            reservaCol.offset(-value, 0);
-            reservasColumn.revalidate();
-        })
-        .then(() -> {
-            reservasColumn.remove(reservaCol);
-            reservasColumn.revalidate();
-        })
-        .start();
     }
 
     public void setMenus(String desayuno, String almuerzo){

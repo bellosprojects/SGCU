@@ -45,7 +45,7 @@ public class CCBCalculoController {
         String NBStr = calcularCCBView.getCantidadBandejas();
         String porcMermaStr = calcularCCBView.getPorcentajeMerma();
 
-         if (!IsValidInputs(CFStr, CVStr, NBStr, porcMermaStr)){
+        if (!IsValidInputs(CFStr, CVStr, NBStr, porcMermaStr)){
             EstiloGral.ShowMessage("Datos invalidos", EstiloGral.ERROR_MESSAGE); 
             return;
         }

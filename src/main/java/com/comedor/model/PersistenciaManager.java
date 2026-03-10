@@ -10,9 +10,9 @@ import java.util.Queue;
 
 import com.comedor.model.Menu.TipoMenu;
 import com.comedor.model.Reserva.EstadoReserva;
+import com.comedor.model.User.Role;
 import com.comedor.utils.ModelUtils;
 import com.comedor.view.EstiloGral;
-import com.comedor.model.User.Role;
 
 public class PersistenciaManager {
 
@@ -174,6 +174,7 @@ public class PersistenciaManager {
                 prices.fromJSON(lineas.get(0));
 
                 prices.setCCB(CCB);
+                prices.setFecha();
                 lineas.clear();
                 lineas.add(prices.toJson());
                 Files.write(pricesFile, lineas, java.nio.charset.StandardCharsets.UTF_8);
@@ -234,7 +235,7 @@ public class PersistenciaManager {
             EstiloGral.ShowMessage("Hubo un error al guardar el usuario", EstiloGral.INFO_MESSAGE);  
         }
     }
-          
+    
     public User getUserFromCedula(String cedula){ 
         
         try {
@@ -357,6 +358,7 @@ public class PersistenciaManager {
             } else {
                 vaciarListaAlmuerzo();
             }
+            resetearListaComensales(menu.getTipo());
         }
 
         try {
@@ -603,7 +605,7 @@ public class PersistenciaManager {
         return null;
     }
 
-    void agregarComensalesPorServicio(TipoMenu tipo, Role role){
+    public void agregarComensalesPorServicio(TipoMenu tipo, Role role){
         try{
             Path ruta = (tipo == TipoMenu.DESAYUNO) ? listaComensalesDesayuno : listaComensalesAlmuerzo;
             if(Files.exists(ruta)){                                    
@@ -623,7 +625,7 @@ public class PersistenciaManager {
         }
     }
 
-    ComensalesPorServicio getComensalesPorServicio(TipoMenu tipo){
+    public ComensalesPorServicio getComensalesPorServicio(TipoMenu tipo){
         try{
             Path ruta = (tipo == TipoMenu.DESAYUNO) ? listaComensalesDesayuno : listaComensalesAlmuerzo;
             if(Files.exists(ruta)){                                    
@@ -631,8 +633,8 @@ public class PersistenciaManager {
                 ComensalesPorServicio comensales = new ComensalesPorServicio();
                 if(!lineas.isEmpty()){
                     comensales.fromJSON(lineas.get(0));
-                    return comensales;
                 }
+                return comensales;
             }
         } catch (IOException e){ 
             EstiloGral.ShowMessage("Hubo un error al leer el archivo de comensales por servicio", EstiloGral.INFO_MESSAGE);
@@ -640,16 +642,20 @@ public class PersistenciaManager {
         return null;
     }
 
-    void resetearListaComensales(){
+    public void resetearListaComensales(TipoMenu tipo){
         try {
-            Files.write(listaComensalesDesayuno, new byte[0], StandardOpenOption.TRUNCATE_EXISTING);
-            Files.write(listaComensalesAlmuerzo, new byte[0], StandardOpenOption.TRUNCATE_EXISTING);
+            if(tipo == TipoMenu.DESAYUNO){
+                Files.write(listaComensalesDesayuno, new byte[0], StandardOpenOption.TRUNCATE_EXISTING);
+            } else {
+                Files.write(listaComensalesAlmuerzo, new byte[0], StandardOpenOption.TRUNCATE_EXISTING);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+    
 
-    String getFechaCCB(){
+    public String getFechaCCB(){
         try{
             List<String> lineas = Files.readAllLines(pricesFile, java.nio.charset.StandardCharsets.UTF_8);        //crea una lista con todas las lineas del archivo
             Prices prices = new Prices();

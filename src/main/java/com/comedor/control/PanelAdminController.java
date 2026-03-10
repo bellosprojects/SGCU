@@ -1,16 +1,12 @@
 package com.comedor.control;
 
-import java.util.Queue;
-
+import com.comedor.model.ComensalesPorServicio;
 import com.comedor.model.Menu;
 import com.comedor.model.PersistenciaManager;
 import com.comedor.model.Prices;
-import com.comedor.model.Reserva;
+import com.comedor.model.Menu.TipoMenu;
 import com.comedor.view.EstiloGral;
 import com.comedor.view.PanelAdminView;
-
-import aura.core.AuraBox;
-import aura.layouts.AuraColumn;
 
 public class PanelAdminController {
     private final NavigationDelegate delegate;
@@ -23,7 +19,6 @@ public class PanelAdminController {
         this.delegate = delegate;
         setupListeners();
         sendData();
-        sendReservas();
     }
 
     private void sendData(){
@@ -42,40 +37,14 @@ public class PanelAdminController {
         String platoAlmuerzo = almuerzo == null? null : almuerzo.getPlato();
 
         panelAdminView.setMenus(platoDesayuno, platoAlmuerzo);
-    }
 
-    private void sendReservas(){
-         Queue<Reserva> almmuerzoRes = persistenciaManager.AlmuerzoWaitingQueue();
-         Queue<Reserva> desayunoRes = persistenciaManager.DesayunoWaitingQueue();
+        ComensalesPorServicio listadoDesayuno = persistenciaManager.getComensalesPorServicio(TipoMenu.DESAYUNO);
+        panelAdminView.setListado(listadoDesayuno, TipoMenu.DESAYUNO);
 
-        panelAdminView.setReservasDesayuno(desayunoRes);
-        panelAdminView.setReservasAlmuerzo(almmuerzoRes);
+        ComensalesPorServicio listadoAlmuerzo = persistenciaManager.getComensalesPorServicio(TipoMenu.ALMUERZO);
+        panelAdminView.setListado(listadoAlmuerzo, TipoMenu.ALMUERZO);
 
-        for(AuraBox<?> b : panelAdminView.findAll("cancelarBtn")){
-            b.onClick(button -> {
-                AuraColumn parent = (AuraColumn) button.getParent().getParent();
-                String data = parent.getId();
-                String[] parts = data.split("-");
-                String cedula = parts[0];
-                String estadoReserva = parts[1];
-                persistenciaManager.cancelarReserva(cedula, Menu.TipoMenu.valueOf(estadoReserva));
-                EstiloGral.ShowMessage("Reserva cancelada exitosamente.", EstiloGral.SUCCESS_MESSAGE);
-                panelAdminView.removeReserva(parent);
-            });
-        }
-
-        for(AuraBox<?> b : panelAdminView.findAll("confirmarBtn")){
-            b.onClick(button -> {
-                AuraColumn parent = (AuraColumn) button.getParent().getParent();
-                String data = parent.getId();
-                String[] parts = data.split("-");
-                String cedula = parts[0];
-                String estadoReserva = parts[1];
-                persistenciaManager.aceptarReserva(cedula, Menu.TipoMenu.valueOf(estadoReserva));
-                EstiloGral.ShowMessage("Reserva confirmada exitosamente.", EstiloGral.SUCCESS_MESSAGE);
-                panelAdminView.removeReserva(parent);
-            });
-        }
+        panelAdminView.setFechaCCB(persistenciaManager.getFechaCCB());
     }
 
     private void actualizarTarifa() {

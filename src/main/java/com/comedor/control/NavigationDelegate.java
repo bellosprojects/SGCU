@@ -9,4 +9,5 @@ public interface NavigationDelegate {
     void onGestionarMenuRequested();
     void onCalcularCCBRequested();
     void onGestionarBecariosRequested();
+    void onCajeroRequested();
 }

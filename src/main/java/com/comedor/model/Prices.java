@@ -15,7 +15,7 @@ public class Prices {
         profesorTarifa = 0.0;
         trabajadorTarifa = 0.0;
         CCB = 0.0;
-        fecha = "";
+        setFecha();
     }
 
     public Prices(double estudiante, double profesor, double trabajador, double ccb){
@@ -23,6 +23,7 @@ public class Prices {
         profesorTarifa = profesor;
         trabajadorTarifa = trabajador;
         CCB = ccb;
+        setFecha();
     }
 
     public String toJson(){
@@ -61,7 +62,11 @@ public class Prices {
 
             String key = kv[0].trim();
 
-            String value = kv[1].trim().replace(",", ".");
+            String value = "";
+
+            if (kv.length > 1) {
+                value = kv[1].trim().replace(",", ".");
+            }
 
             switch (key) {
                 case "Estudiante":
@@ -105,6 +110,6 @@ public class Prices {
         return fecha;
     }
     public void setFecha(){
-       fecha= LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        fecha = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 }

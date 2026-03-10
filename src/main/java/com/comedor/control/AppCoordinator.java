@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.comedor.model.PersistenciaManager;
+import com.comedor.view.CajeroView;
 import com.comedor.view.EstiloGral;
 import com.comedor.view.GestionarBecariosView;
 import com.comedor.view.GestionarCCBView;
@@ -34,6 +35,7 @@ public class AppCoordinator implements NavigationDelegate {
     private GestionarMenuController gestionarMenuController;
     private CCBCalculoController ccbCalculoController;
     private GestionarBecariosController gestionarBecariosController;
+    private CajeroController cajeroController;
 
     public AppCoordinator() {
         this.model = new PersistenciaManager();
@@ -61,6 +63,7 @@ public class AppCoordinator implements NavigationDelegate {
         GestionarMenuView gestionarMenuView = new GestionarMenuView();
         GestionarCCBView gestionarCCBView = new GestionarCCBView();
         GestionarBecariosView gestionarBecariosView = new GestionarBecariosView();
+        CajeroView cajeroView = new CajeroView();
 
         views.put("Login", loginView);
         views.put("Register", registerView);
@@ -69,6 +72,7 @@ public class AppCoordinator implements NavigationDelegate {
         views.put("GestionarMenu", gestionarMenuView);
         views.put("CalcularCCB", gestionarCCBView);
         views.put("GestionarBecarios", gestionarBecariosView);
+        views.put("Cajero", cajeroView);
 
         AuraWhen<String> screen = new AuraWhen<>(viewStateController)
             .animationDuration(250)
@@ -78,7 +82,8 @@ public class AppCoordinator implements NavigationDelegate {
             .addCase("AdminDashboard", panelAdminView)
             .addCase("GestionarMenu", gestionarMenuView)
             .addCase("CalcularCCB", gestionarCCBView)
-            .addCase("GestionarBecarios", gestionarBecariosView);
+            .addCase("GestionarBecarios", gestionarBecariosView)
+            .addCase("Cajero", cajeroView);
 
         userMenuView.createModalRecharge(mainFrame);
         userMenuView.createModalSaldoPana(mainFrame);
@@ -143,6 +148,13 @@ public class AppCoordinator implements NavigationDelegate {
         }
     }
 
+    public void showCajeroView(){
+        viewStateController.set("Cajero");
+        if(cajeroController == null){
+            cajeroController = new CajeroController((CajeroView) views.get("Cajero"), model, this);
+        }
+    }
+
     @Override
     public void onRegisterSuccess() {
         showLogin();
@@ -185,5 +197,10 @@ public class AppCoordinator implements NavigationDelegate {
     @Override
     public void onGestionarBecariosRequested() {
         showGestionarBecarios();
+    }
+
+    @Override
+    public void onCajeroRequested(){
+        showCajeroView();
     }
 }
