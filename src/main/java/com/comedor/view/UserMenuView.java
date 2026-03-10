@@ -806,7 +806,7 @@ public class UserMenuView extends AuraContainer {
                                     .carterColor(EstiloGral.BG_COLOR)
                                     .background(EstiloGral.DARK_COLOR)
                                     .fillWidth()
-                                    .id("cedula")
+                                    .id("cedulaSaldoPana")
                             );
 
                             col.insert(
@@ -883,7 +883,7 @@ public class UserMenuView extends AuraContainer {
 
     public void hideSaldoPana(){
         new AnimateOpacity(this, 1f, 200).start();
-        ((AuraInput) modalSaldoPana.find("cedula")).text("");
+        ((AuraInput) modalSaldoPana.find("cedulaSaldoPana")).text("");
         ((AuraInput) modalSaldoPana.find("monto")).text("");
         ((AuraInput) modalSaldoPana.find("password")).text("");
         modalSaldoPana.close();
@@ -894,7 +894,7 @@ public class UserMenuView extends AuraContainer {
     }
 
     public String getCedulaForSaldoPana(){
-        return ((AuraInput) modalSaldoPana.find("cedula")).getText();
+        return ((AuraInput) modalSaldoPana.find("cedulaSaldoPana")).getText();
     }
 
     public String getMontoForSaldoPana(){

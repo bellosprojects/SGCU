@@ -1,11 +1,4 @@
 package com.comedor.control;
-
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
-import javax.swing.JFileChooser;
 import javax.swing.SwingUtilities;
 
 import com.comedor.model.Menu;
@@ -320,6 +313,11 @@ public class UserMenuController {
         if(rolUser == Role.EXONERADO){
             menuView.InvalidateInputs("cedulaSaldoPana");
             EstiloGral.ShowMessage("Este usuario es exonerado, no es elegible para recargarle saldo", EstiloGral.ERROR_MESSAGE);
+            flag = false;
+        }
+        else if(rolUser != Role.ESTUDIANTE && rolUser != Role.BECARIO){
+            menuView.InvalidateInputs("cedulaSaldoPana");
+            EstiloGral.ShowMessage("Este usuario no es elegible para recargarle saldo pana", EstiloGral.ERROR_MESSAGE);
             flag = false;
         }
         
