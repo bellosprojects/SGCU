@@ -134,7 +134,7 @@ public class PersistenciaManager {
                         return;
                     }
                 }
-
+                prices.setFecha();
                 lineas.clear();
                 lineas.add(prices.toJson());
 
@@ -628,6 +628,19 @@ public class PersistenciaManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    String getFechaCCB(){
+        try{
+            List<String> lineas = Files.readAllLines(pricesFile, java.nio.charset.StandardCharsets.UTF_8);        //crea una lista con todas las lineas del archivo
+            Prices prices = new Prices();
+            prices.fromJSON(lineas.get(0));
+            return prices.getFecha();
+        }
+        catch (IOException e){ 
+            EstiloGral.ShowMessage("Hubo un error al leer en el archivo del CCB", EstiloGral.INFO_MESSAGE);
+        }
+        return null;
     }
 
 }

@@ -15,7 +15,7 @@ public class Prices {
         profesorTarifa = 0.0;
         trabajadorTarifa = 0.0;
         CCB = 0.0;
-        fecha = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        fecha = "";
     }
 
     public Prices(double estudiante, double profesor, double trabajador, double ccb){
@@ -76,6 +76,9 @@ public class Prices {
                 case "CCB":
                     CCB = Double.parseDouble(value);
                     break;
+                case "Fecha":
+                    fecha = value;
+                    break;
                 default:
                     break;
             }
@@ -97,5 +100,11 @@ public class Prices {
     public Double getProfesor(){
         return profesorTarifa;
     }
-    
+
+    public String getFecha(){
+        return fecha;
+    }
+    public void setFecha(){
+       fecha= LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
 }
