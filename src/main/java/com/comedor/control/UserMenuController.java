@@ -80,13 +80,24 @@ public class UserMenuController {
             menuView.showRecharge();
         });
 
-        SwingUtilities.invokeLater(() -> 
+        SwingUtilities.invokeLater(() -> {
 
-            menuView.getModal().find("confirmRechargeBtn").onClick(b -> {
+            menuView.getModalRecargar().find("confirmRechargeBtn").onClick(b -> {
                 recargarSaldo();
-            })
+            });
+
+            menuView.getModalSaldoPana().find("confirmRechargeSaldoPanaBtn").onClick(b -> {
+                String cedulaPana = menuView.getCedulaForSaldoPana();
+                if(isValidCedula(cedulaPana))
+                    recargarSaldoPana(cedulaPana);
+            });
             
-        );
+        });
+
+        menuView.find("rechargeSaldoPanaBtn").onClick(b -> {
+            menuView.showSaldoPana(); 
+        });
+
 
         menuView.find("bookBreakfastBtn").onClick(b -> {
             iniciarReserva(TipoMenu.DESAYUNO);
@@ -136,17 +147,17 @@ public class UserMenuController {
 
     public boolean isValidInputs(String montoStr, String numeroReferencia) {
         boolean flag = true;
-        if(montoStr.isEmpty() ){
+        if(montoStr == null ||  montoStr.trim().isEmpty()){
             menuView.InvalidateInputs("rechargeMonto");
             EstiloGral.ShowMessage("Ingrese un monto para recargar", EstiloGral.ERROR_MESSAGE);
             flag = false;
         }
         else if(!ModelUtils.esDecimalValido(montoStr)){
             menuView.InvalidateInputs("rechargeMonto");
-            EstiloGral.ShowMessage("Ingrese solo nÃºmeros en el monto", EstiloGral.ERROR_MESSAGE);
+            EstiloGral.ShowMessage("Ingrese solo numeros en el monto", EstiloGral.ERROR_MESSAGE);
             flag = false;
         }
-        else if(numeroReferencia.isEmpty()){
+        else if(numeroReferencia.trim().isEmpty()){
             menuView.InvalidateInputs("rechargeRef");
             EstiloGral.ShowMessage("Ingrese un numero de referencia para recargar", EstiloGral.ERROR_MESSAGE);
             flag = false;
@@ -160,7 +171,7 @@ public class UserMenuController {
         return flag;
     }
 
-    public double recargarSaldo() {
+    public double recargarSaldo() { //Para el propio usuario
         String montoStr = menuView.getMonto();
         String numeroReferencia = menuView.getNumeroReferencia();
         if (!isValidInputs(montoStr, numeroReferencia)) {
@@ -173,8 +184,40 @@ public class UserMenuController {
         }
         persistenciaManager.sumarSaldo(cedula, monto);
         EstiloGral.ShowMessage("Recarga exitosa. Saldo recargado: " + monto, EstiloGral.SUCCESS_MESSAGE);
+        
         menuView.hideRecharge();
         menuView.updateSaldo(persistenciaManager.getSaldoFromCedula(cedula));  
+        return monto;          
+    }
+
+    public double recargarSaldoPana(String cedulaInput) { //para saldo pana, le sumo a saldo de ese usuario y me descuento a mi ese monto
+        String montoStr = menuView.getMontoForSaldoPana();
+        String numeroReferencia ="000000000000";
+        String confirmarcion = menuView.getConfirmacionSaldoPana();
+        
+        if(confirmarcion == null || !persistenciaManager.autenticar(cedula, confirmarcion)){
+            menuView.InvalidateInputs("password");
+            EstiloGral.ShowMessage("Contraseña ingresada incorrecta, vuelva a intentarlo", EstiloGral.ERROR_MESSAGE);
+            return -1;
+        }
+
+        if (!isValidInputs(montoStr, numeroReferencia)) {
+            return -1;
+        }
+        if (!isValidInputs(montoStr, numeroReferencia)) {
+            return -1;
+        }
+        double monto = Double.parseDouble(montoStr);
+        if (monto <= 0) {
+            EstiloGral.ShowMessage("Ingrese un monto mayor a 0", EstiloGral.ERROR_MESSAGE);
+            return -1;
+        }
+        persistenciaManager.sumarSaldo(cedulaInput, monto);
+        EstiloGral.ShowMessage("Recarga exitosa para " + cedulaInput + ". Saldo recargado: " + monto, EstiloGral.SUCCESS_MESSAGE);
+        
+        menuView.hideSaldoPana();
+        persistenciaManager.getSaldoFromCedula(cedulaInput);
+        menuView.updateSaldo(persistenciaManager.sumarSaldo(cedula, -monto));  
         return monto;          
     }
 
@@ -197,54 +240,15 @@ public class UserMenuController {
     }
 
     private void verificarFaceId(TipoMenu tipo){
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Selecciona una foto para verificar tu identidad");
-
-        fileChooser.setAcceptAllFileFilterUsed(false);
-        fileChooser.addChoosableFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Archivos de imagen", "jpg", "jpeg", "png"));
-        int result = fileChooser.showOpenDialog(menuView);
-
-        if (result == JFileChooser.APPROVE_OPTION) {
-
-            String rutaArchivo = fileChooser.getSelectedFile().getAbsolutePath();
-            menuView.verificarFaceId(rutaArchivo);
-
-            try {
-                BufferedImage img1 = ImageIO.read(new File(rutaArchivo));
-                BufferedImage img2 = ImageIO.read(new File(EstiloGral.getImgPath(cedula)));
-
-                new Thread(() -> {
-
-                    try {
-                        Thread.sleep(2000);
-
-                        if(ModelUtils.compararRostros(img1, img2)){
-                            EstiloGral.ShowMessage("Reserva exitosa", EstiloGral.SUCCESS_MESSAGE);
-                            sendReserva(new Reserva(cedula, Reserva.EstadoReserva.EN_ESPERA), tipo);
-                            if(tipo == TipoMenu.DESAYUNO){
-                                reservarDesayuno();
-                            } else {
-                                reservarAlmuerzo();
-                            }
-                            double monto = persistenciaManager.getPrecioForUser(cedula);
-                            menuView.updateSaldo(persistenciaManager.sumarSaldo(cedula, -monto));
-                        } else {
-                            EstiloGral.ShowMessage("La verificación facial ha fallado. Reserva cancelada.", EstiloGral.ERROR_MESSAGE);
-                        }
-
-                    } catch (InterruptedException e) {
-                        
-                    }
-
-                }).start();
-
-            } catch (IOException e) {
-                EstiloGral.ShowMessage("Error al procesar la imagen. Reserva cancelada.", EstiloGral.ERROR_MESSAGE);
-            }
-            
+        EstiloGral.ShowMessage("Reserva en espera", EstiloGral.SUCCESS_MESSAGE);
+        sendReserva(new Reserva(cedula, Reserva.EstadoReserva.EN_ESPERA), tipo);
+        if(tipo == TipoMenu.DESAYUNO){
+            reservarDesayuno();
         } else {
-            EstiloGral.ShowMessage("No se seleccionó ninguna foto. Reserva cancelada.", EstiloGral.ERROR_MESSAGE);
+            reservarAlmuerzo();
         }
+        double monto = persistenciaManager.getPrecioForUser(cedula);
+        menuView.updateSaldo(persistenciaManager.sumarSaldo(cedula, -monto));
     }
 
     private void iniciarReserva(TipoMenu tipo){
@@ -262,4 +266,20 @@ public class UserMenuController {
         }
     }
 
+    private boolean isValidCedula(String cedula){
+        boolean flag = true;
+        if (cedula == null || cedula.isEmpty()) {
+            menuView.InvalidateInputs("cedula");
+            EstiloGral.ShowMessage("Ingrese una cedula para continuar", EstiloGral.ERROR_MESSAGE);
+            flag = false;
+        }
+        else if (!persistenciaManager.isCedulaRegistered(cedula)) {
+            menuView.InvalidateInputs("cedula");
+            EstiloGral.ShowMessage("Esta cedula no esta registrada en la base de datos", EstiloGral.ERROR_MESSAGE);
+            flag = false;
+        }
+        
+        return flag;
+
+    }
 }

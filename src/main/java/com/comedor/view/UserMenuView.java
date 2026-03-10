@@ -11,6 +11,7 @@ import com.comedor.model.User;
 import aura.animations.AnimateBackground;
 import aura.animations.AnimateFloat;
 import aura.animations.AnimateInteger;
+import aura.animations.AnimateOpacity;
 import aura.animations.AnimateShake;
 import aura.animations.AnimateString;
 import aura.components.AuraButton;
@@ -29,7 +30,8 @@ import aura.layouts.AuraRow;
 
 public class UserMenuView extends AuraContainer {
 
-    private AuraModal modal;
+    private AuraModal modalRecharge;
+    private AuraModal modalSaldoPana;
 
     public UserMenuView(){
 
@@ -243,13 +245,28 @@ public class UserMenuView extends AuraContainer {
                                                         );
 
                                                         carterColumn.insert(
-                                                            new AuraButton("Recargar")
-                                                                .radius(25)
-                                                                .id("rechargeBtn")
-                                                                .font(EstiloGral.LABEL_FONT)
-                                                                .margin(10, 0, 0, 0)
+                                                            new AuraRow()
+                                                                .gap(40)
+                                                                .margin(20,0,0,0)
+                                                                .content(innerRow -> {
+                                                                    innerRow.insert(
+                                                                        new AuraButton("Recargar")
+                                                                            .radius(25)
+                                                                            .id("rechargeBtn")
+                                                                            .font(EstiloGral.LABEL_FONT)
+                                                                            .margin(10, 0, 0, 0)
+                                                                    );
 
+                                                                    innerRow.insert(
+                                                                        new AuraButton("Saldo Pana")
+                                                                            .radius(25)
+                                                                            .id("rechargeSaldoPanaBtn")
+                                                                            .font(EstiloGral.LABEL_FONT)
+                                                                            .margin(10, 0, 0, 0)
+                                                                    );
+                                                                })
                                                         );
+
                                                     })
                                             );
 
@@ -622,7 +639,9 @@ public class UserMenuView extends AuraContainer {
 
             AuraBox<?> component = find(id);
             if(component == null){
-                component = modal.find(id);
+                component = modalRecharge.find(id);
+            } if (component == null) {
+                component = modalSaldoPana.find(id);
             }
 
             component.cancelAnimations(Transition.AnimationType.BACKGROUND);
@@ -636,9 +655,9 @@ public class UserMenuView extends AuraContainer {
 
     }
 
-    public void createModal(AuraWindow parent){
+    public void createModalRecharge(AuraWindow parent){
 
-        modal = new AuraModal(parent);
+        modalRecharge = new AuraModal(parent);
 
         AuraColumn columnModal = new AuraColumn()
                         .background(EstiloGral.BG_COLOR)
@@ -701,7 +720,7 @@ public class UserMenuView extends AuraContainer {
                                                 .font(EstiloGral.INPUT_FONT)
                                                 .textColor(EstiloGral.BG_COLOR)
                                                 .onClick(b -> {
-                                                    modal.close();
+                                                    hideRecharge();
                                                 })
                                         );
 
@@ -717,21 +736,23 @@ public class UserMenuView extends AuraContainer {
                         });
 
 
-        modal.content(columnModal);
+        modalRecharge.content(columnModal);
     }
 
     public void showRecharge(){ 
-        modal.display();
+        new AnimateOpacity(this, 0.3f, 200).start();
+        modalRecharge.display();
     }
 
     public void hideRecharge(){
-        ((AuraInput) modal.find("rechargeMonto")).text("");
-        ((AuraInput) modal.find("rechargeRef")).text("");
-        modal.close();
+        new AnimateOpacity(this, 1f, 200).start();
+        ((AuraInput) modalRecharge.find("rechargeMonto")).text("");
+        ((AuraInput) modalRecharge.find("rechargeRef")).text("");
+        modalRecharge.close();
     }
 
-    public AuraModal getModal(){
-        return this.modal;
+    public AuraModal getModalRecargar(){
+        return this.modalRecharge;
     }
 
     public void updateSaldo(Double saldo){
@@ -747,96 +768,141 @@ public class UserMenuView extends AuraContainer {
     }
 
     public String getMonto(){
-        return ((AuraInput) modal.find("rechargeMonto")).getText();
+        return ((AuraInput) modalRecharge.find("rechargeMonto")).getText();
     }
 
     public String getNumeroReferencia(){
-        return ((AuraInput) modal.find("rechargeRef")).getText();
+        return ((AuraInput) modalRecharge.find("rechargeRef")).getText();
     }
 
-    public void verificarFaceId(String path){
-        AuraModal faceIdModal = new AuraModal((AuraWindow) getParent());
+    public void createModalSaldoPana(AuraWindow parent){
 
-        AuraContainer barra = new AuraContainer()
-                                .background(EstiloGral.GREEN_COLOR)
-                                .size(300, 2);
+        modalSaldoPana = new AuraModal(parent);
 
-        AuraContainer barra2 = new AuraContainer()
-                                .background(EstiloGral.GREEN_COLOR)
-                                .size(300, 2);
+        AuraColumn modalCol = new AuraColumn()
+                        .background(EstiloGral.BG_COLOR)
+                        .radius(15)
+                        .padding(30)
+                        .content(col -> {
+                            col.insert(
+                                new AuraText("Saldo Pana")
+                                    .font(EstiloGral.MIDDLE_FONT)
+                                    .textColor(EstiloGral.DARK_COLOR)
+                                    .margin(5,120,40,120)
+                            );
 
-        AuraColumn content = new AuraColumn()
-                            .gap(40)
-                            .padding(20)
-                            .radius(15)
-                            .background(EstiloGral.BG_COLOR)
-                            .content(col -> {
-                                col.insert(
-                                    new AuraText("Verificando identidad...")
-                                        .font(EstiloGral.MIDDLE_FONT)
-                                        .textColor(EstiloGral.DARK_COLOR)
-                                );
+                            col.insert(
+                                new AuraText("Cedula")
+                                    .font(EstiloGral.LABEL_FONT)
+                                    .alignSelf(AuraColumn.Alignment.LEFT)
+                                    .margin(0,50,10,0)
+                            );
 
-                                col.insert(
-                                    new AuraRow()
-                                        .gap(50)
-                                        .content(row -> {
-                                            row.insert(
-                                                new AuraContainer()
-                                                    .radius(15)
-                                                    .clipChildrens(true)
-                                                    .size(300, 300)
-                                                    .content(f1 -> {
-                                                        f1.insert(
-                                                            barra
-                                                            , 0, -2
-                                                        );
+                            col.insert(
+                                new AuraInput()
+                                    .radius(15)
+                                    .padding(15)
+                                    .font(EstiloGral.INPUT_FONT)
+                                    .textColor(EstiloGral.BG_COLOR)
+                                    .carterColor(EstiloGral.BG_COLOR)
+                                    .background(EstiloGral.DARK_COLOR)
+                                    .fillWidth()
+                                    .id("cedula")
+                            );
 
-                                                        f1.insert(
-                                                            new AuraImage(path)
-                                                                .radius(15)
-                                                                .size(300,300)
-                                                        );
+                            col.insert(
+                                new AuraText("Monto")
+                                    .font(EstiloGral.LABEL_FONT)
+                                    .alignSelf(AuraColumn.Alignment.LEFT)
+                                    .margin(40,50,10,0)
+                            );
 
-                                                    })
-                                            );
+                            col.insert(
+                                new AuraInput()
+                                    .radius(15)
+                                    .padding(15)
+                                    .font(EstiloGral.INPUT_FONT)
+                                    .textColor(EstiloGral.BG_COLOR)
+                                    .carterColor(EstiloGral.BG_COLOR)
+                                    .background(EstiloGral.DARK_COLOR)
+                                    .fillWidth()
+                                    .id("monto")
+                            );
 
-                                            row.insert(
-                                                new AuraContainer()
-                                                    .radius(15)
-                                                    .size(300, 300)
-                                                    .content(f2 -> {
-                                                        f2.insert(
-                                                            barra2
-                                                            , 0, -2
-                                                        );
+                            col.insert(
+                                new AuraText("Contraseña")
+                                    .font(EstiloGral.LABEL_FONT)
+                                    .alignSelf(AuraColumn.Alignment.LEFT)
+                                    .margin(40,50,10,0)
+                            );
 
-                                                        f2.insert(
-                                                            new AuraImage(EstiloGral.getImgPath(((AuraText) find("cedula")).getText().replace("C.I: ", "")))
-                                                                .radius(15)
-                                                                .size(300,300)
-                                                        );
+                            col.insert(
+                                new AuraInput()
+                                    .radius(15)
+                                    .padding(15)
+                                    .font(EstiloGral.INPUT_FONT)
+                                    .textColor(EstiloGral.BG_COLOR)
+                                    .carterColor(EstiloGral.BG_COLOR)
+                                    .background(EstiloGral.DARK_COLOR)
+                                    .fillWidth()
+                                    .id("password")
+                            );
 
-                                                    })
-                                            );
-                                        })
-                                );
-                            });
+                            col.insert(
+                                new AuraRow()
+                                    .gap(40)
+                                    .margin(40,0,0,0)
+                                    .content(optionsRow -> {
+                                        optionsRow.insert(
+                                            new AuraButton("Cancelar")
+                                                .background(EstiloGral.GREY_COLOR)
+                                                .font(EstiloGral.INPUT_FONT)
+                                                .textColor(EstiloGral.BG_COLOR)
+                                                .onClick(b -> {
+                                                    hideSaldoPana();
+                                                })
+                                        );
 
-        faceIdModal.content(content);
-        faceIdModal.display();
+                                        optionsRow.insert(
+                                            new AuraButton("Confirmar")
+                                                .background(EstiloGral.BUTTON_COLOR)
+                                                .font(EstiloGral.INPUT_FONT)
+                                                .textColor(EstiloGral.BG_COLOR)
+                                                .id("confirmRechargeSaldoPanaBtn")
+                                        );
+                                    })
+                            );
+                        });
 
-        new AnimateInteger(-2, 300, 1000, value -> {
-            barra.setLocation(0, value);
-            barra2.setLocation(0, value);
-        })
-        .delay(500)
-        .type(Transition.TransitionType.EASE_IN_OUT)
-        .pingPong()
-        .then(() -> {
-            faceIdModal.close();
-        })
-        .start();
+        modalSaldoPana.content(modalCol);
+    }
 
+    public void showSaldoPana(){
+        new AnimateOpacity(this, 0.3f, 200).start();
+        modalSaldoPana.display();
+    }
+
+    public void hideSaldoPana(){
+        new AnimateOpacity(this, 1f, 200).start();
+        ((AuraInput) modalSaldoPana.find("cedula")).text("");
+        ((AuraInput) modalSaldoPana.find("monto")).text("");
+        ((AuraInput) modalSaldoPana.find("password")).text("");
+        modalSaldoPana.close();
+    }
+
+    public AuraModal getModalSaldoPana(){
+        return modalSaldoPana;
+    }
+
+    public String getCedulaForSaldoPana(){
+        return ((AuraInput) modalSaldoPana.find("cedula")).getText();
+    }
+
+    public String getMontoForSaldoPana(){
+        return ((AuraInput) modalSaldoPana.find("monto")).getText();
+    }
+
+    public String getConfirmacionSaldoPana(){
+        return ((AuraInput) modalSaldoPana.find("password")).getText();
     }
 }

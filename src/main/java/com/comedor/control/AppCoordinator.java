@@ -80,7 +80,8 @@ public class AppCoordinator implements NavigationDelegate {
             .addCase("CalcularCCB", gestionarCCBView)
             .addCase("GestionarBecarios", gestionarBecariosView);
 
-        userMenuView.createModal(mainFrame);
+        userMenuView.createModalRecharge(mainFrame);
+        userMenuView.createModalSaldoPana(mainFrame);
         gestionarBecariosView.createModal(mainFrame);
 
         mainFrame.insert(screen.fillParent());
