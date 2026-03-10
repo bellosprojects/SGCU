@@ -65,5 +65,10 @@ public class GestionarMenuControllerTest {
     void isValidInputs_CuposCaracter_DevuelveFalse(){
         assertFalse(controller.isValidInputs("10 febrero 2026","Compota","frutas", "10a"));
     }
+
+    @Test
+    void isValidInputs_CuposNegativos_DevuelveFalse() {
+        assertFalse(controller.isValidInputs("10 febrero 2026","Compota","frutas", "-5"));
+    }
 }
 

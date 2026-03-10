@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
+import com.comedor.model.User.Role;
 import com.comedor.utils.ModelUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +33,7 @@ public class PersistenciaManagerTest {
 
     private void agregarUser(String cedula, String rawPassword) throws Exception {
         String passEncriptada = ModelUtils.encriptar(rawPassword);
-        User user = new User("Javier García", cedula, passEncriptada, "prueba@gmail.com", "", 0.0, "Estudiante");
+        User user = new User("Javier García", cedula, passEncriptada, "prueba@gmail.com", "", 0.0, Role.ESTUDIANTE );
         Files.writeString(
             getUsersFilePath(),
             user.toJson() + System.lineSeparator(),

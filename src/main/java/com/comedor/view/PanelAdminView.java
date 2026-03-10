@@ -13,26 +13,19 @@ import aura.animations.AnimateInteger;
 import aura.animations.AnimateShake;
 import aura.animations.AnimateString;
 import aura.components.AuraButton;
-import aura.components.AuraImage;
+import aura.components.AuraContainer;
 import aura.components.AuraInput;
 import aura.components.AuraSelect;
 import aura.components.AuraSpacer;
 import aura.components.AuraText;
-import aura.components.AuraWindow;
 import aura.core.AuraBox;
 import aura.core.Transition;
 import aura.layouts.AuraColumn;
 import aura.layouts.AuraRow;
 
-public class PanelAdminView extends AuraWindow {
+public class PanelAdminView extends AuraContainer {
     
     public PanelAdminView(){
-
-        super("Panel de Admin - SGCU");
-        
-        fullScreen()
-        .noResizable()
-        .icon(new AuraImage(getResourcePath("/images/logoColor.png")));
 
         insert(
             new AuraRow()
@@ -321,14 +314,6 @@ public class PanelAdminView extends AuraWindow {
                                         .font(EstiloGral.MIDDLE_FONT)
                                         .textColor(EstiloGral.BG_COLOR)
                                 );
-
-                                reservasCol.insert(
-                                    new AuraText("No hay reservaciones pendientes")
-                                        .font(EstiloGral.LABEL_FONT)
-                                        .textColor(EstiloGral.LIGHT_COLOR)
-                                        .margin(20)
-                                        .id("isNotR")
-                                );
                             })
                     );
                 })
@@ -347,10 +332,7 @@ public class PanelAdminView extends AuraWindow {
             }
         }
 
-        if(listaLimpia.isEmpty()){
-            ((AuraText) find("isNotR")).setVisible(true);       
-        }else{
-            ((AuraText) find("isNotR")).setVisible(false);
+        if(!listaLimpia.isEmpty()){
             for(Reserva r : listaLimpia){
 
                 if(reservasColumn.find(r.getCedula()) == null){
@@ -376,10 +358,7 @@ public class PanelAdminView extends AuraWindow {
             }
         }
 
-        if(listaLimpia.isEmpty()){
-            ((AuraText) find("isNotR")).setVisible(true);       
-        }else{
-            ((AuraText) find("isNotR")).setVisible(false);
+        if(!listaLimpia.isEmpty()){
             for(Reserva r : listaLimpia){
 
                 if(reservasColumn.find(r.getCedula()) == null){
@@ -404,7 +383,7 @@ public class PanelAdminView extends AuraWindow {
                     .background(EstiloGral.WHITE_TRANSP_COLOR)
                     .content(r -> {
                         r.insert(
-                            new AuraText(res.getCedula() + " - " + res.getEstadoReserva().toString())
+                            new AuraText(res.getCedula() + " - " + tipo.toString())
                                 .font(EstiloGral.LABEL_BOLD_FONT)
                                 .textColor(EstiloGral.BG_COLOR)
                         );
@@ -443,9 +422,6 @@ public class PanelAdminView extends AuraWindow {
         })
         .then(() -> {
             reservasColumn.remove(reservaCol);
-            if(reservasColumn.findAll("cancelarBtn").isEmpty()){
-                ((AuraText) find("isNotR")).setVisible(true);
-            }
             reservasColumn.revalidate();
         })
         .start();
@@ -518,10 +494,6 @@ public class PanelAdminView extends AuraWindow {
 
     public String getRole(){
         return ((AuraSelect) find("role")).getText();
-    }
-    
-    private String getResourcePath(String ruta) {
-        return getClass().getResource(ruta).toString();
     }
 
     public void InvalidateInputs(String... ids){

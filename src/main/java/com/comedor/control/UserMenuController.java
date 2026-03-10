@@ -2,6 +2,7 @@ package com.comedor.control;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
@@ -22,8 +23,7 @@ public class UserMenuController {
     private final NavigationDelegate delegate;
     private final PersistenciaManager persistenciaManager;
     private final UserMenuView menuView;
-    private final String cedula;
-    private String tipoUsuario;
+    private String cedula;
 
     public UserMenuController(PersistenciaManager persistenciaManager, String cedula, UserMenuView menuView, NavigationDelegate delegate) {
         this.delegate = delegate;
@@ -31,6 +31,21 @@ public class UserMenuController {
         this.menuView = menuView;
         this.cedula = cedula;
         setup();
+    }
+
+    public void setCedula(String cedula) {
+        if (cedula == null || cedula.equals(this.cedula)) {
+            return;
+        }
+        this.cedula = cedula;
+        refreshView();
+    }
+
+    private void refreshView() {
+        menuView.clearReservas();
+        sendUser();
+        sendMenu();
+        loadReservas();
     }
 
     private void sendMenu() {
@@ -42,16 +57,15 @@ public class UserMenuController {
         if (Almuerzo != null && Almuerzo.isValidMenu()) {
             menuView.setAlmuerzo(Almuerzo);
         }
-        Double precioFinal = (persistenciaManager.getCCB() * persistenciaManager.getPorcentajeFromRole(tipoUsuario)) / 100;
+        Double precioFinal = (persistenciaManager.getPrecioForUser(cedula));
         menuView.setPrecio(precioFinal);
     }
 
     private void sendUser() {
         User user = persistenciaManager.getUserFromCedula(cedula); 
         if (user != null) {
-            this.tipoUsuario = user.getRole();
             menuView.setUser(user);
-            double precio = persistenciaManager.getPrecioForUser(tipoUsuario);
+            double precio = persistenciaManager.getPrecioForUser(cedula);
             menuView.setPrecio(precio);
         }
     }
@@ -90,9 +104,10 @@ public class UserMenuController {
             menuView.showReservas();
         });
 
-        sendUser();
-        sendMenu();
+        refreshView();
+    }
 
+    private void loadReservas() {
         Reserva desayunoRev = persistenciaManager.getReservaFromCedula(cedula, TipoMenu.DESAYUNO);
         sendReserva(desayunoRev, TipoMenu.DESAYUNO);
         Reserva almuerzoRev = persistenciaManager.getReservaFromCedula(cedula, TipoMenu.ALMUERZO);
@@ -157,7 +172,7 @@ public class UserMenuController {
             return -1;
         }
         persistenciaManager.sumarSaldo(cedula, monto);
-        EstiloGral.ShowMessage("Recarga exitosa. Nuevo saldo: " + monto, EstiloGral.SUCCESS_MESSAGE);
+        EstiloGral.ShowMessage("Recarga exitosa. Saldo recargado: " + monto, EstiloGral.SUCCESS_MESSAGE);
         menuView.hideRecharge();
         menuView.updateSaldo(persistenciaManager.getSaldoFromCedula(cedula));  
         return monto;          
@@ -211,7 +226,7 @@ public class UserMenuController {
                             } else {
                                 reservarAlmuerzo();
                             }
-                            double monto = persistenciaManager.getPrecioForUser(persistenciaManager.getRoleFromCedula(cedula));
+                            double monto = persistenciaManager.getPrecioForUser(cedula);
                             menuView.updateSaldo(persistenciaManager.sumarSaldo(cedula, -monto));
                         } else {
                             EstiloGral.ShowMessage("La verificación facial ha fallado. Reserva cancelada.", EstiloGral.ERROR_MESSAGE);
@@ -223,7 +238,7 @@ public class UserMenuController {
 
                 }).start();
 
-            } catch (Exception e) {
+            } catch (IOException e) {
                 EstiloGral.ShowMessage("Error al procesar la imagen. Reserva cancelada.", EstiloGral.ERROR_MESSAGE);
             }
             
