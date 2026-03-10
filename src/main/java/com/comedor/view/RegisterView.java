@@ -293,7 +293,7 @@ public class RegisterView extends AuraContainer {
     public void setData(User user){
         ((AuraText) find("username")).text(user.getNombres());
         ((AuraText) find("facultad")).text(user.getFacultadSeleccionada());
-        ((AuraText) find("role")).text(user.getRole());
+        ((AuraText) find("role")).text(user.getRole().toString());
         ((AuraImage) find("image")).background(new AuraImage(EstiloGral.getImgPath(user.getCedula())));
     }
 

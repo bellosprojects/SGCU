@@ -24,7 +24,6 @@ public class UserMenuController {
     private final PersistenciaManager persistenciaManager;
     private final UserMenuView menuView;
     private String cedula;
-    private String tipoUsuario;
 
     public UserMenuController(PersistenciaManager persistenciaManager, String cedula, UserMenuView menuView, NavigationDelegate delegate) {
         this.delegate = delegate;
@@ -58,16 +57,15 @@ public class UserMenuController {
         if (Almuerzo != null && Almuerzo.isValidMenu()) {
             menuView.setAlmuerzo(Almuerzo);
         }
-        Double precioFinal = (persistenciaManager.getCCB() * persistenciaManager.getPorcentajeFromRole(tipoUsuario)) / 100;
+        Double precioFinal = (persistenciaManager.getPrecioForUser(cedula));
         menuView.setPrecio(precioFinal);
     }
 
     private void sendUser() {
         User user = persistenciaManager.getUserFromCedula(cedula); 
         if (user != null) {
-            this.tipoUsuario = user.getRole();
             menuView.setUser(user);
-            double precio = persistenciaManager.getPrecioForUser(tipoUsuario);
+            double precio = persistenciaManager.getPrecioForUser(cedula);
             menuView.setPrecio(precio);
         }
     }
@@ -228,7 +226,7 @@ public class UserMenuController {
                             } else {
                                 reservarAlmuerzo();
                             }
-                            double monto = persistenciaManager.getPrecioForUser(persistenciaManager.getRoleFromCedula(cedula));
+                            double monto = persistenciaManager.getPrecioForUser(cedula);
                             menuView.updateSaldo(persistenciaManager.sumarSaldo(cedula, -monto));
                         } else {
                             EstiloGral.ShowMessage("La verificación facial ha fallado. Reserva cancelada.", EstiloGral.ERROR_MESSAGE);

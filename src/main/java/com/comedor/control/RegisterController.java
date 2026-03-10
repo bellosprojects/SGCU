@@ -106,7 +106,7 @@ public class RegisterController {
         String confirmPassword = registerView.getConfirmPassword();
         String email = registerView.getEmail();
         String facultadSeleccionada = registerView.getFacultad();
-        String tipoUsuario = persistenciaManager.getUserFromCedulaInDataBase(cedula).getRole();
+        User.Role tipoUsuario = persistenciaManager.getUserFromCedulaInDataBase(cedula).getRole();
 
         if (isValidRegister(password, confirmPassword, email)) {
             //EstiloGral.ShowMessage("Complete todos los campos", EstiloGral.ERROR_MESSAGE);

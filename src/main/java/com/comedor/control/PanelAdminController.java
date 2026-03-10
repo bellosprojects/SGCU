@@ -29,9 +29,9 @@ public class PanelAdminController {
     private void sendData(){
         
         Double ccb = persistenciaManager.getCCB();
-        Double student = persistenciaManager.getPorcentajeFromRole("Estudiante");
-        Double teacher = persistenciaManager.getPorcentajeFromRole("Profesor");
-        Double worker = persistenciaManager.getPorcentajeFromRole("Trabajador");
+        Double student = persistenciaManager.getPorcentajeFromRole("ESTUDIANTE");
+        Double teacher = persistenciaManager.getPorcentajeFromRole("PROFESOR");
+        Double worker = persistenciaManager.getPorcentajeFromRole("TRABAJADOR");
 
         panelAdminView.setPrices(new Prices(student, teacher, worker, ccb));
 

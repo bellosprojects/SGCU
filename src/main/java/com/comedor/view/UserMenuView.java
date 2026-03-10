@@ -585,7 +585,7 @@ public class UserMenuView extends AuraContainer {
     public void setUser(User user){
         find("profileImg").background(new AuraImage(EstiloGral.getImgPath(user.getCedula())));
         ((AuraText) find("fullname")).text(user.getNombres());
-        ((AuraText) find("role")).text(user.getRole());
+        ((AuraText) find("role")).text(user.getRole().toString());
         ((AuraText) find("rolePrice")).text("Precio para: " + user.getRole());
         ((AuraText) find("cedula")).text("C.I: " + user.getCedula());
 
