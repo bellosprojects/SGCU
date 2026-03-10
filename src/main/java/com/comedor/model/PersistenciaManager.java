@@ -12,6 +12,7 @@ import com.comedor.model.Menu.TipoMenu;
 import com.comedor.model.Reserva.EstadoReserva;
 import com.comedor.utils.ModelUtils;
 import com.comedor.view.EstiloGral;
+import com.comedor.model.User.Role;
 
 public class PersistenciaManager {
 
@@ -104,9 +105,9 @@ public class PersistenciaManager {
                 prices.fromJSON(lineas.get(0));
 
                 switch (role) {
-                    case "Estudiante" -> prices.setEstudiante(tarifaFinal);
-                    case "Profesor" -> prices.setProfesor(tarifaFinal);
-                    case "Trabajador" -> prices.setTrabajador(tarifaFinal);
+                    case "ESTUDIANTE" -> prices.setEstudiante(tarifaFinal);
+                    case "PROFESOR" -> prices.setProfesor(tarifaFinal);
+                    case "TRABAJADOR" -> prices.setTrabajador(tarifaFinal);
                     default -> {
                         EstiloGral.ShowMessage("Rol no reconocido. No se guardó la tarifa.", EstiloGral.ERROR_MESSAGE);
                         return;
@@ -132,9 +133,9 @@ public class PersistenciaManager {
                 prices.fromJSON(lineas.get(0));
 
                 return switch(role){
-                    case "Estudiante" -> prices.getEstudiante();
-                    case "Profesor" -> prices.getProfesor();
-                    case "Trabajador" -> prices.getTrabajador();
+                    case "ESTUDIANTE" -> prices.getEstudiante();
+                    case "PROFESOR" -> prices.getProfesor();
+                    case "TRABAJADOR" -> prices.getTrabajador();
                     default -> 0.0;
                 };
             }
@@ -175,7 +176,7 @@ public class PersistenciaManager {
         return 0.0;
     }
 
-    public boolean isUserInDataBase(String cedula, String role){
+    public boolean isUserInDataBase(String cedula, Role role){
         try{                             //evalua si el archivo existe
             List<String> lineas = Files.readAllLines(UCVDataBase, java.nio.charset.StandardCharsets.UTF_8);        //crea una lista con todas las lineas del archivo
             for(String line : lineas){
@@ -183,7 +184,7 @@ public class PersistenciaManager {
                 user.fromJSON(line);
 
                 if(user.getCedula().equals(cedula)){
-                    return user.getRole().equals(role);
+                    return user.getRole().toString().equals(role.toString());
                 }
             }
 
@@ -242,7 +243,7 @@ public class PersistenciaManager {
         return getUserFromCedula(cedula).getPassword();
     }
 
-    public String getRoleFromCedula(String cedula) {   
+    public Role getRoleFromCedula(String cedula) {   
         User user = getUserFromCedula(cedula);
         if(user == null){
             return null; 
@@ -408,7 +409,7 @@ public class PersistenciaManager {
     }  
 
     public void cancelarReserva(String cedula, TipoMenu tipo){
-        sumarSaldo(cedula, getPrecioForUser(getRoleFromCedula(cedula)));
+        sumarSaldo(cedula, getPrecioForUser(cedula));
         aumentarCupo(tipo);
         modificarEstado(new Reserva(cedula, EstadoReserva.CANCELADO), tipo);
     }
@@ -428,24 +429,31 @@ public class PersistenciaManager {
         if(getCupos(tipo) <= 0){
             return Reserva.EstadoIntento.NO_HAY_CUPO;
         }
-        return (getSaldoFromCedula(cedula) >= getPrecioForUser(getRoleFromCedula(cedula)))? Reserva.EstadoIntento.RESERVA_EXITOSA : Reserva.EstadoIntento.SALDO_INSUFICIENTE;
+        return (getSaldoFromCedula(cedula) >= getPrecioForUser(cedula))? Reserva.EstadoIntento.RESERVA_EXITOSA : Reserva.EstadoIntento.SALDO_INSUFICIENTE;
     }
 
-    public double getPrecioForUser(String role) {
-    if (role == null) return 0.0;
-        try {
+    public double getPrecioForUser(String cedula) {
+        User user = getUserFromCedula(cedula);
+        Role role = user.getRole();
+        try{
             List<String> lineas = Files.readAllLines(pricesFile, java.nio.charset.StandardCharsets.UTF_8);
             Prices prices = new Prices();
-            prices.fromJSON(lineas.get(0)); // Lee el archivo una sola vez
-            
+            prices.fromJSON(lineas.get(0));
+        
+            double descAdicional = (role == Role.BECARIO) ? user.getDescuento() : -1;
+            if(descAdicional != -1){
+                return (descAdicional * prices.getCCB()) / 100.0;
+            } else if(role == null) return 0.0;
+
             double porcentaje = switch(role){
-                case "Estudiante" -> prices.getEstudiante();
-                case "Profesor" -> prices.getProfesor();
-                case "Trabajador" -> prices.getTrabajador();
+                case ESTUDIANTE -> prices.getEstudiante();
+                case PROFESOR -> prices.getProfesor();
+                case TRABAJADOR -> prices.getTrabajador();
                 default -> 0.0;
             };
             
             return (porcentaje * prices.getCCB()) / 100.0;
+            
         } catch (IOException e) {
             return 0.0;
         }

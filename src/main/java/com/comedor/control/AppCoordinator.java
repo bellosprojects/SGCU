@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.comedor.model.PersistenciaManager;
+import com.comedor.model.User;
 import com.comedor.view.EstiloGral;
 import com.comedor.view.GestionarCCBView;
 import com.comedor.view.GestionarMenuView;
@@ -145,7 +146,7 @@ public class AppCoordinator implements NavigationDelegate {
 
     @Override
     public void onLoginSuccess(String cedula) {
-        if (model.getRoleFromCedula(cedula).equals("Admin")) {
+        if (model.getRoleFromCedula(cedula).toString().equals("ADMIN")) {
             showAdminDashboard();
         } else {
             showUserMenu(cedula);

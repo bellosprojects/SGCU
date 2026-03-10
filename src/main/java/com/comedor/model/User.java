@@ -3,13 +3,24 @@ package com.comedor.model;
 import com.comedor.utils.ModelUtils;
 
 public class User {
+
+    public static enum Role {
+        ADMIN,
+        ESTUDIANTE,
+        PROFESOR,
+        TRABAJADOR,
+        BECARIO, 
+        EXONERADO,
+    }
+
     private String fullname;
     private String cedula;
     private String password;
-    private String role;
+    private Role role;
     private String email;
     private String facultadSeleccionada;
     private Double saldo;
+    private Double descuento; // Solo para becarios
 
     public User(){
         this.fullname = "";
@@ -19,6 +30,7 @@ public class User {
         this.email = "";
         this.facultadSeleccionada = "";
         this.saldo = 0.0;
+        this.descuento = -1.0;
     }
 
     public void encriptPassword(){
@@ -29,7 +41,7 @@ public class User {
         }
     }
 
-    public User(String fullname, String cedula, String password, String email, String facultadSeleccionada, Double saldo, String role){
+    public User(String fullname, String cedula, String password, String email, String facultadSeleccionada, Double saldo, Role role){
         this.fullname = fullname; //0
         this.cedula = cedula;     //1
         this.password = password; //2
@@ -37,6 +49,7 @@ public class User {
         this.facultadSeleccionada = facultadSeleccionada; //4
         this.saldo = saldo;    //5
         this.role = role;    //6
+        this.descuento = -1.0;
     }
 
     public String getCedula() {
@@ -45,7 +58,7 @@ public class User {
     public String getPassword() {
         return password;
     }
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
     
@@ -69,19 +82,32 @@ public class User {
         this.saldo = saldo;
     }
 
+    public void setDescuento(Double descuento) { //en Gestionar becarios y exonerado
+        this.descuento = descuento;
+    }
+
+    public void setRole(Role role) { //Gestionar becarios y exonerados
+        this.role = role;
+    }
+
+    public Double getDescuento() {
+        return descuento;
+    }
+
     public String toJson(){
 
         try{
 
             return String.format(
-                "{\"name\":\"%s\",\"ci\":\"%s\",\"pass\":\"%s\",\"email\":\"%s\",\"facultad\":\"%s\",\"saldo\":\"%s\",\"role\":\"%s\"}",
+                "{\"name\":\"%s\",\"ci\":\"%s\",\"pass\":\"%s\",\"email\":\"%s\",\"facultad\":\"%s\",\"saldo\":\"%s\",\"role\":\"%s\",\"descuento\":\"%s\"}",
                 fullname,
                 cedula,
                 password,
                 email,
                 facultadSeleccionada,
                 saldo.toString(),
-                role
+                role.toString(),
+                descuento.toString()
             );
 
         } catch (Exception e){
@@ -126,7 +152,10 @@ public class User {
                     saldo = Double.parseDouble(value);
                     break;
                 case "role":
-                    role = value;
+                    role = Role.valueOf(value);
+                    break;
+                case "descuento":
+                    descuento = Double.parseDouble(value);
                     break;
                 default:
                     break;
