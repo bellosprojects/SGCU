@@ -38,12 +38,13 @@ public class GestionarCCBView extends AuraContainer {
                                 );
 
                                 row.insert(
-                                    new AuraText("SGCU - Gestionar CCB")
+                                    new AuraText("Gestionar CCB")
                                         .font(EstiloGral.TITLE_FONT)
                                         .textColor(EstiloGral.BG_COLOR)
                                 );
                             })
                     );
+
 
                     mainCol.insert(
                         new AuraSpacer()
@@ -59,13 +60,10 @@ public class GestionarCCBView extends AuraContainer {
                     );
 
                     mainCol.insert(
-                        new AuraSpacer()
-                    );
-
-                    mainCol.insert(
                         new AuraGrid(2, 2)
-                            .gap(100)
+                            .gap(60)
                             .fillWidth()
+                            .maximalSize(1300, -1)
                             .margin(20,80,0,80)
                             .content(grid -> {
                                 grid.insert(
@@ -181,8 +179,8 @@ public class GestionarCCBView extends AuraContainer {
 
                     mainCol.insert(
                         new AuraSpacer()
-                            .weight(2f)
                     );
+
 
                     mainCol.insert(
                         new AuraRow()

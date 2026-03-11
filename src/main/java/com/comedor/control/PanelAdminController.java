@@ -1,5 +1,7 @@
 package com.comedor.control;
 
+import javax.swing.SwingUtilities;
+
 import com.comedor.model.ComensalesPorServicio;
 import com.comedor.model.Menu;
 import com.comedor.model.Menu.TipoMenu;
@@ -17,8 +19,11 @@ public class PanelAdminController {
         this.panelAdminView = panelAdminView;
         this.persistenciaManager = persistenciaManager;
         this.delegate = delegate;
-        setupListeners();
-        sendData();
+
+        SwingUtilities.invokeLater(() -> {
+            setupListeners();
+            sendData();
+        });
     }
 
     public void reset(){
@@ -91,7 +96,15 @@ public class PanelAdminController {
             goToMenuGestion()
         );
 
+        panelAdminView.find("menuBtn2").onClick(b -> 
+            goToMenuGestion()
+        );
+
         panelAdminView.find("update").onClick(b -> 
+            actualizarTarifa()
+        );
+
+        panelAdminView.find("update2").onClick(b -> 
             actualizarTarifa()
         );
 

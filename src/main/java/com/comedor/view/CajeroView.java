@@ -6,6 +6,7 @@ import java.util.Queue;
 
 import com.comedor.model.Menu;
 import com.comedor.model.Reserva;
+import com.comedor.model.Menu.TipoMenu;
 
 import aura.animations.AnimateInteger;
 import aura.components.AuraButton;
@@ -27,6 +28,16 @@ public class CajeroView extends AuraContainer {
 	public CajeroView() {
 
         background(new AuraImage(getResourcePath("/images/comedor.png")));
+
+        onSize((w,h) -> {
+            if(w < 1300){
+                find("text").setVisible(false);
+            }
+            else{
+                
+                find("text").setVisible(true);
+            }
+        });
 
         insert(
             new AuraRow()
@@ -50,9 +61,10 @@ public class CajeroView extends AuraContainer {
                                             );
 
                                             row.insert(
-                                                new AuraText("SGCU - Gestionar Reservas")
+                                                new AuraText("Gestionar Reservas")
                                                     .font(EstiloGral.TITLE_FONT)
                                                     .textColor(EstiloGral.BG_COLOR)
+                                                    .id("text")
                                             );
                                         })
                                 );
@@ -80,7 +92,8 @@ public class CajeroView extends AuraContainer {
                             .backgroundAngle(90)
                             .fillHeight()
                             .id("reservas")
-                            .weight(0.4f)
+                            .widthPorc(0.4f)
+                            .minimunSize(450, -1)
                             .padding(40,60)
                             .content(reservasCol -> {
                                 reservasCol.insert(
@@ -109,7 +122,7 @@ public class CajeroView extends AuraContainer {
         if(!listaLimpia.isEmpty()){
             for(Reserva r : listaLimpia){
 
-                if(reservasColumn.find(r.getCedula()) == null){
+                if(reservasColumn.find(r.getCedula() + "-" + TipoMenu.DESAYUNO.toString()) == null){
 
                     AuraColumn reservaCol = createReserva(r, Menu.TipoMenu.DESAYUNO);
 
@@ -135,7 +148,7 @@ public class CajeroView extends AuraContainer {
         if(!listaLimpia.isEmpty()){
             for(Reserva r : listaLimpia){
 
-                if(reservasColumn.find(r.getCedula()) == null){
+                if(reservasColumn.find(r.getCedula() + "-" + TipoMenu.ALMUERZO.toString()) == null){
 
                     AuraColumn reservaCol = createReserva(r, Menu.TipoMenu.ALMUERZO);
 

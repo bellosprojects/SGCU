@@ -7,10 +7,14 @@ import java.awt.Font;
 import javax.swing.JLabel;
 
 import aura.core.AuraBox;
+import aura.layouts.AuraColumn;
+import aura.layouts.AuraColumn.Alignment;
 
 public class AuraText extends AuraBox<AuraText> {
 
     private final JLabel label = new JLabel("");
+
+    private AuraColumn.Alignment align = AuraColumn.Alignment.CENTER;
 
     public AuraText(String text){
         label.setText(text);
@@ -21,8 +25,26 @@ public class AuraText extends AuraBox<AuraText> {
         addMouseEvents();
     }
 
+    public AuraText textAlign(AuraColumn.Alignment align){
+        this.align = align;
+        int al = (align == Alignment.CENTER)? 1 : (align == Alignment.LEFT)? 0 : 2;
+        setLayout(new FlowLayout(al, 0, 0));
+        repaint();
+        if(getParent() != null){
+            getParent().revalidate();
+        }
+        return this;
+    }
+
     public AuraText text(String text){
         this.label.setText(text);
+        repaint();
+        if(getParent() != null) getParent().revalidate();
+        return this;
+    }
+    
+    public AuraText textSize(float size){
+        this.label.setFont(label.getFont().deriveFont(size));
         repaint();
         if(getParent() != null) getParent().revalidate();
         return this;

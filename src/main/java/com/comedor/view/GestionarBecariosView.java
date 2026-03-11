@@ -42,7 +42,7 @@ public class GestionarBecariosView extends AuraContainer {
                                 );
 
                                 row.insert(
-                                    new AuraText("SGCU - Gestionar Becarios y Exonerados")
+                                    new AuraText("Gestionar Becarios")
                                         .font(EstiloGral.TITLE_FONT)
                                         .textColor(EstiloGral.BG_COLOR)
                                 );

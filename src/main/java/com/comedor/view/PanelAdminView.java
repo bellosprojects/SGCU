@@ -34,7 +34,7 @@ public class PanelAdminView extends AuraContainer {
 
     public PanelAdminView(){
 
-        rightPanelStateController = new AuraState<>("reservas");
+        rightPanelStateController = new AuraState<>("listadoDesayuno");
 
         listadoDesayunoColumn = new AuraColumn()
                             .id("listadoDesayuno")
@@ -55,6 +55,147 @@ public class PanelAdminView extends AuraContainer {
                                         .textColor(EstiloGral.BG_COLOR)
                                 );
                             });
+
+        AuraButton menuBtn2 = new AuraButton("Gestionar Menus")
+                                .background(EstiloGral.BUTTON_COLOR)
+                                .textColor(EstiloGral.BG_COLOR)
+                                .fillWidth()
+                                .font(EstiloGral.LABEL_FONT)
+                                .alignSelf(aura.layouts.AuraRow.Alignment.BOTTOM)
+                                .id("menuBtn2");
+
+        menuBtn2.setVisible(false);
+
+        AuraColumn tarifas = new AuraColumn()
+                                    .padding(20)
+                                    .radius(15)
+                                    .gap(10)
+                                    .background(EstiloGral.WHITE_TRANSP_COLOR2)
+                                    .align(AuraColumn.Alignment.LEFT)
+                                    .weight(0.8f)
+                                    .fillHeight()
+                                    .content(updateCol -> {
+
+                                        updateCol.insert(
+                                            new AuraText("Actualizar Tarifas")
+                                                .alignSelf(AuraColumn.Alignment.LEFT)
+                                                .textColor(EstiloGral.BG_COLOR)
+                                                .font(EstiloGral.MIDDLE_FONT)
+                                                .margin(20,50)
+                                        );
+
+                                        updateCol.insert(
+                                            new AuraText("Porcentaje")
+                                                .font(EstiloGral.LABEL_FONT)
+                                                .textColor(EstiloGral.BG_COLOR)
+                                                .margin(0,50,0,0)
+
+                                        );
+
+                                        updateCol.insert(
+                                            new AuraInput()
+                                                .padding(15)
+                                                .radius(15)
+                                                .background(EstiloGral.DARK_COLOR)
+                                                .carterColor(EstiloGral.BG_COLOR)
+                                                .font(EstiloGral.INPUT_FONT)
+                                                .textColor(EstiloGral.BG_COLOR)
+                                                .fillWidth()
+                                                .id("porcentaje")
+                                        );
+
+                                        updateCol.insert(
+                                            new AuraText("Rol")
+                                                .font(EstiloGral.LABEL_FONT)
+                                                .textColor(EstiloGral.BG_COLOR)
+                                                .margin(20,50,0,0)
+
+                                        );
+
+                                        updateCol.insert(
+                                            new AuraSelect("ESTUDIANTE", "PROFESOR", "TRABAJADOR")
+                                                .background(EstiloGral.DARK_COLOR)
+                                                .font(EstiloGral.LABEL_FONT)
+                                                .textColor(EstiloGral.BG_COLOR)
+                                                .fillWidth()
+                                                .id("rol")
+                                        );
+
+                                        updateCol.insert(
+                                            new AuraButton("Actualizar")
+                                                    .background(EstiloGral.BUTTON_COLOR)
+                                                    .textColor(EstiloGral.BG_COLOR)
+                                                    .font(EstiloGral.LABEL_FONT)
+                                                    .id("update")
+                                                    .alignSelf(AuraColumn.Alignment.CENTER)
+                                                    .margin(20,0,10,0)
+                                        );
+                                    });
+
+        tarifas.setVisible(true);
+
+        AuraRow tarifas2 = new AuraRow()
+                                .padding(20)
+                                .radius(15)
+                                .gap(10)
+                                .background(EstiloGral.WHITE_TRANSP_COLOR2)
+                                .weight(1f)
+                                .content(row -> {
+                                    row.insert(
+                                        new AuraSelect("ESTUDIANTE", "PROFESOR", "TRABAJADOR")
+                                                .background(EstiloGral.DARK_COLOR)
+                                                .font(EstiloGral.LABEL_FONT)
+                                                .textColor(EstiloGral.BG_COLOR)
+                                                .id("rol2")
+                                    );
+
+                                    row.insert(
+                                        new AuraInput()
+                                                .padding(15)
+                                                .radius(15)
+                                                .background(EstiloGral.DARK_COLOR)
+                                                .carterColor(EstiloGral.BG_COLOR)
+                                                .font(EstiloGral.INPUT_FONT)
+                                                .textColor(EstiloGral.BG_COLOR)
+                                                .weight(1f)
+                                                .id("porcentaje2")
+                                    );
+
+                                    row.insert(new AuraButton("Actualizar")
+                                                    .background(EstiloGral.BUTTON_COLOR)
+                                                    .textColor(EstiloGral.BG_COLOR)
+                                                    .font(EstiloGral.LABEL_FONT)
+                                                    .id("update2")
+                                                    .fillHeight()
+                                                    .alignSelf(AuraColumn.Alignment.CENTER)
+                                                    .margin(20,0,10,0));
+                                });
+
+        onSize((w, h) -> {
+
+            if(w < 1300){
+                find("tarifasColumn").setVisible(false);
+            } else {
+                find("tarifasColumn").setVisible(true);
+            }
+
+            if(h < 1030 || w < 1300){
+                find("menusColumn").setVisible(false);
+                menuBtn2.setVisible(true);
+            } else {
+                find("menusColumn").setVisible(true);
+                menuBtn2.setVisible(false);
+            }
+
+            if( h < 1000){
+                tarifas.setVisible(false);
+                tarifas2.setVisible(true);
+            } else {
+                tarifas.setVisible(true);
+                tarifas2.setVisible(false);
+            }
+
+        });
 
         insert(
             new AuraRow()
@@ -105,6 +246,7 @@ public class PanelAdminView extends AuraContainer {
                                     new AuraRow()
                                         .alignSelf(Alignment.LEFT)
                                         .margin(60,0)
+                                        .fillWidth()
                                         .gap(40)
                                         .content(pricesRow -> {
                                             pricesRow.insert(
@@ -112,14 +254,17 @@ public class PanelAdminView extends AuraContainer {
                                                     .align(AuraColumn.Alignment.LEFT)
                                                     .padding(30, 40, 30, 100)
                                                     .gap(10)
+                                                    .id("tarifasColumn")
                                                     .fillHeight()
+                                                    .weight(1f)
+                                                    .maximalSize(350, -1)
                                                     .background(EstiloGral.WHITE_TRANSP_COLOR2)
                                                     .stroke(EstiloGral.WHITE_TRANSP_COLOR, 1)
                                                     .content(tarifasCol -> {
                                                         tarifasCol.insert(
                                                             new AuraText("Tarifas Actuales")
                                                                 .textColor(EstiloGral.BG_COLOR)
-                                                                .font(EstiloGral.MIDDLE_FONT)
+                                                                .font(EstiloGral.INPUT_FONT)
                                                                 .margin(0,0,10,0)
                                                         );
 
@@ -150,22 +295,24 @@ public class PanelAdminView extends AuraContainer {
                                             pricesRow.insert(
                                                 new AuraColumn()
                                                     .align(AuraColumn.Alignment.LEFT)
-                                                    .padding(30, 40, 30, 100)
+                                                    .padding(30, 40, 30, 0)
                                                     .gap(10)
                                                     .fillHeight()
+                                                    .weight(1f)
+                                                    .maximalSize(250, -1)
                                                     .background(EstiloGral.WHITE_TRANSP_COLOR2)
                                                     .stroke(EstiloGral.WHITE_TRANSP_COLOR, 1)
                                                     .content(ccbRow -> {
                                                         ccbRow.insert(
                                                             new AuraText("CCB Actual")
                                                                 .textColor(EstiloGral.BG_COLOR)
-                                                                .font(EstiloGral.MIDDLE_FONT)
+                                                                .font(EstiloGral.INPUT_FONT)
                                                         );
 
                                                         ccbRow.insert(
                                                             new AuraText("0,00")
                                                                 .textColor(EstiloGral.BG_COLOR)
-                                                                .font(EstiloGral.MIDDLE_FONT2)
+                                                                .font(EstiloGral.MIDDLE_FONT)
                                                                 .id("ccbValue")
                                                                 .margin(20,0)
                                                         );
@@ -175,6 +322,8 @@ public class PanelAdminView extends AuraContainer {
                                                                 .background(EstiloGral.BUTTON_COLOR)
                                                                 .textColor(EstiloGral.BG_COLOR)
                                                                 .font(EstiloGral.LABEL_FONT)
+                                                                .fillWidth()
+                                                                .maximalSize(160, -1)
                                                                 .id("ccbBtn")
                                                         );
 
@@ -182,12 +331,28 @@ public class PanelAdminView extends AuraContainer {
                                             );
 
                                             pricesRow.insert(
-                                                new AuraButton("Gestionar Becarios y exonerados")
-                                                        .background(EstiloGral.BUTTON_COLOR)
-                                                        .textColor(EstiloGral.BG_COLOR)
-                                                        .font(EstiloGral.LABEL_FONT)
-                                                        .alignSelf(aura.layouts.AuraRow.Alignment.BOTTOM)
-                                                        .id("becariosBtn")
+
+                                                new AuraColumn()
+                                                        .weight(1f)
+                                                        .gap(40)
+                                                        .alignSelf(AuraRow.Alignment.BOTTOM)
+                                                        .maximalSize(260, -1)
+                                                        .content(auxCol -> {
+                                                            auxCol.insert(
+                                                                new AuraButton("Gestionar Becarios")
+                                                                    .background(EstiloGral.BUTTON_COLOR)
+                                                                    .textColor(EstiloGral.BG_COLOR)
+                                                                    .fillWidth()
+                                                                    .font(EstiloGral.LABEL_FONT)
+                                                                    .alignSelf(aura.layouts.AuraRow.Alignment.BOTTOM)
+                                                                    .id("becariosBtn")
+                                                            );
+
+                                                            auxCol.insert(
+                                                                menuBtn2
+                                                            );
+                                                        })
+                                                
                                             );
                                         })
                                 );
@@ -198,73 +363,15 @@ public class PanelAdminView extends AuraContainer {
                                         .alignSelf(AuraColumn.Alignment.LEFT)
                                         .align(AuraRow.Alignment.TOP)
                                         .fillWidth()
+                                        .weight(1f)
                                         .gap(40)
                                         .content(footer -> {
                                             footer.insert(
-                                                new AuraColumn()
-                                                    .padding(20)
-                                                    .radius(15)
-                                                    .gap(10)
-                                                    .background(EstiloGral.WHITE_TRANSP_COLOR2)
-                                                    .align(AuraColumn.Alignment.LEFT)
-                                                    .fillHeight()
-                                                    .content(updateCol -> {
+                                                tarifas
+                                            );
 
-                                                        updateCol.insert(
-                                                            new AuraText("Actualizar Tarifas")
-                                                                .alignSelf(AuraColumn.Alignment.LEFT)
-                                                                .textColor(EstiloGral.BG_COLOR)
-                                                                .font(EstiloGral.MIDDLE_FONT)
-                                                                .margin(20,50)
-                                                        );
-
-                                                        updateCol.insert(
-                                                            new AuraText("Porcentaje")
-                                                                .font(EstiloGral.LABEL_FONT)
-                                                                .textColor(EstiloGral.BG_COLOR)
-                                                                .margin(0,50,0,0)
-
-                                                        );
-
-                                                        updateCol.insert(
-                                                            new AuraInput()
-                                                                .padding(15)
-                                                                .radius(15)
-                                                                .background(EstiloGral.DARK_COLOR)
-                                                                .carterColor(EstiloGral.BG_COLOR)
-                                                                .font(EstiloGral.INPUT_FONT)
-                                                                .textColor(EstiloGral.BG_COLOR)
-                                                                .fillWidth()
-                                                                .id("porcentaje")
-                                                        );
-
-                                                        updateCol.insert(
-                                                            new AuraText("Rol")
-                                                                .font(EstiloGral.LABEL_FONT)
-                                                                .textColor(EstiloGral.BG_COLOR)
-                                                                .margin(20,50,0,0)
-
-                                                        );
-
-                                                        updateCol.insert(
-                                                            new AuraSelect("ESTUDIANTE", "PROFESOR", "TRABAJADOR")
-                                                                .background(EstiloGral.DARK_COLOR)
-                                                                .font(EstiloGral.LABEL_FONT)
-                                                                .textColor(EstiloGral.BG_COLOR)
-                                                                .fillWidth()
-                                                                .id("role")
-                                                        );
-
-                                                        updateCol.insert(
-                                                            new AuraButton("Actualizar")
-                                                                    .background(EstiloGral.BUTTON_COLOR)
-                                                                    .textColor(EstiloGral.BG_COLOR)
-                                                                    .font(EstiloGral.LABEL_FONT)
-                                                                    .id("update")
-                                                                    .alignSelf(AuraColumn.Alignment.CENTER)
-                                                                    .margin(20,0,10,0)
-                                                        );
-                                                    })
+                                            footer.insert(
+                                                tarifas2
                                             );
 
                                             footer.insert(
@@ -275,6 +382,7 @@ public class PanelAdminView extends AuraContainer {
                                                     .radius(15)
                                                     .padding(15)
                                                     .gap(10)
+                                                    .id("menusColumn")
                                                     .align(AuraColumn.Alignment.LEFT)
                                                     .content(menusCol -> {
                                                         menusCol.insert(
@@ -346,7 +454,7 @@ public class PanelAdminView extends AuraContainer {
                             .backgroundAngle(90)
                             .fillHeight()
                             .weight(0.4f)
-                            .padding(40,60)
+                            .padding(40,0)
                             .content(rightCol -> {
 
                                 rightCol.insert(
@@ -364,21 +472,21 @@ public class PanelAdminView extends AuraContainer {
                                     new AuraWhen<>(rightPanelStateController)
                                         .animationDuration(250)
                                         .addCase("listadoDesayuno", 
-                                            new AuraButton("Ver Reservas")
+                                            new AuraButton("Ver Listado Almuerzo")
                                                 .background(EstiloGral.BUTTON_COLOR)
                                                 .textColor(EstiloGral.BG_COLOR)
                                                 .font(EstiloGral.LABEL_FONT)
                                                 .onClick(b -> {
-                                                    rightPanelStateController.set("reservas");
+                                                    rightPanelStateController.set("listadoAlmuerzo");
                                                 })
                                         )
                                         .addCase("listadoAlmuerzo", 
-                                            new AuraButton("Ver Reservas")
+                                            new AuraButton("Ver Listado Desayuno")
                                                 .background(EstiloGral.BUTTON_COLOR)
                                                 .textColor(EstiloGral.BG_COLOR)
                                                 .font(EstiloGral.LABEL_FONT)
                                                 .onClick(b -> {
-                                                    rightPanelStateController.set("reservas");
+                                                    rightPanelStateController.set("listadoDesayuno");
                                                 })
                                         )
                                 );
@@ -397,6 +505,8 @@ public class PanelAdminView extends AuraContainer {
     public void setListado(ComensalesPorServicio listado, TipoMenu tipo){
 
         AuraColumn listadoColumn = (tipo == TipoMenu.ALMUERZO)? listadoAlmuerzoColumn : listadoDesayunoColumn;
+
+        listadoColumn.removeAll();
 
         listadoColumn.insert(
             listadoItem(Role.ESTUDIANTE, listado.getCantidadEstudiante())
@@ -426,18 +536,19 @@ public class PanelAdminView extends AuraContainer {
                     .background(EstiloGral.WHITE_TRANSP_COLOR)
                     .align(Alignment.LEFT)
                     .fillWidth()
-                    .margin(20, 40)
+                    .margin(10, 40)
                     .content(item -> {
                         item.insert(
                             new AuraText(rol.toString())
                                 .textColor(EstiloGral.DARK_COLOR)
-                                .font(EstiloGral.INPUT_FONT)
+                                .font(EstiloGral.LABEL_BOLD_FONT)
                         );
 
                         item.insert(
                             new AuraText(String.valueOf(cantidad))               
                                 .textColor(EstiloGral.DARK_COLOR)
-                                .font(EstiloGral.LABEL_FONT)
+                                .font(EstiloGral.SMALL_FONT)
+                                .margin(5,10)
                         );
                     });
     }
@@ -519,17 +630,21 @@ public class PanelAdminView extends AuraContainer {
     }
 
     public String getPorcentaje(){
-        return ((AuraInput) find("porcentaje")).getText();
+        return  ((AuraInput) find(getHeight() < 1000? "porcentaje2" : "porcentaje")).getText();
     }
 
     public String getRole(){
-        return ((AuraSelect) find("role")).getText();
+        return ((AuraSelect) find(getHeight() < 1000? "rol2" : "rol")).getText();
     }
 
     public void InvalidateInputs(String... ids){
 
         for(String id : ids){
 
+            
+            if(id.equals("porcentaje") && getHeight() < 1000){
+                id = "porcentaje2";
+            }
             AuraBox<?> component = find(id);
 
             component.cancelAnimations(Transition.AnimationType.BACKGROUND);

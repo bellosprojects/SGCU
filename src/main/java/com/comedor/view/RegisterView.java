@@ -19,7 +19,13 @@ import aura.layouts.AuraRow;
 public class RegisterView extends AuraContainer {
 
     public RegisterView() {
+        
         background(new AuraImage(getResourcePath("/images/comedor.png")));
+        initializeView();
+    }
+
+    private void initializeView() {
+
         insert(
             new AuraColumn()
                 .fillParent()
@@ -27,216 +33,248 @@ public class RegisterView extends AuraContainer {
 
                     column.insert(
                         new AuraRow()
+                            .fillWidth()
                             .gap(40)
                             .alignSelf(AuraColumn.Alignment.LEFT)
-                            .padding(10, 40, 0, 0)
+                            .padding(20, 40, 0, 0)
                             .content(row -> {
                                 row.insert(
                                     new AuraImage(getResourcePath("/images/logoWhite.png"))
-                                        .size(200, 200)
+                                        .maximalSize(200, 200)
+                                        .minimunSize(120, 120)
+                                        .ratio(1)
+                                        .widthPorc(0.15f)
                                 );
 
                                 row.insert(
-                                    new AuraText("SGCU - Registro")
+                                    new AuraText("Registro")
                                         .font(EstiloGral.TITLE_FONT)
                                         .textColor(EstiloGral.BG_COLOR)
                                 );
+
+                                row.insert(new AuraSpacer());
                             })
                     );
 
                     column.insert(
-                        new AuraText("Ingresa tu Cedula")
-                                .alignSelf(AuraColumn.Alignment.LEFT)
-                                .font(EstiloGral.LABEL_FONT)
-                                .textColor(EstiloGral.BG_COLOR)
-                                .margin(100, 250, 10, 0)
+                        new AuraSpacer()
                     );
 
                     column.insert(
-                        new AuraRow()
-                            .gap(40)
-                            .fillWidth()
-                            .margin(0,200,0,0)
-                            .content(cedulaRow -> {
+                        new AuraColumn()
+                            .widthPorc(0.8f)
+                            .maximalSize(800, -1)
+                            .minimunSize(500, -1)
+                            .content(innercol -> {
 
-                                cedulaRow.insert(
-                                    new AuraInput()
-                                        .weight(0.5f)
-                                        .padding(15)
-                                        .radius(15)
-                                        .font(EstiloGral.INPUT_FONT)
-                                        .background(EstiloGral.WHITE_TRANSP_COLOR)
-                                        .info(createInfo("Cedula sin puntos Ej: 12345678"), 1, 0, 1, 1)
-                                        .id("cedula")
+
+                                innercol.insert(
+                                    new AuraText("Ingresa tu Cedula")
+                                            .alignSelf(AuraColumn.Alignment.LEFT)
+                                            .font(EstiloGral.LABEL_FONT)
+                                            .textColor(EstiloGral.BG_COLOR)
+                                            .margin(0, 50, 10, 0)
                                 );
 
-                                cedulaRow.insert(
-                                    new AuraButton("Buscar")
-                                        .font(EstiloGral.MIDDLE_FONT)
-                                        .textColor(EstiloGral.BG_COLOR)
-                                        .background(EstiloGral.BUTTON_COLOR)
-                                        .radius(15)
-                                        .fillHeight()
-                                        .id("findUser")
-                                );
-
-                                cedulaRow.insert(
-                                    new AuraSpacer()
-                                );
-
-                            })
-                    );
-
-
-                    column.insert(
-                        new AuraRow()
-                            .fillWidth()
-                            .margin(50,200)
-                            .content(dataInfo -> {
-                                dataInfo.insert(
-                                    new AuraGrid(2, 3)
-                                        .weight(1f)
-                                        .alignSelf(AuraRow.Alignment.BOTTOM)
+                                innercol.insert(
+                                    new AuraRow()
                                         .gap(40)
-                                        .margin(0,0,0,80)
-                                        .content(gridInfo -> {
-                                            gridInfo.insert(
-                                                new AuraColumn()
-                                                    .gap(10)
-                                                    .colSpan(2)
-                                                    .content(usernameCol -> {
-                                                        usernameCol.insert(
-                                                            new AuraText("Nombre")
-                                                                .font(EstiloGral.LABEL_FONT)
-                                                                .textColor(EstiloGral.BG_COLOR)
-                                                                .margin(0,50,0,0)
-                                                                .alignSelf(AuraColumn.Alignment.LEFT)
-                                                                .id("usernameLabel")
-                                                        );
+                                        .fillWidth()
+                                        .content(cedulaRow -> {
 
-                                                        usernameCol.insert(
-                                                            new AuraText(" ")
-                                                                .font(EstiloGral.INPUT_FONT)
-                                                                .fillWidth()
-                                                                .background(EstiloGral.WHITE_TRANSP_COLOR)
-                                                                .padding(15)
-                                                                .radius(15)
-                                                                .id("username")
-                                                        );
-
-                                                        AuraInput emailInput = new AuraInput()
-                                                                                .font(EstiloGral.INPUT_FONT)
-                                                                                .fillWidth()
-                                                                                .background(EstiloGral.WHITE_TRANSP_COLOR)
-                                                                                .padding(15)
-                                                                                .radius(15)
-                                                                                .id("email");
-
-                                                        emailInput.setVisible(false);
-
-                                                        usernameCol.insert(
-                                                            emailInput
-                                                        );
-                                                    })
+                                            cedulaRow.insert(
+                                                new AuraInput()
+                                                    .weight(1f)
+                                                    .padding(15)
+                                                    .radius(15)
+                                                    .font(EstiloGral.INPUT_FONT)
+                                                    .background(EstiloGral.WHITE_TRANSP_COLOR)
+                                                    .info(createInfo("Cedula sin puntos Ej: 12345678"), 1, 0, 1, 1)
+                                                    .id("cedula")
                                             );
 
-                                            gridInfo.insert(
-                                                new AuraSpacer()
+                                            cedulaRow.insert(
+                                                new AuraButton("Buscar")
+                                                    .font(EstiloGral.MIDDLE_FONT)
+                                                    .textColor(EstiloGral.BG_COLOR)
+                                                    .background(EstiloGral.BUTTON_COLOR)
+                                                    .radius(15)
+                                                    .fillHeight()
+                                                    .id("findUser")
                                             );
 
-                                            gridInfo.insert(
-                                                new AuraColumn()
-                                                    .gap(10)
-                                                    .content(facuCol -> {
-                                                        facuCol.insert(
-                                                            new AuraText("Facultad")
-                                                                .font(EstiloGral.LABEL_FONT)
-                                                                .textColor(EstiloGral.BG_COLOR)
-                                                                .margin(0,50,0,0)
-                                                                .alignSelf(AuraColumn.Alignment.LEFT)
-                                                                .id("facuLabel")
-                                                        );
-
-                                                        AuraInput passwordInput = new AuraInput()
-                                                                                .font(EstiloGral.INPUT_FONT)
-                                                                                .fillWidth()
-                                                                                .background(EstiloGral.WHITE_TRANSP_COLOR)
-                                                                                .padding(15)
-                                                                                .radius(15)
-                                                                                .id("password");
-
-                                                        passwordInput.setVisible(false);
-
-                                                        facuCol.insert(
-                                                            passwordInput
-                                                        );
-
-                                                        facuCol.insert(
-                                                            new AuraText(" ")
-                                                                .font(EstiloGral.INPUT_FONT)
-                                                                .fillWidth()
-                                                                .background(EstiloGral.WHITE_TRANSP_COLOR)
-                                                                .padding(15)
-                                                                .radius(15)
-                                                                .id("facultad")
-                                                        );
-                                                    })
-                                            );
-
-                                            gridInfo.insert(
-                                                new AuraColumn()
-                                                    .gap(10)
-                                                    .content(roleCol -> {
-                                                        roleCol.insert(
-                                                            new AuraText("Rol")
-                                                                .font(EstiloGral.LABEL_FONT)
-                                                                .textColor(EstiloGral.BG_COLOR)
-                                                                .margin(0,50,0,0)
-                                                                .alignSelf(AuraColumn.Alignment.LEFT)
-                                                                .id("roleLabel")
-                                                        );
-
-                                                        AuraInput passwordInput = new AuraInput()
-                                                                                .font(EstiloGral.INPUT_FONT)
-                                                                                .fillWidth()
-                                                                                .background(EstiloGral.WHITE_TRANSP_COLOR)
-                                                                                .padding(15)
-                                                                                .radius(15)
-                                                                                .id("confirmPassword");
-
-                                                        passwordInput.setVisible(false);
-
-                                                        roleCol.insert(
-                                                            passwordInput
-                                                        );
-
-                                                        roleCol.insert(
-                                                            new AuraText(" ")
-                                                                .font(EstiloGral.INPUT_FONT)
-                                                                .fillWidth()
-                                                                .background(EstiloGral.WHITE_TRANSP_COLOR)
-                                                                .padding(15)
-                                                                .radius(15)
-                                                                .id("role")
-                                                        );
-                                                    })
-                                            );
                                         })
                                 );
+                            })
+                        );
 
-                                dataInfo.insert(
-                                    new AuraColumn()
-                                        .gap(20)
-                                        .id("imageColumn")
-                                        .content(imageCol -> {
-                                            imageCol.insert(
+                    column.insert(
+                        new AuraSpacer().weight(0.5f)
+                    );
+
+                    column.insert(
+                        new AuraColumn()
+                            .widthPorc(0.8f)
+                            .maximalSize(1200, -1)
+                            .minimunSize(500, -1)
+                            .content(innerCol -> {
+
+                                innerCol.insert(
+
+                                    new AuraRow()
+                                        .fillWidth()
+                                        .content(innerRow -> {
+
+                                            innerRow.insert(
+                                                    new AuraSpacer()
+                                            );
+
+                                            innerRow.insert(
+                                                
+                                                new AuraGrid(2, 2)
+                                                    .widthPorc(0.75f)
+                                                    .maximalSize(700, -1)
+                                                    .gap(40)
+                                                    .content(gridInfo -> {
+                                                        gridInfo.insert(
+                                                            new AuraColumn()
+                                                                .gap(10)
+                                                                .colSpan(2)
+                                                                .content(usernameCol -> {
+                                                                    usernameCol.insert(
+                                                                        new AuraText("Nombre")
+                                                                            .font(EstiloGral.LABEL_FONT)
+                                                                            .textColor(EstiloGral.BG_COLOR)
+                                                                            .margin(0,50,0,0)
+                                                                            .alignSelf(AuraColumn.Alignment.LEFT)
+                                                                            .id("usernameLabel")
+                                                                    );
+
+                                                                    usernameCol.insert(
+                                                                        new AuraText(" ")
+                                                                            .font(EstiloGral.INPUT_FONT)
+                                                                            .fillWidth()
+                                                                            .background(EstiloGral.WHITE_TRANSP_COLOR)
+                                                                            .padding(15)
+                                                                            .radius(15)
+                                                                            .id("username")
+                                                                    );
+
+                                                                    AuraInput emailInput = new AuraInput()
+                                                                                            .font(EstiloGral.INPUT_FONT)
+                                                                                            .fillWidth()
+                                                                                            .background(EstiloGral.WHITE_TRANSP_COLOR)
+                                                                                            .padding(15)
+                                                                                            .radius(15)
+                                                                                            .id("email");
+
+                                                                    emailInput.setVisible(false);
+
+                                                                    usernameCol.insert(
+                                                                        emailInput
+                                                                    );
+                                                                })
+                                                        );
+
+                                                        gridInfo.insert(
+                                                            new AuraColumn()
+                                                                .gap(10)
+                                                                .content(facuCol -> {
+                                                                    facuCol.insert(
+                                                                        new AuraText("Facultad")
+                                                                            .font(EstiloGral.LABEL_FONT)
+                                                                            .textColor(EstiloGral.BG_COLOR)
+                                                                            .margin(0,50,0,0)
+                                                                            .alignSelf(AuraColumn.Alignment.LEFT)
+                                                                            .id("facuLabel")
+                                                                    );
+
+                                                                    AuraInput passwordInput = new AuraInput()
+                                                                                            .font(EstiloGral.INPUT_FONT)
+                                                                                            .fillWidth()
+                                                                                            .background(EstiloGral.WHITE_TRANSP_COLOR)
+                                                                                            .padding(15)
+                                                                                            .radius(15)
+                                                                                            .id("password");
+
+                                                                    passwordInput.setVisible(false);
+
+                                                                    facuCol.insert(
+                                                                        passwordInput
+                                                                    );
+
+                                                                    facuCol.insert(
+                                                                        new AuraText(" ")
+                                                                            .font(EstiloGral.INPUT_FONT)
+                                                                            .fillWidth()
+                                                                            .background(EstiloGral.WHITE_TRANSP_COLOR)
+                                                                            .padding(15)
+                                                                            .radius(15)
+                                                                            .id("facultad")
+                                                                    );
+                                                                })
+                                                        );
+
+                                                        gridInfo.insert(
+                                                            new AuraColumn()
+                                                                .gap(10)
+                                                                .content(roleCol -> {
+                                                                    roleCol.insert(
+                                                                        new AuraText("Rol")
+                                                                            .font(EstiloGral.LABEL_FONT)
+                                                                            .textColor(EstiloGral.BG_COLOR)
+                                                                            .margin(0,50,0,0)
+                                                                            .alignSelf(AuraColumn.Alignment.LEFT)
+                                                                            .id("roleLabel")
+                                                                    );
+
+                                                                    AuraInput passwordInput = new AuraInput()
+                                                                                            .font(EstiloGral.INPUT_FONT)
+                                                                                            .fillWidth()
+                                                                                            .background(EstiloGral.WHITE_TRANSP_COLOR)
+                                                                                            .padding(15)
+                                                                                            .radius(15)
+                                                                                            .id("confirmPassword");
+
+                                                                    passwordInput.setVisible(false);
+
+                                                                    roleCol.insert(
+                                                                        passwordInput
+                                                                    );
+
+                                                                    roleCol.insert(
+                                                                        new AuraText(" ")
+                                                                            .font(EstiloGral.INPUT_FONT)
+                                                                            .fillWidth()
+                                                                            .background(EstiloGral.WHITE_TRANSP_COLOR)
+                                                                            .padding(15)
+                                                                            .radius(15)
+                                                                            .id("role")
+                                                                    );
+                                                                })
+                                                        );
+                                                    })
+                                            );
+
+                                            innerRow.insert(
+                                                    new AuraSpacer()
+                                            );
+
+                                            innerRow.insert(
                                                 new AuraImage(" ")
-                                                    .size(300,300)
                                                     .id("image")
                                                     .radius(15)
+                                                    .minimunSize(100, 100)
+                                                    .margin(20)
+                                                    .ratio(1f)
+                                                    .maximalSize(300, 300)
+                                                    .widthPorc(0.3f)
                                             );
+
                                         })
+
                                 );
+
                             })
                     );
 
@@ -248,7 +286,7 @@ public class RegisterView extends AuraContainer {
                     column.insert(
                         new AuraRow()
                             .fillWidth()
-                            .margin(40,80)
+                            .margin(0,0,40,80)
                             .gap(40)
                             .content(footer -> {
 

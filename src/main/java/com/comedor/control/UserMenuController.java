@@ -98,30 +98,31 @@ public class UserMenuController {
                     recargarSaldoPana(cedulaPana);
             });
             
+            menuView.find("rechargeSaldoPanaBtn").onClick(b -> {
+                menuView.showSaldoPana(); 
+            });
+    
+    
+            menuView.find("bookBreakfastBtn").onClick(b -> {
+                iniciarReserva(TipoMenu.DESAYUNO);
+            });
+    
+            menuView.find("bookLunchBtn").onClick(b -> {
+                iniciarReserva(TipoMenu.ALMUERZO);
+            });
+    
+            menuView.find("menusBtn").onClick(b -> {
+                menuView.showMenus();
+            });
+    
+            menuView.find("reservationsBtn").onClick(b -> {
+                menuView.showReservas();
+            });
+            
+            refreshView();
         });
 
-        menuView.find("rechargeSaldoPanaBtn").onClick(b -> {
-            menuView.showSaldoPana(); 
-        });
 
-
-        menuView.find("bookBreakfastBtn").onClick(b -> {
-            iniciarReserva(TipoMenu.DESAYUNO);
-        });
-
-        menuView.find("bookLunchBtn").onClick(b -> {
-            iniciarReserva(TipoMenu.ALMUERZO);
-        });
-
-        menuView.find("menusBtn").onClick(b -> {
-            menuView.showMenus();
-        });
-
-        menuView.find("reservationsBtn").onClick(b -> {
-            menuView.showReservas();
-        });
-
-        refreshView();
     }
 
     private void loadReservas() {
