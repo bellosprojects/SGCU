@@ -39,7 +39,7 @@ public class RegisterController {
         });
         registerView.find("findUser").onClick(b -> {
 
-            String cedula = registerView.getCedula();
+            String cedula = registerView.getCedula().trim();
             User user = persistenciaManager.getUserFromCedulaInDataBase(cedula);
 
             if(user != null){
@@ -104,7 +104,7 @@ public class RegisterController {
         String cedula = registerView.getCedula().trim();
         String password = registerView.getPassword();
         String confirmPassword = registerView.getConfirmPassword();
-        String email = registerView.getEmail();
+        String email = registerView.getEmail().trim();
         String facultadSeleccionada = registerView.getFacultad();
         User.Role tipoUsuario = persistenciaManager.getUserFromCedulaInDataBase(cedula).getRole();
 

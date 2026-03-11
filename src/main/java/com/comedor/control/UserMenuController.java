@@ -93,7 +93,7 @@ public class UserMenuController {
             });
 
             menuView.getModalSaldoPana().find("confirmRechargeSaldoPanaBtn").onClick(b -> {
-                String cedulaPana = menuView.getCedulaForSaldoPana();
+                String cedulaPana = menuView.getCedulaForSaldoPana().trim();
                 if(isValidCedula(cedulaPana))
                     recargarSaldoPana(cedulaPana);
             });
@@ -266,7 +266,7 @@ public class UserMenuController {
         }
     }
 
-    private void verificarFaceId(TipoMenu tipo){
+    private void reservar(TipoMenu tipo){
         EstiloGral.ShowMessage("Reserva en espera", EstiloGral.SUCCESS_MESSAGE);
         sendReserva(new Reserva(cedula, Reserva.EstadoReserva.EN_ESPERA), tipo);
         if(tipo == TipoMenu.DESAYUNO){
@@ -274,8 +274,6 @@ public class UserMenuController {
         } else {
             reservarAlmuerzo();
         }
-        double monto = persistenciaManager.getPrecioForUser(cedula);
-        menuView.updateSaldo(persistenciaManager.sumarSaldo(cedula, -monto));
     }
 
     private void iniciarReserva(TipoMenu tipo){
@@ -284,7 +282,7 @@ public class UserMenuController {
             case YA_TIENE_RESERVA -> EstiloGral.ShowMessage("Ya tienes una reserva para este menú", EstiloGral.INFO_MESSAGE);
             case SALDO_INSUFICIENTE -> EstiloGral.ShowMessage("No tienes suficiente saldo para reservar este menú", EstiloGral.INFO_MESSAGE);
             case RESERVA_EXITOSA -> {
-                verificarFaceId(tipo);
+                reservar(tipo);
             }
             case RESERVA_CANCELADA -> EstiloGral.ShowMessage("Tu reserva ha sido cancelada", EstiloGral.INFO_MESSAGE);
             case NO_HAY_CUPO -> EstiloGral.ShowMessage("No hay cupo disponible para este menú", EstiloGral.INFO_MESSAGE);
@@ -316,12 +314,7 @@ public class UserMenuController {
             flag = false;
         }
         Role rolUser = persistenciaManager.getRoleFromCedula(cedulaInput);
-        if(rolUser == Role.EXONERADO){
-            menuView.InvalidateInputs("cedulaSaldoPana");
-            EstiloGral.ShowMessage("Este usuario es exonerado, no es elegible para recargarle saldo", EstiloGral.ERROR_MESSAGE);
-            flag = false;
-        }
-        else if(rolUser != Role.ESTUDIANTE && rolUser != Role.BECARIO){
+        if(rolUser != Role.ESTUDIANTE && rolUser != Role.BECARIO){
             menuView.InvalidateInputs("cedulaSaldoPana");
             EstiloGral.ShowMessage("Este usuario no es elegible para recargarle saldo pana", EstiloGral.ERROR_MESSAGE);
             flag = false;

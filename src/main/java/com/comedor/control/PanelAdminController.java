@@ -61,6 +61,7 @@ public class PanelAdminController {
 
         String newPorcentaje = panelAdminView.getPorcentaje();
         if (newPorcentaje == null || newPorcentaje.trim().isEmpty()) {
+            EstiloGral.ShowMessage("Por favor, ingresa un número válido para el porcentaje.", EstiloGral.ERROR_MESSAGE);
             panelAdminView.InvalidateInputs("porcentaje");
             return;
         }
