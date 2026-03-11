@@ -11,6 +11,8 @@ import com.comedor.utils.ModelUtils;
 import com.comedor.view.EstiloGral;
 import com.comedor.view.UserMenuView;
 
+import aura.core.AuraBox;
+
 import aura.layouts.AuraRow;
 
 public class UserMenuController {
@@ -103,13 +105,17 @@ public class UserMenuController {
             });
     
     
-            menuView.find("bookBreakfastBtn").onClick(b -> {
-                iniciarReserva(TipoMenu.DESAYUNO);
-            });
-    
-            menuView.find("bookLunchBtn").onClick(b -> {
-                iniciarReserva(TipoMenu.ALMUERZO);
-            });
+            for(AuraBox<?> c : menuView.findAll("bookBreakfastBtn")){
+                c.onClick(b -> 
+                    iniciarReserva(TipoMenu.DESAYUNO)
+                );
+            }
+
+            for(AuraBox<?> c : menuView.findAll("bookLunchBtn")){
+                c.onClick(b -> 
+                    iniciarReserva(TipoMenu.ALMUERZO)
+                );
+            }
     
             menuView.find("menusBtn").onClick(b -> {
                 menuView.showMenus();

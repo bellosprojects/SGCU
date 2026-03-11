@@ -36,17 +36,11 @@ public class UserMenuView extends AuraContainer {
 
     private AuraRow menusRow;
 
-    AuraState<String> stateController;
-
     public UserMenuView(){
         initializeView();
     }
 
     private void initializeView() {
-
-        stateController = new AuraState<>("FHD");
-
-        AuraWhen<String> menusView = new AuraWhen<>(stateController);
 
         menusRow = new AuraRow()
                 .fillWidth()
@@ -177,32 +171,30 @@ public class UserMenuView extends AuraContainer {
 
                 });
 
-        menusView.addCase("FHD", menusRow);
+        AuraRow menusRow2 = new AuraRow()
+                        .fillWidth()
+                        .gap(20)
+                        .content(row -> {
+                            row.insert(
+                                new AuraButton("Reservar Desayuno")
+                                    .radius(20)
+                                    .background(EstiloGral.BUTTON_COLOR)
+                                    .font(EstiloGral.LABEL_BOLD_FONT)
+                                    .textColor(EstiloGral.BG_COLOR)
+                                    .id("bookBreakfastBtn")
+                            );
 
-        menusView.addCase("HD", new AuraRow()
-                                            .fillWidth()
-                                            .gap(20)
-                                            .content(row -> {
-                                                row.insert(
-                                                    new AuraButton("Reservar Desayuno")
-                                                        .radius(20)
-                                                        .background(EstiloGral.BUTTON_COLOR)
-                                                        .font(EstiloGral.LABEL_BOLD_FONT)
-                                                        .textColor(EstiloGral.BG_COLOR)
-                                                        .id("bookBreakfastBtn")
-                                                );
-
-                                                row.insert(
-                                                    new AuraButton("Reservar Almuerzo")
-                                                        .radius(20)
-                                                        .background(EstiloGral.BUTTON_COLOR)
-                                                        .font(EstiloGral.LABEL_BOLD_FONT)
-                                                        .textColor(EstiloGral.BG_COLOR)
-                                                        .id("bookLunchBtn")
-                                                );
-                                            })
+                            row.insert(
+                                new AuraButton("Reservar Almuerzo")
+                                    .radius(20)
+                                    .background(EstiloGral.BUTTON_COLOR)
+                                    .font(EstiloGral.LABEL_BOLD_FONT)
+                                    .textColor(EstiloGral.BG_COLOR)
+                                    .id("bookLunchBtn")
+                            );
+                        });
                                         
-                        );
+                        
 
         onSize((w,h) -> {
             if(w < 1620){
@@ -212,9 +204,11 @@ public class UserMenuView extends AuraContainer {
             }
 
             if(h < 900){
-                stateController.set("HD");
+                menusRow.setVisible(false);
+                menusRow2.setVisible(true);
             }else {
-                stateController.set("FHD");
+                menusRow2.setVisible(false);
+                menusRow.setVisible(true);
             }
         });
 
@@ -513,7 +507,11 @@ public class UserMenuView extends AuraContainer {
                                 );
 
                                 mainColumn.insert(
-                                    menusView.fillWidth().weight(1f)
+                                    menusRow
+                                );
+
+                                mainColumn.insert(
+                                    menusRow2
                                 );
 
                             })
