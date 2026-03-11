@@ -2,9 +2,9 @@ package com.comedor.control;
 
 import com.comedor.model.ComensalesPorServicio;
 import com.comedor.model.Menu;
+import com.comedor.model.Menu.TipoMenu;
 import com.comedor.model.PersistenciaManager;
 import com.comedor.model.Prices;
-import com.comedor.model.Menu.TipoMenu;
 import com.comedor.view.EstiloGral;
 import com.comedor.view.PanelAdminView;
 
@@ -18,6 +18,11 @@ public class PanelAdminController {
         this.persistenciaManager = persistenciaManager;
         this.delegate = delegate;
         setupListeners();
+        sendData();
+    }
+
+    public void reset(){
+        panelAdminView.reset();
         sendData();
     }
 

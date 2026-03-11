@@ -208,4 +208,8 @@ public class LoginView extends AuraContainer {
         return ((AuraInput) find("password")).getText();
     }
 
+    public void reset(){
+        ((AuraInput) find("cedula")).text("");
+        ((AuraInput) find("password")).text("");
+    }
 }

@@ -99,16 +99,24 @@ public class AppCoordinator implements NavigationDelegate {
     }
 
     private void showLogin() {
+
+        LoginView view = (LoginView) views.get("Login");
+        view.reset();
+
         viewStateController.set("Login");
         if (loginController == null) {
-            loginController = new LoginController((LoginView) views.get("Login"), model, this);
+            loginController = new LoginController(view, model, this);
         }
     }
 
     private void showRegister() {
         viewStateController.set("Register");
+
+        RegisterView view = (RegisterView) views.get("Register");
+        view.reset();
+
         if (registerController == null) {
-            registerController = new RegisterController((RegisterView) views.get("Register"), model, this);
+            registerController = new RegisterController(view, model, this);
         }
     }
 
@@ -119,6 +127,7 @@ public class AppCoordinator implements NavigationDelegate {
         } else {
             userMenuController.setCedula(cedula);
         }
+        userMenuController.reset();
     }
 
     private void showAdminDashboard() {
@@ -126,12 +135,17 @@ public class AppCoordinator implements NavigationDelegate {
         if (panelAdminController == null) {
             panelAdminController = new PanelAdminController((PanelAdminView) views.get("AdminDashboard"), model, this);
         }
+        panelAdminController.reset();
     }
 
     private void showGestionarMenuView() {
+
+        GestionarMenuView view = (GestionarMenuView) views.get("GestionarMenu");
+        view.reset();
+
         viewStateController.set("GestionarMenu");
         if (gestionarMenuController == null) {
-            gestionarMenuController = new GestionarMenuController((GestionarMenuView) views.get("GestionarMenu"), model, this);
+            gestionarMenuController = new GestionarMenuController(view, model, this);
         }
     }
 
@@ -140,12 +154,17 @@ public class AppCoordinator implements NavigationDelegate {
         if (ccbCalculoController == null) {
             ccbCalculoController = new CCBCalculoController((GestionarCCBView) views.get("CalcularCCB"), model, this);
         }
+        ccbCalculoController.reset();
     }
 
     public void showGestionarBecarios() {
         viewStateController.set("GestionarBecarios");
+
+        GestionarBecariosView view = (GestionarBecariosView) views.get("GestionarBecarios");
+        view.reset();
+
         if(gestionarBecariosController == null){
-            gestionarBecariosController = new GestionarBecariosController((GestionarBecariosView) views.get("GestionarBecarios"), model, this);
+            gestionarBecariosController = new GestionarBecariosController(view, model, this);
         }
     }
 
@@ -154,6 +173,7 @@ public class AppCoordinator implements NavigationDelegate {
         if(cajeroController == null){
             cajeroController = new CajeroController((CajeroView) views.get("Cajero"), model, this);
         }
+        cajeroController.reset();
     }
 
     @Override

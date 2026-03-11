@@ -904,4 +904,9 @@ public class UserMenuView extends AuraContainer {
     public String getConfirmacionSaldoPana(){
         return ((AuraInput) modalSaldoPana.find("password")).getText();
     }
+
+    public void reset(){
+        ((AuraText) find("credits")).text("0,00Bs");
+        ((AuraText) find("price")).text("0,00Bs");
+    }
 }

@@ -6,6 +6,7 @@ import com.comedor.view.EstiloGral;
 import com.comedor.view.GestionarCCBView;
 
 public class CCBCalculoController {
+
     private final NavigationDelegate delegate;
     private final GestionarCCBView calcularCCBView;
     private final PersistenciaManager persistenciaManager;
@@ -15,6 +16,16 @@ public class CCBCalculoController {
         this.persistenciaManager = persistenciaManager;
         this.delegate = delegate;
         setup();
+    }
+
+    public void reset(){
+
+        calcularCCBView.limpiarFormulario();
+
+        Double ccb = persistenciaManager.getCCB();
+        if (ccb != null) {
+            calcularCCBView.setCCB(ccb);
+        }
     }
 
     private void setup() {

@@ -1,8 +1,11 @@
 package aura.components;
 
 import java.awt.Image;
+
 import javax.swing.ImageIcon;
+
 import aura.core.AuraBox;
+import java.net.MalformedURLException;
 
 public class AuraImage extends AuraBox<AuraImage> {
     
@@ -15,7 +18,7 @@ public class AuraImage extends AuraBox<AuraImage> {
                 img = new ImageIcon(url).getImage();
             }
             this.background(img);
-        } catch (Exception e) {
+        } catch (MalformedURLException e) {
             Image img = new ImageIcon(url).getImage();
             this.background(img);
         }

@@ -1,9 +1,8 @@
 package com.comedor.view;
 
-import aura.layouts.AuraColumn;
-import aura.layouts.AuraRow;
-import aura.layouts.AuraColumn.Alignment;
-
+import aura.animations.AnimateBackground;
+import aura.animations.AnimateOpacity;
+import aura.animations.AnimateShake;
 import aura.components.AuraButton;
 import aura.components.AuraContainer;
 import aura.components.AuraImage;
@@ -12,13 +11,11 @@ import aura.components.AuraModal;
 import aura.components.AuraSpacer;
 import aura.components.AuraText;
 import aura.components.AuraWindow;
-
-import aura.animations.AnimateBackground;
-import aura.animations.AnimateOpacity;
-import aura.animations.AnimateShake;
-
 import aura.core.AuraBox;
 import aura.core.Transition;
+import aura.layouts.AuraColumn;
+import aura.layouts.AuraColumn.Alignment;
+import aura.layouts.AuraRow;
 
 public class GestionarBecariosView extends AuraContainer {
     
@@ -239,5 +236,10 @@ public class GestionarBecariosView extends AuraContainer {
 
     public AuraModal getModal(){
         return modal;
+    }
+
+    public void reset(){
+        ((AuraInput) find("cedula")).text("");
+        ((AuraInput) modal.find("descuento")).text("");
     }
 }

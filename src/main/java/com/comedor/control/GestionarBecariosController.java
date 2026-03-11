@@ -79,7 +79,7 @@ public class GestionarBecariosController {
             flag = false;
         }
         if(!ModelUtils.esEnteroValido(cedula)){
-            view.InvalidateInputs("cedulaForSaldoPana");
+            view.InvalidateInputs("cedula");
             EstiloGral.ShowMessage("La cedula solo debe contener numeros", EstiloGral.ERROR_MESSAGE);
             flag = false;
         }

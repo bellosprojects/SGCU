@@ -1,9 +1,13 @@
 package com.comedor.view;
 
-import aura.layouts.AuraColumn;
-import aura.layouts.AuraRow;
-import aura.layouts.AuraColumn.Alignment;
+import java.awt.Component;
+import java.util.LinkedList;
+import java.util.Queue;
 
+import com.comedor.model.Menu;
+import com.comedor.model.Reserva;
+
+import aura.animations.AnimateInteger;
 import aura.components.AuraButton;
 import aura.components.AuraContainer;
 import aura.components.AuraImage;
@@ -11,16 +15,10 @@ import aura.components.AuraModal;
 import aura.components.AuraSpacer;
 import aura.components.AuraText;
 import aura.components.AuraWindow;
-
-import aura.animations.AnimateInteger;
-
-import java.util.LinkedList;
-import java.util.Queue;
-
-import com.comedor.model.Menu;
-import com.comedor.model.Reserva;
-
 import aura.core.Transition;
+import aura.layouts.AuraColumn;
+import aura.layouts.AuraColumn.Alignment;
+import aura.layouts.AuraRow;
 
 public class CajeroView extends AuraContainer {
 
@@ -287,5 +285,14 @@ public class CajeroView extends AuraContainer {
 
     }
 
+    public void removeAllReservas(){
+        AuraColumn reservasColumn = (AuraColumn) find("reservas");
+
+        for(Component c : reservasColumn.getComponents()){
+            if(c instanceof AuraColumn){
+                reservasColumn.remove(c);
+            }
+        }
+    }
 
 }

@@ -1,9 +1,9 @@
 package com.comedor.control;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Queue;
-import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
@@ -13,13 +13,11 @@ import com.comedor.model.Menu.TipoMenu;
 import com.comedor.model.PersistenciaManager;
 import com.comedor.model.Reserva;
 import com.comedor.utils.ModelUtils;
+import com.comedor.view.CajeroView;
 import com.comedor.view.EstiloGral;
-import com.comedor.view.GestionarCCBView;
 
 import aura.core.AuraBox;
 import aura.layouts.AuraColumn;
-
-import com.comedor.view.CajeroView;
 
 public class CajeroController {
     private final NavigationDelegate delegate;
@@ -38,6 +36,11 @@ public class CajeroController {
         view.find("backBtn").onClick(b -> {
             delegate.onBackToLoginRequested();
         });
+    }
+
+    public void reset(){
+        view.removeAllReservas();
+        sendReservas();
     }
 
     private void sendReservas(){

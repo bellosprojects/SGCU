@@ -249,4 +249,8 @@ public class GestionarMenuView extends AuraContainer {
         ((AuraMultiText) find("ingredientes")).text("");
         ((AuraInput) find("cupos")).text("");
     }
+
+    public void reset(){
+        limpiarFormulario();
+    }
 }

@@ -1,18 +1,14 @@
 package com.comedor.view;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.awt.Component;
 
 import com.comedor.model.ComensalesPorServicio;
-import com.comedor.model.Menu;
-import com.comedor.model.Prices;
-import com.comedor.model.Reserva;
 import com.comedor.model.Menu.TipoMenu;
+import com.comedor.model.Prices;
 import com.comedor.model.User.Role;
 
 import aura.animations.AnimateBackground;
 import aura.animations.AnimateFloat;
-import aura.animations.AnimateInteger;
 import aura.animations.AnimateShake;
 import aura.animations.AnimateString;
 import aura.components.AuraButton;
@@ -22,13 +18,12 @@ import aura.components.AuraSelect;
 import aura.components.AuraSpacer;
 import aura.components.AuraText;
 import aura.components.AuraWhen;
-
 import aura.core.AuraBox;
 import aura.core.AuraState;
 import aura.core.Transition;
 import aura.layouts.AuraColumn;
-import aura.layouts.AuraRow;
 import aura.layouts.AuraColumn.Alignment;
+import aura.layouts.AuraRow;
 
 public class PanelAdminView extends AuraContainer {
     
@@ -39,7 +34,7 @@ public class PanelAdminView extends AuraContainer {
 
     public PanelAdminView(){
 
-        rightPanelStateController = new AuraState<String>("reservas");
+        rightPanelStateController = new AuraState<>("reservas");
 
         listadoDesayunoColumn = new AuraColumn()
                             .id("listadoDesayuno")
@@ -445,6 +440,21 @@ public class PanelAdminView extends AuraContainer {
                                 .font(EstiloGral.LABEL_FONT)
                         );
                     });
+    }
+
+    public void reset(){
+        
+        for(Component c : listadoAlmuerzoColumn.getComponents()){
+            if(c instanceof AuraColumn){
+                listadoAlmuerzoColumn.remove(c);
+            }
+        }
+
+        for(Component c : listadoDesayunoColumn.getComponents()){
+            if(c instanceof AuraColumn){
+                listadoDesayunoColumn.remove(c);
+            }
+        }
     }
 
     public void setMenus(String desayuno, String almuerzo){

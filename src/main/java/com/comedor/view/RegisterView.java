@@ -88,7 +88,7 @@ public class RegisterView extends AuraContainer {
                     );
 
 
-                     column.insert(
+                    column.insert(
                         new AuraRow()
                             .fillWidth()
                             .margin(50,200)
@@ -339,9 +339,6 @@ public class RegisterView extends AuraContainer {
         ((AuraText) find("facultad")).setVisible(false);
         ((AuraInput) find("password")).setVisible(true);
 
-        ((AuraText) find("username")).setVisible(false);
-        ((AuraInput) find("email")).setVisible(true);
-
         ((AuraText) find("role")).setVisible(false);
         ((AuraInput) find("confirmPassword")).setVisible(true);
 
@@ -353,6 +350,47 @@ public class RegisterView extends AuraContainer {
 
         //Blquear input de cedula
         ((AuraInput) find("cedula")).block();
+    }
+
+    public void backStep(){
+
+        ((AuraImage) find("image")).opacity(1f);
+        ((AuraImage) find("image")).background(new AuraImage(""));
+
+        //Cambiar nombre de los Label
+        ((AuraText) find("usernameLabel")).text("Nombre");
+        ((AuraText) find("facuLabel")).text("Facultad");
+        ((AuraText) find("roleLabel")).text("Rol");
+
+        //Intercambiar text por inputs
+        ((AuraText) find("username")).setVisible(true);
+        ((AuraInput) find("email")).setVisible(false);
+
+        ((AuraText) find("facultad")).setVisible(true);
+        ((AuraInput) find("password")).setVisible(false);
+
+        ((AuraText) find("role")).setVisible(true);
+        ((AuraInput) find("confirmPassword")).setVisible(false);
+
+        //Cambiar boton de next por Registrar
+        ((AuraButton) find("nextBtn")).setVisible(true);
+        ((AuraButton) find("registerBtn")).setVisible(false);
+
+        ((AuraButton) find("findUser")).setVisible(true);
+
+        //Blquear input de cedula
+        ((AuraInput) find("cedula")).unblock();
+    }
+
+    public void reset(){
+        backStep();
+        ((AuraInput) find("cedula")).text("");
+        ((AuraInput) find("email")).text("");
+        ((AuraText) find("facultad")).text(" ");
+        ((AuraText) find("role")).text(" ");
+        ((AuraInput) find("confirmPassword")).text("");
+        ((AuraInput) find("password")).text("");
+        ((AuraText) find("username")).text(" ");
     }
 
     public String getCedula(){

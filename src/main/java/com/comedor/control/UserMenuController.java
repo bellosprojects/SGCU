@@ -27,6 +27,11 @@ public class UserMenuController {
         setup();
     }
 
+    public void reset(){
+        menuView.reset();
+        refreshView();
+    }
+
     public void setCedula(String cedula) {
         if (cedula == null || cedula.equals(this.cedula)) {
             return;
