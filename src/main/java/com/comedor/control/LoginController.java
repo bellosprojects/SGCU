@@ -31,7 +31,7 @@ public class LoginController {
     }
 
     private void handleLogin() {
-        String cedula = loginView.getCedula();
+        String cedula = loginView.getCedula().trim();
         String password = loginView.getPassword();
 
         if(cedula.equals("cajero") && password.equals("caraotas")){
@@ -56,7 +56,7 @@ public class LoginController {
 
     private boolean isValidInputs(String cedula, String password) {
         boolean flag = true;
-        if (cedula.isEmpty() || !ModelUtils.esEnteroValido(cedula)) {
+        if (cedula.isEmpty() || !ModelUtils.esEnteroValido(cedula.trim())) {
             loginView.InvalidateInputs("cedula");
             flag = false;
         }

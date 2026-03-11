@@ -93,11 +93,11 @@ public class GestionarBecariosController {
 
     public boolean isValidCedulaForBeca(String cedula){
         boolean flag = true;
-        if (!isValidCedula(cedula)){
+        if (!isValidCedula(cedula.trim())){
             return false;
         }
 
-        Role rolUser = persistenciaManager.getRoleFromCedula(cedula);
+        Role rolUser = persistenciaManager.getRoleFromCedula(cedula.trim());
         if(rolUser == Role.EXONERADO){
             view.InvalidateInputs("cedula");
             EstiloGral.ShowMessage("Este usuario ya es exonerado, no se puede becar", EstiloGral.ERROR_MESSAGE);
@@ -117,11 +117,11 @@ public class GestionarBecariosController {
 
     public boolean isValidCedulaForExonerado(String cedula){
         boolean flag = true;
-        if (!isValidCedula(cedula)){
+        if (!isValidCedula(cedula.trim())){
             return false;
         }
 
-        Role rolUser = persistenciaManager.getRoleFromCedula(cedula);
+        Role rolUser = persistenciaManager.getRoleFromCedula(cedula.trim());
         if(rolUser == Role.EXONERADO){
             view.InvalidateInputs("cedula");
             EstiloGral.ShowMessage("Este usuario ya esta exonerado", EstiloGral.ERROR_MESSAGE);

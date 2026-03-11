@@ -90,7 +90,7 @@ public class CajeroController {
                             view.removeReserva((AuraColumn) view.find(cedula).getParent());
                         } else {
                             
-                            EstiloGral.ShowMessage("La verificación facial ha fallado.", EstiloGral.ERROR_MESSAGE);
+                            EstiloGral.ShowMessage("La verificación facial ha fallado. Intente de nuevo.", EstiloGral.ERROR_MESSAGE);
                         }
 
                     } catch (InterruptedException e) {
@@ -100,11 +100,11 @@ public class CajeroController {
                 }).start();
 
             } catch (IOException e) {
-                EstiloGral.ShowMessage("Error al procesar la imagen. Reserva cancelada.", EstiloGral.ERROR_MESSAGE);
+                EstiloGral.ShowMessage("Error al procesar la imagen. Intente de nuevo.", EstiloGral.ERROR_MESSAGE);
             }
             
         } else {
-            EstiloGral.ShowMessage("No se seleccionó ninguna foto. Reserva cancelada.", EstiloGral.ERROR_MESSAGE);
+            EstiloGral.ShowMessage("No se seleccionó ninguna foto. Intente de nuevo.", EstiloGral.ERROR_MESSAGE);
         }
     }
 }

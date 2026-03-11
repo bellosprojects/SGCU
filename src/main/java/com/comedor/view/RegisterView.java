@@ -130,6 +130,7 @@ public class RegisterView extends AuraContainer {
                                                                                 .background(EstiloGral.WHITE_TRANSP_COLOR)
                                                                                 .padding(15)
                                                                                 .radius(15)
+                                                                                .info(createInfo("Ej: correo@dominio.com"), 1, 0, 1, 1)
                                                                                 .id("email");
 
                                                         emailInput.setVisible(false);
@@ -163,6 +164,7 @@ public class RegisterView extends AuraContainer {
                                                                                 .background(EstiloGral.WHITE_TRANSP_COLOR)
                                                                                 .padding(15)
                                                                                 .radius(15)
+                                                                                .info(createInfo("Contraseña sin espacios"), 1, 0, 1, 1)
                                                                                 .id("password");
 
                                                         passwordInput.setVisible(false);
@@ -202,6 +204,7 @@ public class RegisterView extends AuraContainer {
                                                                                 .background(EstiloGral.WHITE_TRANSP_COLOR)
                                                                                 .padding(15)
                                                                                 .radius(15)
+                                                                                .info(createInfo("Contraseña sin espacios"), 1, 0, 1, 1)
                                                                                 .id("confirmPassword");
 
                                                         passwordInput.setVisible(false);
