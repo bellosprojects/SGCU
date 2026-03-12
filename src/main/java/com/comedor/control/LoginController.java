@@ -10,6 +10,8 @@ public class LoginController {
     private final NavigationDelegate delegate;
     private final LoginView loginView;
     private final PersistenciaManager persistenciaManager;
+    private final String cajeroCedula = "cajero";
+    private final String cajeroPassword = "CAJERO";
 
     public LoginController(LoginView loginView, PersistenciaManager persistenciaManager, NavigationDelegate delegate) {
         this.loginView = loginView;
@@ -34,7 +36,7 @@ public class LoginController {
         String cedula = loginView.getCedula().trim();
         String password = loginView.getPassword();
 
-        if(cedula.equals("cajero") && password.equals("caraotas")){
+        if(cedula.equals(cajeroCedula) && password.equals(cajeroPassword)){
             delegate.onCajeroRequested();
             return;
         }

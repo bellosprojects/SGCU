@@ -83,12 +83,20 @@ public class CajeroController {
                     try {
                         Thread.sleep(2000);
                         if(ModelUtils.compararRostros(img1, img2)){
-                            persistenciaManager.aceptarReserva(cedula, tipo);
+                            
+
                             double monto = persistenciaManager.getPrecioForUser(cedula);
-                            persistenciaManager.sumarSaldo(cedula, -monto);
-                            EstiloGral.ShowMessage("Reserva exitosa", EstiloGral.SUCCESS_MESSAGE);
-                            view.removeReserva((AuraColumn) view.find(cedula).getParent());
-                            persistenciaManager.agregarComensalesPorServicio(tipo, persistenciaManager.getRoleFromCedula(cedula));
+                            double saldo = persistenciaManager.getSaldoFromCedula(cedula);
+                            if(monto > saldo){
+                                EstiloGral.ShowMessage("Saldo insuficiente, favor recargar", EstiloGral.ERROR_MESSAGE);
+                            } else {
+                                persistenciaManager.aceptarReserva(cedula, tipo);
+                                persistenciaManager.sumarSaldo(cedula, -monto);
+                                EstiloGral.ShowMessage("Reserva exitosa", EstiloGral.SUCCESS_MESSAGE);
+                                view.removeReserva((AuraColumn) view.find(cedula).getParent());
+                                persistenciaManager.agregarComensalesPorServicio(tipo, persistenciaManager.getRoleFromCedula(cedula));  
+                            }
+
                         } else {
                             
                             EstiloGral.ShowMessage("La verificación facial ha fallado. Intente de nuevo.", EstiloGral.ERROR_MESSAGE);
