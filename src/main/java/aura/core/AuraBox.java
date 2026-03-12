@@ -15,8 +15,6 @@ import java.awt.Paint;
 import java.awt.Point;
 import java.awt.RadialGradientPaint;
 import java.awt.Shape;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Area;
@@ -1005,67 +1003,6 @@ public abstract class AuraBox<T extends AuraBox<T>> extends JPanel {
                 findAllRecursive(id, (AuraBox<?>) child, results);
             }
         }
-    }
-
-    private Dimension minimalSize = new Dimension(-1,-1);
-
-    public T minimunSize(int w, int h){
-        this.minimalSize = new Dimension(w,h);
-        if(getParent() != null){
-            getParent().revalidate();
-        }
-
-        return (T) this;
-    }
-
-    public Dimension getMinimalSize(){
-        return minimalSize;
-    }
-
-    private Dimension maximalSize = new Dimension(-1,-1);
-
-    public T maximalSize(int w, int h){
-        this.maximalSize = new Dimension(w,h);
-        if(getParent() != null){
-            getParent().revalidate();
-        }
-
-        return (T) this;
-    }
-
-    public Dimension getMaximalSize(){
-        return maximalSize;
-    }
-
-    private float ratio = -1;
-
-    public T ratio(float r){
-        this.ratio = r;
-
-        if(getParent() != null){
-            getParent().revalidate();
-        }
-
-        return (T) this;
-    }
-
-    public float getRatio(){
-        return ratio;
-    }
-
-    public interface SizeAction {
-        void onResize(int w, int h);
-    }
-
-    public T onSize(SizeAction action){
-        this.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e){
-                action.onResize(getWidth(), getHeight());
-            }
-        });
-
-        return (T) this;
     }
 
 }

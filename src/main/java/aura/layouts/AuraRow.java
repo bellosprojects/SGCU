@@ -1,26 +1,26 @@
 package aura.layouts;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Insets;
-
+import java.awt.*;
 import aura.core.AuraBox;
 import aura.core.Layout;
-import aura.utils.MathUtils;
 
 public class AuraRow extends Layout<AuraRow> {
 
-    public static enum Alignment { CENTER, TOP, BOTTOM }
+    public static enum Alignment {
+        CENTER,
+        TOP,
+        BOTTOM
+    }
+
     private Alignment alignment = Alignment.CENTER;
 
-    public AuraRow() {
+    public AuraRow(){
         addMouseEvents();
         setLayout(null);
         background(new Color(0,0,0,0));
     }
 
-    public AuraRow align(Alignment align) {
+    public AuraRow align(Alignment align){
         this.alignment = align;
         revalidate();
         return this;
@@ -42,44 +42,30 @@ public class AuraRow extends Layout<AuraRow> {
             AuraBox<?> box = (AuraBox<?>) c;
             if (box.getWeight() > 0) {
                 totalWeight += box.getWeight();
-            } else if (box.getWidthPorc() > 0) {
-                fixedWidth += MathUtils.clamp(box.getWidthPorc() * totalWidth, box.getMinimalSize().width, box.getMaximalSize().width);
             } else {
-                fixedWidth += getClampedSize(box).width;
+                fixedWidth += c.getPreferredSize().width;
             }
             visibleCount++;
         }
 
-        int gapTotal = (visibleCount > 1) ? (visibleCount - 1) * gap : 0;
-        int remainingWidth = Math.max(0, totalWidth - fixedWidth - gapTotal);
-        int currentX = in.left;
+        int gapSpace = (visibleCount > 1) ? (visibleCount - 1) * gap : 0;
+        int remainingWidth = totalWidth - fixedWidth - gapSpace;
 
+        int currentX = in.left;
         for (Component c : children) {
             if (!c.isVisible()) continue;
             AuraBox<?> box = (AuraBox<?>) c;
-            Dimension d = getClampedSize(box);
-
+            Dimension d = c.getPreferredSize();
+            
             int finalWidth = d.width;
-            if (box.getWeight() > 0 && totalWeight > 0) {
+            if (box.getWeight() > 0 && remainingWidth > 0) {
                 finalWidth = (int) ((box.getWeight() / totalWeight) * remainingWidth);
-                finalWidth = (int) MathUtils.clamp(finalWidth, 
-                    box.getMinimalSize().width != -1 ? box.getMinimalSize().width : 0, 
-                    box.getMaximalSize().width != -1 ? box.getMaximalSize().width : Integer.MAX_VALUE);
-            } else if (box.getWidthPorc() > 0) {
-                finalWidth = (int) MathUtils.clamp(box.getWidthPorc() * totalWidth, box.getMinimalSize().width, box.getMaximalSize().width);
             }
 
-            int finalHeight = (box.getHeightPorc() > 0) ? (int)(box.getHeightPorc() * availableHeight) : d.height;
+            int finalHeight = (box.getHeightPorc() > 0)? (int) (box.getHeightPorc() * availableHeight) : d.height;
 
-            if (box.getRatio() > 0 ){
-                finalHeight = (int) (finalWidth * box.getRatio());
-            }
+            Alignment finalAlign = (box.getAlignR() != null)? box.getAlignR() : alignment;
 
-            finalHeight = (int) MathUtils.clamp(finalHeight, 
-                box.getMinimalSize().height != -1 ? box.getMinimalSize().height : 0, 
-                box.getMaximalSize().height != -1 ? box.getMaximalSize().height : Integer.MAX_VALUE);
-
-            Alignment finalAlign = (box.getAlignR() != null) ? box.getAlignR() : alignment;
             int y = switch (finalAlign) {
                 case CENTER -> in.top + (availableHeight - finalHeight) / 2;
                 case BOTTOM -> in.top + (availableHeight - finalHeight);
@@ -89,18 +75,6 @@ public class AuraRow extends Layout<AuraRow> {
             c.setBounds(currentX, y, finalWidth, finalHeight);
             currentX += finalWidth + gap;
         }
-    }
-
-    private Dimension getClampedSize(AuraBox<?> box) {
-        Dimension d = box.getPreferredSize();
-        int w = (int) MathUtils.clamp(d.width, 
-            box.getMinimalSize().width != -1 ? box.getMinimalSize().width : 0, 
-            box.getMaximalSize().width != -1 ? box.getMaximalSize().width : Integer.MAX_VALUE);
-        int h = (int) MathUtils.clamp(d.height, 
-            box.getMinimalSize().height != -1 ? box.getMinimalSize().height : 0, 
-            box.getMaximalSize().height != -1 ? box.getMaximalSize().height : Integer.MAX_VALUE);
-
-        return new Dimension(w, h);
     }
 
     @Override

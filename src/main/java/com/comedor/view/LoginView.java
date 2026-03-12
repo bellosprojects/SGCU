@@ -12,16 +12,15 @@ import aura.components.AuraText;
 import aura.core.AuraBox;
 import aura.core.Transition;
 import aura.layouts.AuraColumn;
+import aura.layouts.AuraGrid;
 import aura.layouts.AuraRow;
 
 public class LoginView extends AuraContainer {
 
     public LoginView() {
-        background(new AuraImage(getResourcePath("/images/comedor.png")));
-        initializeComponents();
-    }
 
-    private void initializeComponents() {
+        background(new AuraImage(getResourcePath("/images/comedor.png")));
+
         AuraButton loginButton = new AuraButton("Iniciar Sesión")
                                         .margin(20, 40)
                                         .background(EstiloGral.DARK_COLOR)
@@ -47,6 +46,7 @@ public class LoginView extends AuraContainer {
                                     .radius(15)
                                     .font(EstiloGral.INPUT_FONT)
                                     .background(EstiloGral.WHITE_TRANSP_COLOR)
+                                    .margin(0, 40)
                                     .info(createInfo("Cedula sin puntos Ej: 12345678"), 1, 0, 1, 1)
                                     .id("cedula");
 
@@ -56,98 +56,108 @@ public class LoginView extends AuraContainer {
                                     .radius(15)
                                     .font(EstiloGral.INPUT_FONT)
                                     .background(EstiloGral.WHITE_TRANSP_COLOR)
+                                    .margin(0, 40)
                                     .info(createInfo("Contraseña sin espacios"), 1, 0, 1, 1)
                                     .id("password");
 
         insert(
 
-            new AuraColumn()
-                .padding(20)
+            new AuraGrid(8, 10)
                 .fillParent()
-                .content(col -> {
+                .content(grid -> {
 
-                    col.insert(
-                        new AuraImage(getResourcePath("/images/logoWhite.png"))
-                            .heightPorc(0.2f)
-                            .maximalSize(200, 200)
-                            .minimunSize(120, 120)
-                            .ratio(1)
+                    grid.insert(
+                        new AuraSpacer()
+                            .colSpan(3)
+                            .rowSpan(7)
                         );
 
-                    col.insert(
-                        new AuraText("Iniciar Sesión")
-                            .font(EstiloGral.TITLE_FONT)
-                            .textColor(EstiloGral.BG_COLOR)
-                        );
-
-
-                    col.insert(
+                    grid.insert(
                         new AuraColumn()
-                            .widthPorc(0.5f)
-                            .minimunSize(450, -1)
-                            .maximalSize(650, -1)
-                            .weight(1f)
-                            .content(innerColumn -> {
+                            .colSpan(4)
+                            .rowSpan(7)
+                            .padding(20, 0, 0, 0)
+                            .content(col -> {
 
-                                innerColumn.insert(
+                                col.insert(
+                                    new AuraImage(getResourcePath("/images/logoWhite.png"))
+                                        .size(200, 200)
+                                    );
+
+                                col.insert(
+                                    new AuraText("SGCU - Iniciar Sesión")
+                                        .font(EstiloGral.TITLE_FONT)
+                                        .textColor(EstiloGral.BG_COLOR)
+                                    );
+
+                                col.insert(
                                     new AuraSpacer()
-                                );
+                                        .weight(1f)
+                                    );
 
-                                innerColumn.insert(
+                                col.insert(
                                     new AuraText("CEDULA")
                                         .alignSelf(AuraColumn.Alignment.LEFT)
                                         .font(EstiloGral.LABEL_FONT)
                                         .textColor(EstiloGral.BG_COLOR)
-                                        .margin(0, 50, 10, 0)
+                                        .margin(0, 90, 10, 0)
                                     );
 
-                                innerColumn.insert(cedulaInput);
+                                col.insert(cedulaInput);
 
-                                innerColumn.insert(
-                                    new AuraSpacer()
-                                        .weight(0.35f)
-                                );
-
-
-                                innerColumn.insert(
+                                col.insert(
                                     new AuraText("CONTRASEÑA")
                                         .alignSelf(AuraColumn.Alignment.LEFT)
                                         .font(EstiloGral.LABEL_FONT)
                                         .textColor(EstiloGral.BG_COLOR)
-                                        .margin(0, 50, 10, 0)
+                                        .margin(80, 90, 10, 0)
                                     );
 
-                                innerColumn.insert(passwordInput);
+                                col.insert(passwordInput);
 
-                                innerColumn.insert(
-                                    registerButton
-                                        .margin(10,0)
-                                        .alignSelf(AuraColumn.Alignment.RIGHT)
-                                );
+                                col.insert(
+                                    new AuraRow()
+                                        .fillWidth()
+                                        .margin(20, 60, 0, 60)
+                                        .content(options -> {
+                                        
+                                            options.add(new AuraSpacer().weight(1f));
+                                            options.add(registerButton);
 
-                                innerColumn.insert(
+                                        })
+                                    );
+
+                                col.insert(
                                     new AuraSpacer()
-                                );
+                                        .weight(0.75f)
+                                    );
 
                             })
-                    );
+                        );
 
+                    grid.insert(
+                        new AuraSpacer()
+                            .colSpan(3)
+                            .rowSpan(7)
+                        );
 
-                    col.insert(
+                    grid.insert(
                         new AuraRow()
-                            .fillWidth()
+                            .colSpan(10)
                             .align(AuraRow.Alignment.BOTTOM)
                             .content(footer -> {
 
                                 footer.insert(
                                     new AuraText("© 2026 SGCU. Todos los derechos reservados.")
                                         .textColor(EstiloGral.BG_COLOR)
-                                        .margin(0, 0, 20, 0)
+                                        .margin(20, 40)
                                         .font(EstiloGral.LABEL_FONT)
-                                        .textAlign(AuraColumn.Alignment.LEFT)
-                                        .weight(1f)
                                     );
 
+                                footer.insert(
+                                    new AuraSpacer()
+                                        .weight(1f)
+                                    );
 
                                 footer.insert(loginButton);
 

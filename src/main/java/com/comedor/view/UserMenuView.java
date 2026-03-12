@@ -21,10 +21,8 @@ import aura.components.AuraModal;
 import aura.components.AuraMultiText;
 import aura.components.AuraSpacer;
 import aura.components.AuraText;
-import aura.components.AuraWhen;
 import aura.components.AuraWindow;
 import aura.core.AuraBox;
-import aura.core.AuraState;
 import aura.core.Transition;
 import aura.layouts.AuraColumn;
 import aura.layouts.AuraRow;
@@ -34,183 +32,7 @@ public class UserMenuView extends AuraContainer {
     private AuraModal modalRecharge;
     private AuraModal modalSaldoPana;
 
-    private AuraRow menusRow;
-
     public UserMenuView(){
-        initializeView();
-    }
-
-    private void initializeView() {
-
-        menusRow = new AuraRow()
-                .fillWidth()
-                .margin(60,0,0,0)
-                .gap(40)
-                .weight(1f)
-                .content(menusRow -> {
-
-                    menusRow.insert(
-                        new AuraColumn()
-                            .weight(1f)
-                            .fillHeight()
-                            .content(desayunoColumn -> {
-                                desayunoColumn.insert(
-                                    new AuraText("Desayuno")
-                                        .textColor(EstiloGral.BG_COLOR)
-                                        .font(EstiloGral.INPUT_FONT)
-                                        .alignSelf(AuraColumn.Alignment.LEFT)
-                                        .margin(0,60)
-                                );
-
-                                desayunoColumn.insert(
-                                    new AuraColumn()
-                                        .weight(1f)
-                                        .fillWidth()
-                                        .margin(30, 0, 0, 10)
-                                        .radius(20)
-                                        .background(new AuraImage(getResourcePath("/images/desayunoBackground.jpg")))
-                                        .content(desayuno -> {
-                                            desayuno.insert(
-                                                new AuraButton("Reservar")
-                                                    .alignSelf(AuraColumn.Alignment.RIGHT)
-                                                    .radius(0, 20, 10, 0)
-                                                    .background(EstiloGral.BUTTON_COLOR)
-                                                    .font(EstiloGral.LABEL_BOLD_FONT)
-                                                    .textColor(EstiloGral.BG_COLOR)
-                                                    .id("bookBreakfastBtn")
-                                            );
-
-                                            desayuno.insert(
-                                                new AuraMultiText("")
-                                                    .textColor(EstiloGral.LIGHT_COLOR)
-                                                    .weight(1f)
-                                                    .id("desayunoIng")
-                                                    .block()
-                                                    .background(EstiloGral.TRANSPARENT_COLOR)
-                                                    .font(EstiloGral.LABEL_FONT)
-                                                    .fillWidth()
-                                                    .margin(20, 35)
-                                            );
-
-                                            desayuno.insert(
-                                                new AuraText("Arepa")
-                                                    .textColor(EstiloGral.BG_COLOR)
-                                                    .font(EstiloGral.MIDDLE_FONT)
-                                                    .padding(20, 0)
-                                                    .fillWidth()
-                                                    .radius(0, 20)
-                                                    .background(EstiloGral.WHITE_TRANSP_COLOR2)
-                                                    .id("desayuno")
-
-                                            );
-                                        })
-                                );
-                            })
-
-                    );
-
-                    menusRow.insert(
-                        new AuraColumn()
-                            .weight(1f)
-                            .fillHeight()
-                            .content(almuerzoColumn -> {
-                                almuerzoColumn.insert(
-                                    new AuraText("Almuerzo")
-                                        .textColor(EstiloGral.BG_COLOR)
-                                        .font(EstiloGral.INPUT_FONT)
-                                        .alignSelf(AuraColumn.Alignment.LEFT)
-                                        .margin(0,60)
-                                );
-
-                                almuerzoColumn.insert(
-                                    new AuraColumn()
-                                        .weight(1f)
-                                        .fillWidth()
-                                        .margin(30, 0, 0, 10)
-                                        .radius(20)
-                                        .background(new AuraImage(getResourcePath("/images/almuerzoBackground.jpg")))
-                                        .content(almuerzo -> {
-                                            almuerzo.insert(
-                                                new AuraButton("Reservar")
-                                                    .alignSelf(AuraColumn.Alignment.RIGHT)
-                                                    .radius(0, 20, 10, 0)
-                                                    .background(EstiloGral.BUTTON_COLOR)
-                                                    .font(EstiloGral.LABEL_BOLD_FONT)
-                                                    .textColor(EstiloGral.BG_COLOR)
-                                                    .id("bookLunchBtn")
-                                            );
-
-                                            almuerzo.insert(
-                                                new AuraMultiText("")
-                                                    .textColor(EstiloGral.LIGHT_COLOR)
-                                                    .weight(1f)
-                                                    .id("almuerzoIng")
-                                                    .block()
-                                                    .background(EstiloGral.TRANSPARENT_COLOR)
-                                                    .font(EstiloGral.LABEL_FONT)
-                                                    .fillWidth()
-                                                    .margin(20, 35)
-                                            );
-
-                                            almuerzo.insert(
-                                                new AuraText("Arroz")
-                                                    .textColor(EstiloGral.BG_COLOR)
-                                                    .font(EstiloGral.MIDDLE_FONT)
-                                                    .padding(20, 0)
-                                                    .fillWidth()
-                                                    .radius(0, 20)
-                                                    .background(EstiloGral.WHITE_TRANSP_COLOR2)
-                                                    .id("almuerzo")
-
-                                            );
-                                        })
-                                );
-                            })
-
-                    );
-
-                });
-
-        AuraRow menusRow2 = new AuraRow()
-                        .fillWidth()
-                        .gap(20)
-                        .content(row -> {
-                            row.insert(
-                                new AuraButton("Reservar Desayuno")
-                                    .radius(20)
-                                    .background(EstiloGral.BUTTON_COLOR)
-                                    .font(EstiloGral.LABEL_BOLD_FONT)
-                                    .textColor(EstiloGral.BG_COLOR)
-                                    .id("bookBreakfastBtn")
-                            );
-
-                            row.insert(
-                                new AuraButton("Reservar Almuerzo")
-                                    .radius(20)
-                                    .background(EstiloGral.BUTTON_COLOR)
-                                    .font(EstiloGral.LABEL_BOLD_FONT)
-                                    .textColor(EstiloGral.BG_COLOR)
-                                    .id("bookLunchBtn")
-                            );
-                        });
-                                        
-                        
-
-        onSize((w,h) -> {
-            if(w < 1620){
-                find("animate").setVisible(false);
-            }else {
-                find("animate").setVisible(true);
-            }
-
-            if(h < 900){
-                menusRow.setVisible(false);
-                menusRow2.setVisible(true);
-            }else {
-                menusRow2.setVisible(false);
-                menusRow.setVisible(true);
-            }
-        });
 
         insert(
             new AuraRow()
@@ -224,8 +46,7 @@ public class UserMenuView extends AuraContainer {
                             .addBg(EstiloGral.DARK_BG__COLOR.darker(), 1f)
                             .backgroundAngle(90)
                             .padding(20, 0)
-                            .widthPorc(0.28f)
-                            .minimunSize(400, -1)
+                            .weight(0.28f)
                             .content(panelColumn -> {
                                 panelColumn.insert(
                                     new AuraRow()
@@ -404,7 +225,7 @@ public class UserMenuView extends AuraContainer {
                                             pricesRow.insert(
                                                 new AuraColumn()
                                                     .align(AuraColumn.Alignment.LEFT)
-                                                    .padding(30, 40, 30, 20)
+                                                    .padding(30, 40, 30, 100)
                                                     .gap(10)
                                                     .background(EstiloGral.WHITE_TRANSP_COLOR2)
                                                     .stroke(EstiloGral.WHITE_TRANSP_COLOR, 1)
@@ -451,7 +272,7 @@ public class UserMenuView extends AuraContainer {
                                             pricesRow.insert(
                                                 new AuraColumn()
                                                     .align(AuraColumn.Alignment.LEFT)
-                                                    .padding(30, 40, 30, 20)
+                                                    .padding(30, 40, 30, 100)
                                                     .gap(10)
                                                     .background(EstiloGral.WHITE_TRANSP_COLOR2)
                                                     .stroke(EstiloGral.WHITE_TRANSP_COLOR, 1)
@@ -492,7 +313,7 @@ public class UserMenuView extends AuraContainer {
                                                     .textColor(EstiloGral.BG_COLOR)
                                                     .font(EstiloGral.CLOCK_FONT)
                                                     .alignSelf(AuraRow.Alignment.TOP)
-                                                    .margin(10, 0, 10, 20)
+                                                    .margin(10, 20)
                                                     .id("animate")
                                             );
 
@@ -507,11 +328,134 @@ public class UserMenuView extends AuraContainer {
                                 );
 
                                 mainColumn.insert(
-                                    menusRow
-                                );
+                                    new AuraRow()
+                                        .fillWidth()
+                                        .margin(60,0,0,0)
+                                        .gap(40)
+                                        .weight(1f)
+                                        .content(menusRow -> {
 
-                                mainColumn.insert(
-                                    menusRow2
+                                            menusRow.insert(
+                                                new AuraColumn()
+                                                    .weight(1f)
+                                                    .fillHeight()
+                                                    .content(desayunoColumn -> {
+                                                        desayunoColumn.insert(
+                                                            new AuraText("Desayuno")
+                                                                .textColor(EstiloGral.BG_COLOR)
+                                                                .font(EstiloGral.INPUT_FONT)
+                                                                .alignSelf(AuraColumn.Alignment.LEFT)
+                                                                .margin(0,60)
+                                                        );
+
+                                                        desayunoColumn.insert(
+                                                            new AuraColumn()
+                                                                .weight(1f)
+                                                                .fillWidth()
+                                                                .margin(30, 0, 0, 10)
+                                                                .radius(20)
+                                                                .background(new AuraImage(getResourcePath("/images/desayunoBackground.jpg")))
+                                                                .content(desayuno -> {
+                                                                    desayuno.insert(
+                                                                        new AuraButton("Reservar")
+                                                                            .alignSelf(AuraColumn.Alignment.RIGHT)
+                                                                            .radius(0, 20, 10, 0)
+                                                                            .background(EstiloGral.BUTTON_COLOR)
+                                                                            .font(EstiloGral.LABEL_BOLD_FONT)
+                                                                            .textColor(EstiloGral.BG_COLOR)
+                                                                            .id("bookBreakfastBtn")
+                                                                    );
+
+                                                                    desayuno.insert(
+                                                                        new AuraMultiText("")
+                                                                            .textColor(EstiloGral.LIGHT_COLOR)
+                                                                            .weight(1f)
+                                                                            .id("desayunoIng")
+                                                                            .block()
+                                                                            .background(EstiloGral.TRANSPARENT_COLOR)
+                                                                            .font(EstiloGral.LABEL_FONT)
+                                                                            .fillWidth()
+                                                                            .margin(20, 35)
+                                                                    );
+
+                                                                    desayuno.insert(
+                                                                        new AuraText("Arepa")
+                                                                            .textColor(EstiloGral.BG_COLOR)
+                                                                            .font(EstiloGral.MIDDLE_FONT)
+                                                                            .padding(20, 0)
+                                                                            .fillWidth()
+                                                                            .radius(0, 20)
+                                                                            .background(EstiloGral.WHITE_TRANSP_COLOR2)
+                                                                            .id("desayuno")
+
+                                                                    );
+                                                                })
+                                                        );
+                                                    })
+                    
+                                            );
+
+                                            menusRow.insert(
+                                                new AuraColumn()
+                                                    .weight(1f)
+                                                    .fillHeight()
+                                                    .content(almuerzoColumn -> {
+                                                        almuerzoColumn.insert(
+                                                            new AuraText("Almuerzo")
+                                                                .textColor(EstiloGral.BG_COLOR)
+                                                                .font(EstiloGral.INPUT_FONT)
+                                                                .alignSelf(AuraColumn.Alignment.LEFT)
+                                                                .margin(0,60)
+                                                        );
+
+                                                        almuerzoColumn.insert(
+                                                            new AuraColumn()
+                                                                .weight(1f)
+                                                                .fillWidth()
+                                                                .margin(30, 0, 0, 10)
+                                                                .radius(20)
+                                                                .background(new AuraImage(getResourcePath("/images/almuerzoBackground.jpg")))
+                                                                .content(almuerzo -> {
+                                                                    almuerzo.insert(
+                                                                        new AuraButton("Reservar")
+                                                                            .alignSelf(AuraColumn.Alignment.RIGHT)
+                                                                            .radius(0, 20, 10, 0)
+                                                                            .background(EstiloGral.BUTTON_COLOR)
+                                                                            .font(EstiloGral.LABEL_BOLD_FONT)
+                                                                            .textColor(EstiloGral.BG_COLOR)
+                                                                            .id("bookLunchBtn")
+                                                                    );
+
+                                                                    almuerzo.insert(
+                                                                        new AuraMultiText("")
+                                                                            .textColor(EstiloGral.LIGHT_COLOR)
+                                                                            .weight(1f)
+                                                                            .id("almuerzoIng")
+                                                                            .block()
+                                                                            .background(EstiloGral.TRANSPARENT_COLOR)
+                                                                            .font(EstiloGral.LABEL_FONT)
+                                                                            .fillWidth()
+                                                                            .margin(20, 35)
+                                                                    );
+
+                                                                    almuerzo.insert(
+                                                                        new AuraText("Arroz")
+                                                                            .textColor(EstiloGral.BG_COLOR)
+                                                                            .font(EstiloGral.MIDDLE_FONT)
+                                                                            .padding(20, 0)
+                                                                            .fillWidth()
+                                                                            .radius(0, 20)
+                                                                            .background(EstiloGral.WHITE_TRANSP_COLOR2)
+                                                                            .id("almuerzo")
+
+                                                                    );
+                                                                })
+                                                        );
+                                                    })
+                    
+                                            );
+
+                                        })
                                 );
 
                             })
@@ -636,9 +580,9 @@ public class UserMenuView extends AuraContainer {
 
         ((AuraText) find("date")).text("Menus disponibles en la fecha: " + desayuno.getFecha());
 
-        ((AuraText) menusRow.find("desayuno")).text(desayuno.getPlato());
+        ((AuraText) find("desayuno")).text(desayuno.getPlato());
 
-        ((AuraMultiText) menusRow.find("desayunoIng")).text("Ingredientes: " + desayuno.getIngredientes());
+        ((AuraMultiText) find("desayunoIng")).text("Ingredientes: " + desayuno.getIngredientes());
 
     }
 
@@ -648,9 +592,9 @@ public class UserMenuView extends AuraContainer {
 
         ((AuraText) find("date")).text("Menus disponibles en la fecha: " + almuerzo.getFecha());
 
-        ((AuraText) menusRow.find("almuerzo")).text(almuerzo.getPlato());
+        ((AuraText) find("almuerzo")).text(almuerzo.getPlato());
 
-        ((AuraMultiText) menusRow.find("almuerzoIng")).text("Ingredientes: " + almuerzo.getIngredientes());
+        ((AuraMultiText) find("almuerzoIng")).text("Ingredientes: " + almuerzo.getIngredientes());
 
     }
 

@@ -38,7 +38,7 @@ public class GestionarMenuView extends AuraContainer {
                                 );
 
                                 row.insert(
-                                    new AuraText("Gestionar Menu")
+                                    new AuraText("SGCU - Gestionar Menu")
                                         .font(EstiloGral.TITLE_FONT)
                                         .textColor(EstiloGral.BG_COLOR)
                                 );
@@ -46,10 +46,14 @@ public class GestionarMenuView extends AuraContainer {
                     );
 
                     mainCol.insert(
+                        new AuraSpacer()
+                    );
+
+                    mainCol.insert(
                         new AuraRow()
-                            .gap(40)
+                            .margin(0,150)
+                            .gap(150)
                             .fillWidth()
-                            .maximalSize(800, -1)
                             .content(dataRow -> {
                                 dataRow.insert(
                                     new AuraColumn()
@@ -78,7 +82,7 @@ public class GestionarMenuView extends AuraContainer {
                                                     .alignSelf(AuraColumn.Alignment.LEFT)
                                                     .font(EstiloGral.LABEL_FONT)
                                                     .textColor(EstiloGral.BG_COLOR)
-                                                    .margin(20, 50, 10, 0)
+                                                    .margin(50, 50, 10, 0)
                                             );
 
                                             col1.insert(
@@ -120,7 +124,7 @@ public class GestionarMenuView extends AuraContainer {
                                                     .alignSelf(AuraColumn.Alignment.LEFT)
                                                     .font(EstiloGral.LABEL_FONT)
                                                     .textColor(EstiloGral.BG_COLOR)
-                                                    .margin(20, 50, 10, 0)
+                                                    .margin(50, 50, 10, 0)
                                             );
 
                                             col2.insert(
@@ -142,20 +146,24 @@ public class GestionarMenuView extends AuraContainer {
                                 .alignSelf(AuraColumn.Alignment.LEFT)
                                 .font(EstiloGral.LABEL_FONT)
                                 .textColor(EstiloGral.BG_COLOR)
-                                .margin(20, 200, 10, 0)
+                                .margin(50, 200, 10, 0)
                     );
 
                     mainCol.insert(
                         new AuraMultiText(" ")
                             .alignSelf(AuraColumn.Alignment.LEFT)
                             .fillWidth()
-                            .weight(1f)
+                            .height(160)
                             .radius(15)
                             .padding(15)
                             .font(EstiloGral.INPUT_FONT)
                             .background(EstiloGral.WHITE_TRANSP_COLOR)
                             .margin(0,150)
                             .id("ingredientes")
+                    );
+
+                    mainCol.insert(
+                        new AuraSpacer()
                     );
 
                     mainCol.insert(
