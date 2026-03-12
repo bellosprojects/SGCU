@@ -34,11 +34,9 @@ public class ListaComensalesTest {
 
     @Test
     public void testReset_CargaListaComensalesDesagregada() {
-        // Preparamos los datos simulados 
         ComensalesPorServicio comensalesDesayuno = mock(ComensalesPorServicio.class);
         ComensalesPorServicio comensalesAlmuerzo = mock(ComensalesPorServicio.class);
         
-        // Simulamos que el PersistenciaManager devuelve estas listas al controlador
         when(persistenciaMock.getComensalesPorServicio(TipoMenu.DESAYUNO)).thenReturn(comensalesDesayuno);
         when(persistenciaMock.getComensalesPorServicio(TipoMenu.ALMUERZO)).thenReturn(comensalesAlmuerzo);
 
