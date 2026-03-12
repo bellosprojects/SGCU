@@ -86,7 +86,6 @@ public class CajeroController {
                             
 
                             double monto = persistenciaManager.getPrecioForUser(cedula);
-<<<<<<< HEAD
                             double saldo = persistenciaManager.getSaldoFromCedula(cedula);
                             if(monto > saldo){
                                 EstiloGral.ShowMessage("Saldo insuficiente, favor recargar", EstiloGral.ERROR_MESSAGE);
@@ -98,11 +97,6 @@ public class CajeroController {
                                 persistenciaManager.agregarComensalesPorServicio(tipo, persistenciaManager.getRoleFromCedula(cedula));  
                             }
 
-=======
-                            persistenciaManager.sumarSaldo(cedula, -monto);
-                            EstiloGral.ShowMessage("Reserva exitosa", EstiloGral.SUCCESS_MESSAGE);
-                            view.removeReserva((AuraColumn) view.find(cedula).getParent());
->>>>>>> 0f0c8a78c024af75ec6eb2598b1e519b95e75e9e
                         } else {
                             
                             EstiloGral.ShowMessage("La verificación facial ha fallado. Intente de nuevo.", EstiloGral.ERROR_MESSAGE);

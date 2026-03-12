@@ -50,10 +50,7 @@ public class AppCoordinator implements NavigationDelegate {
         mainFrame = new AuraWindow("SGCU")
             .fullScreen()
             .background(EstiloGral.DARK_COLOR)
-<<<<<<< HEAD
             //.size(1360,768)
-=======
->>>>>>> 0f0c8a78c024af75ec6eb2598b1e519b95e75e9e
             .noResizable()
             .icon(new AuraImage(getResourcePath("/images/logoColor.png")))
             .display();
