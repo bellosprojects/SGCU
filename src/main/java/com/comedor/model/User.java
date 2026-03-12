@@ -11,6 +11,7 @@ public class User {
         TRABAJADOR,
         BECARIO, 
         EXONERADO,
+        CAJERO,
     }
 
     private String fullname;

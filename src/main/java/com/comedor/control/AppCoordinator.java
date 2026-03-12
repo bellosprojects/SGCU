@@ -47,10 +47,10 @@ public class AppCoordinator implements NavigationDelegate {
 
     private void initView(){
         mainFrame = new AuraWindow("SGCU")
-            //.fullScreen()
+            .fullScreen()
             .background(EstiloGral.DARK_COLOR)
-            .size(1360,768)
-            //.noResizable()
+            //.size(1360,768)
+            .noResizable()
             .icon(new AuraImage(getResourcePath("/images/logoColor.png")))
             .display();
 
@@ -195,6 +195,8 @@ public class AppCoordinator implements NavigationDelegate {
     public void onLoginSuccess(String cedula) {
         if (model.getRoleFromCedula(cedula).toString().equals("ADMIN")) {
             showAdminDashboard();
+        } else if(model.getRoleFromCedula(cedula).toString().equals("CAJERO")){
+            showCajeroView();
         } else {
             showUserMenu(cedula);
         }
