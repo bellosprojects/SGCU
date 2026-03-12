@@ -27,6 +27,7 @@ public class AppCoordinator implements NavigationDelegate {
     private AuraState<String> viewStateController;
     private final Map<String, AuraBox<?>> views = new HashMap<>();
 
+    // Controllers are created once and reused to avoid re-attaching listeners.
     private LoginController loginController;
     private RegisterController registerController;
     private UserMenuController userMenuController;
@@ -195,6 +196,8 @@ public class AppCoordinator implements NavigationDelegate {
     public void onLoginSuccess(String cedula) {
         if (model.getRoleFromCedula(cedula).toString().equals("ADMIN")) {
             showAdminDashboard();
+        } else if(model.getRoleFromCedula(cedula).toString().equals("CAJERO")){
+            showCajeroView();
         } else {
             showUserMenu(cedula);
         }
