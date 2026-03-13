@@ -27,7 +27,6 @@ public class AppCoordinator implements NavigationDelegate {
     private AuraState<String> viewStateController;
     private final Map<String, AuraBox<?>> views = new HashMap<>();
 
-    // Controllers are created once and reused to avoid re-attaching listeners.
     private LoginController loginController;
     private RegisterController registerController;
     private UserMenuController userMenuController;
