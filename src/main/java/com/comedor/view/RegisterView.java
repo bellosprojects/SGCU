@@ -367,7 +367,7 @@ public class RegisterView extends AuraContainer {
 
         //Cambiar nombre de los Label
         ((AuraText) find("usernameLabel")).text("Correo");
-        ((AuraText) find("facuLabel")).text("Contraseña");
+        ((AuraText) find("facuLabel")).text("Contrase{a");
         ((AuraText) find("roleLabel")).text("Confirmar Contraseña");
 
         //Intercambiar text por inputs

@@ -43,7 +43,7 @@ public class GestionarMenuController {
         TipoMenu tipoMenu = tipo.equals("Desayuno") ? TipoMenu.DESAYUNO : TipoMenu.ALMUERZO;
 
         if (!isValidInputs(fecha, plato, ingredientes, cupos)) {
-            EstiloGral.ShowMessage("Datos invalidos", EstiloGral.ERROR_MESSAGE); 
+            EstiloGral.ShowMessage("Datos inválidos", EstiloGral.ERROR_MESSAGE); 
             return;
         }
 

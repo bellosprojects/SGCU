@@ -17,6 +17,7 @@ public class AuraSelect extends AuraText {
 
     private final List<String> options;
     private AuraColumn popup;
+    private boolean isOpen = false;
 
     public AuraSelect(String... options) {
         super(options[0]);
@@ -30,8 +31,19 @@ public class AuraSelect extends AuraText {
 
     }
 
+    public boolean isOpen(){
+        return isOpen;
+    }
+
+    public void close(){
+        if(isOpen){
+            togglePopup();
+        }
+    }
 
     private void togglePopup() {
+
+        isOpen = !isOpen;
 
         AuraWindow window = BoxUtils.getAuraWindow(this);
         

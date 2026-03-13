@@ -12,7 +12,6 @@ import com.comedor.view.EstiloGral;
 import com.comedor.view.UserMenuView;
 
 import aura.core.AuraBox;
-
 import aura.layouts.AuraRow;
 
 public class UserMenuController {

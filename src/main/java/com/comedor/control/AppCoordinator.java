@@ -194,12 +194,11 @@ public class AppCoordinator implements NavigationDelegate {
 
     @Override
     public void onLoginSuccess(String cedula) {
-        if (model.getRoleFromCedula(cedula).toString().equals("ADMIN")) {
-            showAdminDashboard();
-        } else if(model.getRoleFromCedula(cedula).toString().equals("CAJERO")){
-            showCajeroView();
-        } else {
-            showUserMenu(cedula);
+        String role = model.getRoleFromCedula(cedula).toString();
+        switch (role) {
+            case "ADMIN" -> showAdminDashboard();
+            case "CAJERO" -> showCajeroView();
+            default -> showUserMenu(cedula);
         }
     }
 

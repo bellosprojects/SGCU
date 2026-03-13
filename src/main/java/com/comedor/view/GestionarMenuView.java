@@ -8,7 +8,6 @@ import aura.components.AuraImage;
 import aura.components.AuraInput;
 import aura.components.AuraMultiText;
 import aura.components.AuraSelect;
-import aura.components.AuraSpacer;
 import aura.components.AuraText;
 import aura.core.AuraBox;
 import aura.core.Transition;
@@ -17,8 +16,11 @@ import aura.layouts.AuraRow;
 
 public class GestionarMenuView extends AuraContainer {
 
-    public GestionarMenuView(){
+    public GestionarMenuView() {
+        initializeView();
+    }
 
+    private void initializeView() {
         insert(
             new AuraColumn()
                 .fillParent()
@@ -190,7 +192,6 @@ public class GestionarMenuView extends AuraContainer {
                     );
                 })
         );
-        
     }
 
     private String getResourcePath(String ruta) {

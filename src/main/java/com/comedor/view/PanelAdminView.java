@@ -659,5 +659,10 @@ public class PanelAdminView extends AuraContainer {
 
     }
 
+    public void closeSelect(){
+        ((AuraSelect) find("rol")).close();
+        ((AuraSelect) find("rol2")).close();
+    }
+
 }
 

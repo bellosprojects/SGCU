@@ -56,8 +56,8 @@ public class CajeroController {
                 String data = parent.getId();
                 String[] parts = data.split("-");
                 String cedula = parts[0];
-                String estadoReserva = parts[1];
-                verificarFaceId(Menu.TipoMenu.valueOf(estadoReserva), cedula);
+                String tipoReserva = parts[1];
+                verificarFaceId(Menu.TipoMenu.valueOf(tipoReserva), cedula);
             });
         }
     }
@@ -93,7 +93,7 @@ public class CajeroController {
                                 persistenciaManager.aceptarReserva(cedula, tipo);
                                 persistenciaManager.sumarSaldo(cedula, -monto);
                                 EstiloGral.ShowMessage("Reserva exitosa", EstiloGral.SUCCESS_MESSAGE);
-                                view.removeReserva((AuraColumn) view.find(cedula).getParent());
+                                view.removeReserva((AuraColumn) view.find(cedula + "-" + tipo.toString()));
                                 persistenciaManager.agregarComensalesPorServicio(tipo, persistenciaManager.getRoleFromCedula(cedula));  
                             }
 

@@ -116,18 +116,22 @@ public class PanelAdminController {
     }
 
     private void gotoLoginView() {
+        panelAdminView.closeSelect();
         delegate.onBackToLoginRequested();
     }
 
     private void goToCalcularCCB() {
+        panelAdminView.closeSelect();
         delegate.onCalcularCCBRequested();
     }
 
     private void goToMenuGestion() {
+        panelAdminView.closeSelect();
         delegate.onGestionarMenuRequested();
     }
 
     private void goToGestionarBecarios(){
+        panelAdminView.closeSelect();
         delegate.onGestionarBecariosRequested();
     }
 
